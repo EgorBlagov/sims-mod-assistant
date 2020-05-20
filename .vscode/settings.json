@@ -1,0 +1,10 @@
+{
+    "search.exclude": {
+        "**/.cache": true,
+        "**/dist": true
+    },
+    "files.watcherExclude": {
+        "**/.cache": true,
+        "**/dist": true
+    }
+}
