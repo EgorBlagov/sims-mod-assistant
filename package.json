@@ -4,25 +4,34 @@
     "description": "Simple Electron based Application to help Sims 4 players handle their thousands of mods",
     "main": "index.js",
     "devDependencies": {
+        "@types/axios": "^0.14.0",
         "@types/electron": "^1.6.10",
         "@types/node": "^12.12.6",
         "electron": "^9.0.0",
         "parcel-bundler": "^1.12.4",
+        "pre-commit": "^1.2.2",
+        "prettier": "^2.0.5",
+        "tslint": "^6.1.2",
+        "tslint-config-prettier": "^1.18.0",
+        "tslint-react": "^5.0.0",
         "typescript": "^3.9.3"
     },
     "dependencies": {
-        "@types/axios": "^0.14.0",
         "axios": "^0.19.2",
         "react": "^16.13.1",
         "react-dom": "^16.13.1"
     },
     "scripts": {
         "dev": "parcel ui/index.html",
+        "lint": "prettier --write {server,ui}/**/*.{tsx,ts,css} && tslint --fix {server,ui}/**/*.{ts,tsx}",
         "build": "rm -rf dist && npm run build:ui && npm run build:server",
         "build:ui": "parcel build ui/index.html --public-url ./",
         "build:server": "tsc --build server/tsconfig.json",
         "start": "electron dist/main.js"
     },
+    "pre-commit": [
+        "lint"
+    ],
     "keywords": [
         "sims",
         "dbpf",
@@ -34,9 +43,10 @@
     "author": "Egor Blagov",
     "license": "ISC",
     "prettier": {
-        "trailingComma": "es5",
+        "trailingComma": "all",
         "tabWidth": 4,
         "semi": true,
-        "singleQuote": true
+        "printWidth": 120,
+        "singleQuote": false
     }
 }

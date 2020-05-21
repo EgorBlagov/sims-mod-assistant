@@ -1,0 +1,16 @@
+{
+    "defaultSeverity": "error",
+    "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+    "jsRules": {},
+    "rules": {
+        "object-literal-sort-keys": false,
+        "no-namespace": false,
+        "no-bitwise": false,
+        "file-name-casing": [
+            true,
+            { ".tsx": "pascal-case", ".ts": "kebab-case" }
+        ],
+        "no-return-await": true
+    },
+    "rulesDirectory": []
+}
