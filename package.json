@@ -6,8 +6,12 @@
     "devDependencies": {
         "@types/axios": "^0.14.0",
         "@types/electron": "^1.6.10",
+        "@types/express": "^4.17.6",
         "@types/node": "^12.12.6",
+        "@types/react": "^16.9.35",
+        "concurrently": "^5.2.0",
         "electron": "^9.0.0",
+        "nodemon": "^2.0.4",
         "parcel-bundler": "^1.12.4",
         "pre-commit": "^1.2.2",
         "prettier": "^2.0.5",
@@ -18,14 +22,17 @@
     },
     "dependencies": {
         "axios": "^0.19.2",
+        "express": "^4.17.1",
         "react": "^16.13.1",
         "react-dom": "^16.13.1"
     },
     "scripts": {
-        "dev": "parcel ui/index.html",
+        "dev": "npm run watch-server",
+        "watch-server": "nodemon -e ts,tsx,html --watch server/**/* --watch ui/**/* --exec \"npm run build && electron dist/main.js\"",
+        "watch-client": "parcel watch ui/index.html --public-url ./ -d dist/client",
         "lint": "prettier --write {server,ui}/**/*.{tsx,ts,css} && tslint --fix {server,ui}/**/*.{ts,tsx}",
         "build": "rm -rf dist && npm run build:ui && npm run build:server",
-        "build:ui": "parcel build ui/index.html --public-url ./",
+        "build:ui": "parcel build ui/index.html --public-url ./ -d dist/client",
         "build:server": "tsc --build server/tsconfig.json",
         "start": "electron dist/main.js"
     },
