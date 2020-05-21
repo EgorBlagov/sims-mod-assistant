@@ -1,34 +1,42 @@
 {
-  "name": "sims-mod-assistant",
-  "version": "1.0.0",
-  "description": "Simple Electron based Application to help Sims 4 players handle their thousands of mods",
-  "main": "index.js",
-  "devDependencies": {
-    "@types/electron": "^1.6.10",
-    "@types/node": "^12.12.6",
-    "electron": "^9.0.0",
-    "parcel-bundler": "^1.12.4",
-    "typescript": "^3.9.3"
-  },
-  "dependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  },
-  "scripts": {
-    "dev": "parcel ui/index.html",
-    "build": "rm -rf dist && npm run build:ui && npm run build:server",
-    "build:ui": "parcel build ui/index.html --public-url ./",
-    "build:server": "tsc --build server/tsconfig.json",
-    "start": "electron dist/main.js"
-  },
-  "keywords": [
-    "sims",
-    "dbpf",
-    "mod",
-    "mods",
-    "conflict",
-    "duplicate"
-  ],
-  "author": "Egor Blagov",
-  "license": "ISC"
+    "name": "sims-mod-assistant",
+    "version": "1.0.0",
+    "description": "Simple Electron based Application to help Sims 4 players handle their thousands of mods",
+    "main": "index.js",
+    "devDependencies": {
+        "@types/electron": "^1.6.10",
+        "@types/node": "^12.12.6",
+        "electron": "^9.0.0",
+        "parcel-bundler": "^1.12.4",
+        "typescript": "^3.9.3"
+    },
+    "dependencies": {
+        "@types/axios": "^0.14.0",
+        "axios": "^0.19.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1"
+    },
+    "scripts": {
+        "dev": "parcel ui/index.html",
+        "build": "rm -rf dist && npm run build:ui && npm run build:server",
+        "build:ui": "parcel build ui/index.html --public-url ./",
+        "build:server": "tsc --build server/tsconfig.json",
+        "start": "electron dist/main.js"
+    },
+    "keywords": [
+        "sims",
+        "dbpf",
+        "mod",
+        "mods",
+        "conflict",
+        "duplicate"
+    ],
+    "author": "Egor Blagov",
+    "license": "ISC",
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": true
+    }
 }
