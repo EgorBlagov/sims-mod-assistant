@@ -4,7 +4,7 @@ interface LSchemaMeta {
     [key: string]: string | Formatter;
 }
 
-interface Translation extends LSchemaMeta {
+export interface Translation extends LSchemaMeta {
     fetchedInfo: string;
     systemInfo: Formatter;
 }

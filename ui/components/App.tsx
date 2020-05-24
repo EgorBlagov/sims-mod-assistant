@@ -1,36 +1,20 @@
 import * as React from "react";
 import { ipc } from "../../common/ipc";
-import { l10n, Language } from "../../common/l10n";
-
-const LanguageContext = React.createContext(Language.English);
+import { Language } from "../../common/l10n";
+import { LanguageContext } from "../utils/L10n";
+import { Main } from "./Main";
 
 interface IState {
     queriedInfo: string;
     systemInfo: string;
+    currentLanguage: Language;
 }
 
-class LocalizationTest extends React.Component<IState> {
-    static contextType = LanguageContext;
-    declare context: React.ContextType<typeof LanguageContext>;
-
-    render() {
-        return (
-            <div>
-                Test Info
-                {l10n[this.context].fetchedInfo}
-                {this.props.queriedInfo}
-                <br />
-                {l10n[this.context].systemInfo(this.props.systemInfo)}
-            </div>
-        );
-    }
-}
-
-// tslint:disable-next-line: max-classes-per-file
 export class App extends React.Component<{}, IState> {
     state: IState = {
         queriedInfo: "Not fetched",
         systemInfo: "Non fetched",
+        currentLanguage: Language.English,
     };
 
     componentDidMount() {
@@ -41,12 +25,14 @@ export class App extends React.Component<{}, IState> {
         ipc.renderer.testRPCSytemInfo(10).then((data) => {
             this.setState({ systemInfo: data });
         });
+
+        setTimeout(() => this.setState({ currentLanguage: Language.Russian }), 5000);
     }
 
     render() {
         return (
-            <LanguageContext.Provider value={Language.Russian}>
-                <LocalizationTest {...this.state} />;
+            <LanguageContext.Provider value={this.state.currentLanguage}>
+                <Main info1={this.state.queriedInfo} info2={this.state.systemInfo} />;
             </LanguageContext.Provider>
         );
     }
