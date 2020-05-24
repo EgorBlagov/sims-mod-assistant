@@ -4,24 +4,23 @@ interface LSchemaMeta {
     [key: string]: string | Formatter;
 }
 
-export interface Translation extends LSchemaMeta {
-    fetchedInfo: string;
-    systemInfo: Formatter;
-}
-
-export const english: Translation = {
-    fetchedInfo: "Fetched info: ",
-    systemInfo: (exampleParam) => `System Info (param: ${exampleParam}): `,
+export const english = {
+    language: "Language",
 };
 
+export type Translation = typeof english;
+
+// tslint:disable-next-line: no-empty
+function assertLanguageSchema(_: LSchemaMeta) {}
+assertLanguageSchema(english);
+
 export const russian: Translation = {
-    fetchedInfo: "Полученная информация: ",
-    systemInfo: (exampleParam) => `Системная информация ${exampleParam}): `,
+    language: "Язык",
 };
 
 export enum Language {
-    English,
-    Russian,
+    English = "English",
+    Russian = "Русский",
 }
 
 export const l10n: Record<Language, Translation> = {
