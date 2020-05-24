@@ -1,6 +1,6 @@
 /* Pretending to be a separate tool */
 
-import { ipcRenderer, ipcMain } from "electron";
+import { ipcMain, ipcRenderer } from "electron";
 
 type TIpcCallback<TArg, TReturn> = (args: TArg) => Promise<TReturn>;
 type TIpcRegisterHandler<TArg, TReturn> = (callback: TIpcCallback<TArg, TReturn>) => void;
@@ -26,11 +26,11 @@ class IpcCreator<T extends TIpcSchema> {
 
     constructor(ipcSchema: TIpcSchema) {
         for (const channelName of Object.keys(ipcSchema)) {
-            this.registerApi(channelName, ipcSchema[channelName]);
+            this.registerApi(channelName);
         }
     }
 
-    private registerApi<K extends keyof TIpcSchema>(name: K, channelSchema: TIpcRPCSchema): void {
+    private registerApi<K extends keyof TIpcSchema>(name: K): void {
         this.interface.main[name] = this.createTypesafeMainApi(name.toString());
         this.interface.renderer[name] = this.createTypesafeRendererApi(name.toString());
     }
