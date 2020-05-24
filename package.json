@@ -17,6 +17,7 @@
         "parcel-bundler": "^1.12.4",
         "pre-commit": "^1.2.2",
         "prettier": "^2.0.5",
+        "sass": "^1.26.5",
         "tslint": "^6.1.2",
         "tslint-config-prettier": "^1.18.0",
         "tslint-react": "^5.0.0",
