@@ -1,27 +1,26 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-// tslint:disable-next-line: no-var-requires
-const axios = require("axios").default;
-
-const url = new URL(window.location.toString());
-const port = Number(url.searchParams.get("port"));
-
-interface IProps {
-    port: number;
-}
+import { ipc } from "../common/ipc";
+import { Test } from "tslint";
 
 interface IState {
     queriedInfo: string;
+    systemInfo: string;
 }
 
-class App extends React.Component<IProps, IState> {
+class App extends React.Component<{}, IState> {
     state: IState = {
         queriedInfo: "Not fetched",
+        systemInfo: "Non fetched",
     };
 
     componentDidMount() {
-        axios.get("/api").then((res) => {
-            this.setState({ queriedInfo: JSON.stringify(res.data) });
+        ipc.renderer.testRPC().then((data) => {
+            this.setState({ queriedInfo: JSON.stringify(data) });
+        });
+
+        ipc.renderer.testRPCSytemInfo(10).then((data) => {
+            this.setState({ systemInfo: data });
         });
     }
 
@@ -30,10 +29,10 @@ class App extends React.Component<IProps, IState> {
             <div>
                 Fetched API test: {this.state.queriedInfo}
                 <br />
-                Port: {this.props.port}
+                System info: {this.state.systemInfo}{" "}
             </div>
         );
     }
 }
 
-ReactDOM.render(<App port={port} />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));

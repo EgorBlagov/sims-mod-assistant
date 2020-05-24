@@ -22,17 +22,19 @@
     },
     "dependencies": {
         "axios": "^0.19.2",
+        "electron-typesafe-ipc": "0.0.17",
         "express": "^4.17.1",
         "react": "^16.13.1",
         "react-dom": "^16.13.1"
     },
     "scripts": {
-        "dev": "npm run watch-server",
-        "watch-server": "nodemon -e ts,tsx,html --watch server/**/* --watch ui/**/* --exec \"npm run build && electron dist/main.js\"",
-        "watch-client": "parcel watch ui/index.html --public-url ./ -d dist/client",
+        "dev": "concurrently npm:watch-*",
+        "watch-server-bundled": "set NODE_ENV=development&& nodemon -e js,html --watch dist/**/* --exec \"electron dist/server/main.js\"",
+        "watch-client": "parcel watch ui/index.html --public-url ./ -d dist/client --target electron",
+        "watch-server": "tsc --build server/tsconfig.json --watch",
         "lint": "prettier --write {server,ui}/**/*.{tsx,ts,css} && tslint --fix {server,ui}/**/*.{ts,tsx}",
         "build": "rm -rf dist && npm run build:ui && npm run build:server",
-        "build:ui": "parcel build ui/index.html --public-url ./ -d dist/client",
+        "build:ui": "parcel build ui/index.html --public-url ./ -d dist/client --target electron",
         "build:server": "tsc --build server/tsconfig.json",
         "start": "electron dist/main.js"
     },

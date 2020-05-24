@@ -6,5 +6,8 @@
     "files.watcherExclude": {
         "**/.cache": true,
         "**/dist": true
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
     }
 }
