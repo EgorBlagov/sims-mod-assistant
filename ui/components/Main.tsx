@@ -52,9 +52,9 @@ class MainImpl extends React.Component<IProps, IState> {
                     </Box>
                 </Box>
 
-                <div uk-grid="true">
-                    <div className="uk-width-expand uk-text-center">{l10n.dirInfo(1000, 1000)}</div>
-                </div>
+                <Box mb={1}>
+                    <Typography align="center">{l10n.dirInfo(1000, 1000)}</Typography>
+                </Box>
 
                 <form>
                     <div className="uk-flex uk-flex-column uk-margin-top">
