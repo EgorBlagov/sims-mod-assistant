@@ -1,4 +1,4 @@
-import { Box, Container, Divider } from "@material-ui/core";
+import { Box, Button, Container, Divider } from "@material-ui/core";
 import { remote } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
@@ -41,6 +41,12 @@ class MainImpl extends React.Component<IProps, IState> {
 
                 <Divider variant="middle" />
 
+                <Box display="flex">
+                    <Box flexGrow={1} />
+                    <Box>
+                        <Button>{l10n.Open}</Button>
+                    </Box>
+                </Box>
                 <div uk-grid="true">
                     <div className="uk-width-expand">{!!this.state.path ? this.state.path : l10n.chooseDir}</div>
                     <div className="uk-width-auto">
@@ -68,13 +74,13 @@ class MainImpl extends React.Component<IProps, IState> {
                 </form>
                 <progress className="uk-progress" value="10" max="100" />
                 <div className="uk-flex-1 uk-panel-scrollable">
-                    <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
-                        {_.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0], (x, i) => (
+                    {_.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0], (x, i) => (
+                        <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
                             <li key={i}>
                                 File {x} {i}
                             </li>
-                        ))}
-                    </ul>
+                        </ul>
+                    ))}
                 </div>
             </Container>
         );

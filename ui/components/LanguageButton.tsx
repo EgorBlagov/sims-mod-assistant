@@ -34,15 +34,4 @@ export const LanguageButton = ({ setLanguage }: IProps) => {
             </Dialog>
         </>
     );
-    // <div uk-dropdown="mode: click" className="uk-padding-small">
-    //     <ul className="uk-nav uk-dropdown-nav">
-    //         {_.map(Object.values(Language), (x) => (
-    //             <li key={x} className={classnames({ "uk-active": x === lang })}>
-    //                 <a href="#" onClick={this.handleChangeLanguage(x)}>
-    //                     {x}
-    //                 </a>
-    //             </li>
-    //         ))}
-    //     </ul>
-    // </div>
 };
