@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Typography } from "@material-ui/core";
+import { Box, Button, Container, Divider, LinearProgress, Typography } from "@material-ui/core";
 import { remote } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
@@ -58,7 +58,8 @@ class MainImpl extends React.Component<IProps, IState> {
                 </Box>
 
                 <SearchParametersForm />
-                <progress className="uk-progress" value="10" max="100" />
+                <LinearProgress variant="determinate" value={10} />
+
                 <div className="uk-flex-1 uk-panel-scrollable">
                     <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
                         {_.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0], (x, i) => (
