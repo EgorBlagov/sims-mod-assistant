@@ -2,8 +2,12 @@ body {
     margin: 0;
 }
 
-.main-wrapper {
+.main__wrapper {
     height: 100vh;
     padding-top: 1em;
     padding-bottom: 1em;
+}
+
+.main__folder-caption {
+    overflow-wrap: anywhere;
 }

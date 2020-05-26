@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider } from "@material-ui/core";
+import { Box, Button, Container, Divider, Typography } from "@material-ui/core";
 import { remote } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
@@ -34,17 +34,21 @@ class MainImpl extends React.Component<IProps, IState> {
     render() {
         const { l10n, lang } = this.props;
         return (
-            <Container className="main-wrapper">
+            <Container className="main__wrapper">
                 <Box display="flex" justifyContent="flex-end" mb={1}>
                     <LanguageButton setLanguage={this.handleChangeLanguage} />
                 </Box>
 
                 <Divider variant="middle" />
 
-                <Box display="flex" mb={1}>
-                    <Box flexGrow={1}>{!!this.state.path ? this.state.path : l10n.chooseDir}</Box>
+                <Box display="flex" my={1}>
+                    <Box flexGrow={1} display="flex" flexDirection="column" justifyContent="center">
+                        <Typography className="main__folder-caption">
+                            {!!this.state.path ? this.state.path : l10n.chooseDir}
+                        </Typography>
+                    </Box>
                     <Box>
-                        <Button>{l10n.open}</Button>
+                        <Button onClick={this.handleOpenDialog}>{l10n.open}</Button>
                     </Box>
                 </Box>
 
