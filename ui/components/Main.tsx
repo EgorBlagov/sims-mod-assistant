@@ -6,6 +6,7 @@ import { Language } from "../../common/l10n";
 import { LocalizedProps, withL10n } from "../utils/L10n";
 import { LanguageButton } from "./LanguageButton";
 import "./Main.scss";
+import { SearchParametersForm } from "./SearchParametersForm";
 
 interface IOwnProps {
     setLanguage: (l: Language) => void;
@@ -56,18 +57,7 @@ class MainImpl extends React.Component<IProps, IState> {
                     <Typography align="center">{l10n.dirInfo(1000, 1000)}</Typography>
                 </Box>
 
-                <form>
-                    <div className="uk-flex uk-flex-column uk-margin-top">
-                        <label>
-                            <input className="uk-checkbox uk-margin-small-right" type="checkbox" />
-                            {l10n.searchExactDoubles}
-                        </label>
-                        <label>
-                            <input className="uk-checkbox uk-margin-small-right" type="checkbox" />
-                            {l10n.searchCatalogueConflicts}
-                        </label>
-                    </div>
-                </form>
+                <SearchParametersForm />
                 <progress className="uk-progress" value="10" max="100" />
                 <div className="uk-flex-1 uk-panel-scrollable">
                     <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
