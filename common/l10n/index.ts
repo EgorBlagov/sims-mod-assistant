@@ -11,3 +11,5 @@ export const l10n: Record<Language, Translation> = {
     [Language.English]: english,
     [Language.Russian]: russian,
 };
+
+export { Translation } from "./types";

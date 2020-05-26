@@ -35,26 +35,18 @@ class MainImpl extends React.Component<IProps, IState> {
         const { l10n, lang } = this.props;
         return (
             <Container className="main-wrapper">
-                <Box display="flex" justifyContent="flex-end" mb="1em">
+                <Box display="flex" justifyContent="flex-end" mb={1}>
                     <LanguageButton setLanguage={this.handleChangeLanguage} />
                 </Box>
 
                 <Divider variant="middle" />
 
-                <Box display="flex">
-                    <Box flexGrow={1} />
+                <Box display="flex" mb={1}>
+                    <Box flexGrow={1}>{!!this.state.path ? this.state.path : l10n.chooseDir}</Box>
                     <Box>
-                        <Button>{l10n.Open}</Button>
+                        <Button>{l10n.open}</Button>
                     </Box>
                 </Box>
-                <div uk-grid="true">
-                    <div className="uk-width-expand">{!!this.state.path ? this.state.path : l10n.chooseDir}</div>
-                    <div className="uk-width-auto">
-                        <button className="uk-button uk-button-small" onClick={this.handleOpenDialog}>
-                            Open
-                        </button>
-                    </div>
-                </div>
 
                 <div uk-grid="true">
                     <div className="uk-width-expand uk-text-center">{l10n.dirInfo(1000, 1000)}</div>
@@ -74,13 +66,13 @@ class MainImpl extends React.Component<IProps, IState> {
                 </form>
                 <progress className="uk-progress" value="10" max="100" />
                 <div className="uk-flex-1 uk-panel-scrollable">
-                    {_.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0], (x, i) => (
-                        <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
+                    <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
+                        {_.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0], (x, i) => (
                             <li key={i}>
                                 File {x} {i}
                             </li>
-                        </ul>
-                    ))}
+                        ))}
+                    </ul>
                 </div>
             </Container>
         );
