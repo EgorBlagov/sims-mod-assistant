@@ -1,47 +1,52 @@
-import classnames from "classnames";
+import { Box, Container, Divider } from "@material-ui/core";
+import { remote } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
 import { Language } from "../../common/l10n";
 import { LocalizedProps, withL10n } from "../utils/L10n";
+import { LanguageButton } from "./LanguageButton";
 import "./Main.scss";
+
 interface IOwnProps {
     setLanguage: (l: Language) => void;
 }
 type IProps = LocalizedProps<IOwnProps>;
 
-class MainImpl extends React.Component<IProps> {
-    handleChangeLanguage = (newLanguage: Language) => () => {
+interface IState {
+    path: string;
+}
+
+class MainImpl extends React.Component<IProps, IState> {
+    state: IState = {
+        path: undefined,
+    };
+
+    handleChangeLanguage = (newLanguage: Language) => {
         this.props.setLanguage(newLanguage);
     };
+
+    handleOpenDialog = () => {
+        remote.dialog.showOpenDialog({ properties: ["openDirectory"] }).then((res) => {
+            this.setState({ path: res.filePaths && res.filePaths[0] });
+        });
+    };
+
     render() {
         const { l10n, lang } = this.props;
         return (
-            <div className="uk-container uk-flex uk-flex-column main-wrapper uk-panel">
-                <div uk-grid="true">
-                    <div className="uk-width-expand" />
-                    <div className="uk-width-auto">
-                        <button className="uk-button uk-button-small" type="button">
-                            {l10n.language}
-                        </button>
-                        <div uk-dropdown="mode: click" className="uk-padding-small">
-                            <ul className="uk-nav uk-dropdown-nav">
-                                {_.map(Object.values(Language), (x) => (
-                                    <li key={x} className={classnames({ "uk-active": x === lang })}>
-                                        <a href="#" onClick={this.handleChangeLanguage(x)}>
-                                            {x}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <hr />
+            <Container className="main-wrapper">
+                <Box display="flex" justifyContent="flex-end" mb="1em">
+                    <LanguageButton setLanguage={this.handleChangeLanguage} />
+                </Box>
+
+                <Divider variant="middle" />
 
                 <div uk-grid="true">
-                    <div className="uk-width-expand">{l10n.chooseDir}</div>
+                    <div className="uk-width-expand">{!!this.state.path ? this.state.path : l10n.chooseDir}</div>
                     <div className="uk-width-auto">
-                        <button className="uk-button uk-button-small">Open</button>
+                        <button className="uk-button uk-button-small" onClick={this.handleOpenDialog}>
+                            Open
+                        </button>
                     </div>
                 </div>
 
@@ -71,7 +76,7 @@ class MainImpl extends React.Component<IProps> {
                         ))}
                     </ul>
                 </div>
-            </div>
+            </Container>
         );
     }
 }

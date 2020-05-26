@@ -24,6 +24,7 @@
         "typescript": "^3.9.3"
     },
     "dependencies": {
+        "@material-ui/core": "^4.10.0",
         "axios": "^0.19.2",
         "classnames": "^2.2.6",
         "electron-typesafe-ipc": "0.0.17",

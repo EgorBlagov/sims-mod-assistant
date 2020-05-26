@@ -16,3 +16,8 @@ export function withL10n<T extends object>(
         }
     };
 }
+
+export function useL10n(): [Translation, Language] {
+    const language = React.useContext(LanguageContext);
+    return [l10n[language], language];
+}
