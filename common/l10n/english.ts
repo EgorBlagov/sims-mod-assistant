@@ -3,7 +3,7 @@ export const english = {
     selectLangauge: "Select language",
     chooseDir: "Choose a directory",
     open: "Open",
-    dirInfo: (filesCount: string, sizeMb: string) => `Total files: ${filesCount}, size: ${sizeMb} Mb`,
+    dirInfo: (filesCount: string | number, sizeMb: string | number) => `Total files: ${filesCount}, size: ${sizeMb} Mb`,
     searchExactDoubles: "Search exact doubles",
     searchCatalogueConflicts: "Search catalogue conflicts",
 };
