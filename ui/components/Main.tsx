@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, LinearProgress, Typography } from "@material-ui/core";
+import { Box, Button, Container, Divider, LinearProgress, List, ListItemText, Typography } from "@material-ui/core";
 import { remote } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
@@ -36,39 +36,41 @@ class MainImpl extends React.Component<IProps, IState> {
         const { l10n, lang } = this.props;
         return (
             <Container className="main__wrapper">
-                <Box display="flex" justifyContent="flex-end" mb={1}>
-                    <LanguageButton setLanguage={this.handleChangeLanguage} />
-                </Box>
-
-                <Divider variant="middle" />
-
-                <Box display="flex" my={1}>
-                    <Box flexGrow={1} display="flex" flexDirection="column" justifyContent="center">
-                        <Typography className="main__folder-caption">
-                            {!!this.state.path ? this.state.path : l10n.chooseDir}
-                        </Typography>
+                <Box display="flex" flexDirection="column" height="100%">
+                    <Box display="flex" justifyContent="flex-end" mb={1}>
+                        <LanguageButton setLanguage={this.handleChangeLanguage} />
                     </Box>
-                    <Box>
-                        <Button onClick={this.handleOpenDialog}>{l10n.open}</Button>
+
+                    <Divider variant="middle" />
+
+                    <Box display="flex" my={1}>
+                        <Box flexGrow={1} display="flex" flexDirection="column" justifyContent="center">
+                            <Typography className="main__folder-caption">
+                                {!!this.state.path ? this.state.path : l10n.chooseDir}
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <Button onClick={this.handleOpenDialog}>{l10n.open}</Button>
+                        </Box>
+                    </Box>
+
+                    <Box mb={1}>
+                        <Typography align="center">{l10n.dirInfo(1000, 1000)}</Typography>
+                    </Box>
+
+                    <SearchParametersForm />
+                    <Box mb={1}>
+                        <LinearProgress variant="determinate" value={10} />
+                    </Box>
+
+                    <Box overflow="auto">
+                        <List>
+                            {_.map([1, 2, 3, 4, 5, 6, 9, 0, 1, 2, 3, 4, 5, 6, 9, 0, 0, 0], (x, i) => (
+                                <ListItemText key={i} primary={`File ${x} ${i}`} />
+                            ))}
+                        </List>
                     </Box>
                 </Box>
-
-                <Box mb={1}>
-                    <Typography align="center">{l10n.dirInfo(1000, 1000)}</Typography>
-                </Box>
-
-                <SearchParametersForm />
-                <LinearProgress variant="determinate" value={10} />
-
-                <div className="uk-flex-1 uk-panel-scrollable">
-                    <ul className="uk-list uk-list-divider uk-list-striped uk-list-large">
-                        {_.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0], (x, i) => (
-                            <li key={i}>
-                                File {x} {i}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             </Container>
         );
     }
