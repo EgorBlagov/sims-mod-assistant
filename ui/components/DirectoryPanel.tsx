@@ -6,6 +6,7 @@ import { isOk } from "../../common/tools";
 import { LocalizedProps, withL10n } from "../utils/L10n";
 import "./DirectoryPanel.css";
 import { DirectorySummary } from "./DirectorySummary";
+
 type IProps = LocalizedProps<{}>;
 
 interface IState {
@@ -59,4 +60,4 @@ class DirectoryPanelImpl extends React.Component<IProps, IState> {
         );
     }
 }
-export const DirectoryPanel = withL10n(DirectoryPanelImpl);
+export const DirectoryPanel = withL10n<{}>(DirectoryPanelImpl);
