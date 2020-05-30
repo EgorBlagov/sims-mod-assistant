@@ -1,6 +1,6 @@
 /* Pretending to be a separate tool */
 
-import { ipcMain, IpcMain, ipcRenderer, IpcRenderer } from "electron";
+import { BrowserWindow, ipcMain, IpcMain, ipcRenderer, IpcRenderer } from "electron";
 
 type TIpcCallback<TArg, TReturn> = (args: TArg) => Promise<TReturn>;
 type TIpcRegisterHandler<TArg, TReturn> = (callback: TIpcCallback<TArg, TReturn>) => void;
@@ -8,7 +8,7 @@ type TIpcRendererApi<TArg, TReturn> = TIpcCallback<TArg, TReturn>;
 type TIpcMainApi<TArg, TReturn> = TIpcRegisterHandler<TArg, TReturn>;
 
 type TIpcEventHandler<TArg> = (args: TArg) => void;
-type TIpcEventEmitter<TArg> = (args: TArg) => void;
+type TIpcWindowEventEmitter<TArg> = (window: BrowserWindow, args: TArg) => void;
 type TIpcEventOn<TArg> = (handler: TIpcEventHandler<TArg>) => void;
 type TIpcEventOff<TArg> = TIpcEventOn<TArg>;
 
@@ -31,7 +31,7 @@ type TIpcOutput<T extends TIpcSchema> = {
     };
     main: {
         handleRpc: { [K in keyof T["rpc"]]: TIpcMainApi<T["rpc"][K]["args"], T["rpc"][K]["return"]> };
-        emit: { [K in keyof T["mainEvents"]]: TIpcEventEmitter<T["mainEvents"][K]["args"]> };
+        emit: { [K in keyof T["mainEvents"]]: TIpcWindowEventEmitter<T["mainEvents"][K]["args"]> };
     };
 };
 
@@ -80,7 +80,7 @@ class IpcCreator<T extends TIpcSchema> {
     }
 
     private registerMainEvent<K extends keyof TIpcSchema["mainEvents"]>(name: K): void {
-        this.interface.main.emit[name] = (arg) => ipcMain.emit(name.toString(), arg);
+        this.interface.main.emit[name] = (window, arg) => window.webContents.send(name.toString(), arg);
         this.interface.renderer.on[name] = (callback) =>
             ipcRenderer.on(name.toString(), (event, args) => callback(args));
         this.interface.renderer.off[name] = (callback) =>

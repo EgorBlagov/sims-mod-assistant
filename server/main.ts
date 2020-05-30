@@ -7,7 +7,7 @@ const clientPath = path.join(__dirname, "..", "client");
 const isDev = process.env.NODE_ENV === "development";
 
 const launchElectron = () => {
-    const createWindow = () => {
+    const createWindow = (): BrowserWindow => {
         const mainWindow = new BrowserWindow({
             width: 1024,
             height: 768,
@@ -23,20 +23,22 @@ const launchElectron = () => {
             mainWindow.webContents.openDevTools();
             mainWindow.maximize();
         }
+
+        return mainWindow;
     };
 
     Menu.setApplicationMenu(new Menu());
 
-    ipc.main.handleRpc.getDirectoryInfo(async (args) => {
-        return searcher.getDirectoryInfo(args.targetPath);
-    });
-
-    ipc.main.handleRpc.startSearch(async (args) => {
-        return searcher.startSearch(args.targetPath, args);
-    });
-
     app.whenReady().then(() => {
-        createWindow();
+        const wnd = createWindow();
+
+        ipc.main.handleRpc.getDirectoryInfo(async (args) => {
+            return searcher.getDirectoryInfo(args.targetPath);
+        });
+
+        ipc.main.handleRpc.startSearch(async (args) => {
+            return searcher.startSearch(args.targetPath, args, wnd); // TODO: remove wnd from business logic
+        });
     });
 
     app.on("window-all-closed", () => {

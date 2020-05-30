@@ -1,3 +1,4 @@
+import { BrowserWindow } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import { ipc } from "../common/ipc";
@@ -8,7 +9,7 @@ const MB: number = 1024 * 1024;
 
 interface ISearcher {
     getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo>;
-    startSearch(targetPath: string, params: ISearchParams): IStartResult;
+    startSearch(targetPath: string, params: ISearchParams, mainWindow: BrowserWindow): IStartResult;
 }
 
 class Searcher implements ISearcher {
@@ -40,15 +41,15 @@ class Searcher implements ISearcher {
         return result;
     }
 
-    startSearch(targetPath: string, params: ISearchParams): IStartResult {
+    startSearch(targetPath: string, params: ISearchParams, wnd: BrowserWindow): IStartResult {
         this.currentSearchTicket++;
 
-        this.startSearchProgress(targetPath, params)
+        this.startSearchProgress(this.currentSearchTicket, targetPath, params, wnd)
             .then((result) => {
-                ipc.main.emit.searchResult(result); // remove IPC from business logic
+                ipc.main.emit.searchResult(wnd, result); // remove IPC from business logic
             })
             .catch((error) => {
-                ipc.main.emit.searchError(error);
+                ipc.main.emit.searchError(wnd, error);
             });
 
         return {
@@ -56,8 +57,22 @@ class Searcher implements ISearcher {
         };
     }
 
-    private async startSearchProgress(targetPath: string, params: ISearchParams): Promise<ISearchResult> {
+    private async startSearchProgress(
+        ticketId: number,
+        targetPath: string,
+        params: ISearchParams,
+        wnd: BrowserWindow,
+    ): Promise<ISearchResult> {
+        for (let i = 0; i < 10; i++) {
+            await this.timeout(1000); // TEMPORARY
+            ipc.main.emit.searchProgress(wnd, { ticketId, progress: (i + 1) * 10 }); // remove IPC from business logic
+        }
+
         return {};
+    }
+
+    private timeout(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 }
 
