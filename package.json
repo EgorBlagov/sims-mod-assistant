@@ -11,6 +11,7 @@
         "@types/lodash": "^4.14.152",
         "@types/node": "^12.12.6",
         "@types/react": "^16.9.35",
+        "@types/winston": "^2.4.4",
         "concurrently": "^5.2.0",
         "electron": "^9.0.0",
         "nodemon": "^2.0.4",
@@ -31,7 +32,8 @@
         "express": "^4.17.1",
         "lodash": "^4.17.15",
         "react": "^16.13.1",
-        "react-dom": "^16.13.1"
+        "react-dom": "^16.13.1",
+        "winston": "^3.2.1"
     },
     "scripts": {
         "dev": "concurrently npm:watch-*",
