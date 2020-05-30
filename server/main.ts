@@ -27,8 +27,12 @@ const launchElectron = () => {
 
     Menu.setApplicationMenu(new Menu());
 
-    ipc.main.getDirectoryInfo(async (args) => {
+    ipc.main.handleRpc.getDirectoryInfo(async (args) => {
         return searcher.getDirectoryInfo(args.targetPath);
+    });
+
+    ipc.main.handleRpc.startSearch(async (args) => {
+        return searcher.startSearch(args.targetPath, args);
     });
 
     app.whenReady().then(() => {

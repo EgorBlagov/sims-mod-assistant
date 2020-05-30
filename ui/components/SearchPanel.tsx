@@ -1,8 +1,10 @@
 import { Box, Button } from "@material-ui/core";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
-import { ISearchParams } from "../../common/types";
+import { isOk } from "../../common/tools";
+import { ISearchParams, TTicketId } from "../../common/types";
 import { useL10n } from "../utils/L10n";
+import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
 
 interface IProps {
@@ -12,22 +14,27 @@ interface IProps {
 export const SearchPanel = ({ targetPath }: IProps) => {
     const [l10n, _] = useL10n();
     const [params, setParams] = React.useState<ISearchParams>({ searchMd5: true, searchTgi: false });
+    const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
 
     const startSearch = () => {
-        ipc.renderer.startSearch({ targetPath, ...params });
+        ipc.renderer.rpc.startSearch({ targetPath, ...params }).then((res) => {
+            setSearchTicketId(res.searchTicketId);
+        });
     };
 
-    const rest = (
-        <Button color="primary" variant="contained" onClick={startSearch}>
-            {l10n.start}
-        </Button>
+    const rest = isOk(searchTicketId) ? (
+        <ProgressBar progress={1} />
+    ) : (
+        <Box display="flex" justifyContent="center">
+            <Button color="primary" variant="contained" onClick={startSearch}>
+                {l10n.start}
+            </Button>
+        </Box>
     );
     return (
         <>
             <SearchParametersForm params={params} setParams={setParams} />
-            <Box display="flex" justifyContent="center">
-                {rest}
-            </Box>
+            {rest}
         </>
     );
 };

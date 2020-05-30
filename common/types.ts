@@ -17,3 +17,5 @@ export interface ISearchParams {
     searchMd5: boolean;
     searchTgi: boolean;
 }
+
+export interface ISearchResult {}
