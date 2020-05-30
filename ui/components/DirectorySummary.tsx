@@ -13,5 +13,5 @@ export const DirectorySummary = ({ filesCount, sizeMb }: IProps) => {
         return <CircularProgress />;
     }
 
-    return <Typography>{l10n.dirInfo(filesCount, sizeMb)}</Typography>;
+    return <Typography>{l10n.dirInfo(filesCount, sizeMb.toFixed(2))}</Typography>;
 };

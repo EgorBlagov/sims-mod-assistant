@@ -1,8 +1,8 @@
 import { createTypesafeIpc, createTypesafeIpcChannel } from "./ipc/ipc-creator";
+import { IDirectoryInfo } from "./types";
 
 const IpcSchema = {
-    testRPC: createTypesafeIpcChannel<void, number[]>(),
-    testRPCSytemInfo: createTypesafeIpcChannel<number, string>(),
+    getDirectoryInfo: createTypesafeIpcChannel<{ path: string }, IDirectoryInfo>(),
 };
 
 export const ipc = createTypesafeIpc(IpcSchema);

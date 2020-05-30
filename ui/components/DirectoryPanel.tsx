@@ -1,11 +1,11 @@
 import { Box, Button, Typography } from "@material-ui/core";
 import { remote } from "electron";
 import * as React from "react";
+import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { LocalizedProps, withL10n } from "../utils/L10n";
 import "./DirectoryPanel.css";
 import { DirectorySummary } from "./DirectorySummary";
-
 type IProps = LocalizedProps<{}>;
 
 interface IState {
@@ -29,7 +29,10 @@ class DirectoryPanelImpl extends React.Component<IProps, IState> {
 
     componentDidUpdate(_: IProps, prevState: IState) {
         if (isOk(this.state.path) && this.state.path !== prevState.path) {
-            // TODO: implement fetch directory info
+            this.setState({ filesCount: undefined, sizeMb: undefined });
+            ipc.renderer.getDirectoryInfo({ path: this.state.path }).then((result) => {
+                this.setState({ filesCount: result.filesCount, sizeMb: result.sizeMb });
+            });
         }
     }
 
