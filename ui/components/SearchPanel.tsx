@@ -18,7 +18,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
     const [progress, setProgress] = React.useState<number>(0);
 
-    useIpcEvent("searchProgress", (args) => {
+    useIpcEvent("searchProgress", (event, args) => {
         if (searchTicketId === args.ticketId) {
             setProgress(args.progress);
         }

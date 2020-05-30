@@ -65,6 +65,9 @@ class Searcher implements ISearcher {
     ): Promise<ISearchResult> {
         for (let i = 0; i < 10; i++) {
             await this.timeout(1000); // TEMPORARY
+            if (ticketId !== this.currentSearchTicket) {
+                return; // Handle interruption
+            }
             ipc.main.emit.searchProgress(wnd, { ticketId, progress: (i + 1) * 10 }); // remove IPC from business logic
         }
 

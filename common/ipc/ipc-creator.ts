@@ -1,13 +1,13 @@
 /* Pretending to be a separate tool */
 
-import { BrowserWindow, ipcMain, IpcMain, ipcRenderer, IpcRenderer } from "electron";
+import { BrowserWindow, Event, ipcMain, IpcMain, ipcRenderer, IpcRenderer } from "electron";
 
 type TIpcCallback<TArg, TReturn> = (args: TArg) => Promise<TReturn>;
 type TIpcRegisterHandler<TArg, TReturn> = (callback: TIpcCallback<TArg, TReturn>) => void;
 type TIpcRendererApi<TArg, TReturn> = TIpcCallback<TArg, TReturn>;
 type TIpcMainApi<TArg, TReturn> = TIpcRegisterHandler<TArg, TReturn>;
 
-type TIpcEventHandler<TArg> = (args: TArg) => void;
+type TIpcEventHandler<TArg> = (event: Event, args: TArg) => void;
 type TIpcWindowEventEmitter<TArg> = (window: BrowserWindow, args: TArg) => void;
 type TIpcEventOn<TArg> = (handler: TIpcEventHandler<TArg>) => void;
 type TIpcEventOff<TArg> = TIpcEventOn<TArg>;
@@ -81,10 +81,8 @@ class IpcCreator<T extends TIpcSchema> {
 
     private registerMainEvent<K extends keyof TIpcSchema["mainEvents"]>(name: K): void {
         this.interface.main.emit[name] = (window, arg) => window.webContents.send(name.toString(), arg);
-        this.interface.renderer.on[name] = (callback) =>
-            ipcRenderer.on(name.toString(), (event, args) => callback(args));
-        this.interface.renderer.off[name] = (callback) =>
-            ipcRenderer.removeListener(name.toString(), (event, args) => callback(args));
+        this.interface.renderer.on[name] = (callback) => ipcRenderer.on(name.toString(), callback);
+        this.interface.renderer.off[name] = (callback) => ipcRenderer.off(name.toString(), callback);
     }
 }
 
