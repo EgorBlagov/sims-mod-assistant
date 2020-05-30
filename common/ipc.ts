@@ -1,7 +1,7 @@
 import { createTypesafeIpc, createTypesafeIpcChannel, createTypesafeIpcEvent } from "./ipc/ipc-creator";
-import { IDirectoryInfo, IDrectoryParams, ISearchParams, ISearchResult, IStartResult } from "./types";
+import { IDirectoryInfo, IDrectoryParams, ISearchParams, ISearchProgress, ISearchResult, IStartResult } from "./types";
 
-const IpcSchema = {
+export const IpcSchema = {
     rpc: {
         getDirectoryInfo: createTypesafeIpcChannel<IDrectoryParams, IDirectoryInfo>(),
         startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
@@ -9,6 +9,7 @@ const IpcSchema = {
     mainEvents: {
         searchResult: createTypesafeIpcEvent<ISearchResult>(),
         searchError: createTypesafeIpcEvent<string>(),
+        searchProgress: createTypesafeIpcEvent<ISearchProgress>(),
     },
 };
 

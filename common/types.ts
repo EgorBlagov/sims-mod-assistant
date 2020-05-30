@@ -19,3 +19,8 @@ export interface ISearchParams {
 }
 
 export interface ISearchResult {}
+
+export interface ISearchProgress {
+    ticketId: TTicketId;
+    progress: number;
+}

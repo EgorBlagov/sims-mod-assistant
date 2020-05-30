@@ -84,7 +84,7 @@ class IpcCreator<T extends TIpcSchema> {
         this.interface.renderer.on[name] = (callback) =>
             ipcRenderer.on(name.toString(), (event, args) => callback(args));
         this.interface.renderer.off[name] = (callback) =>
-            ipcRenderer.off(name.toString(), (event, args) => callback(args));
+            ipcRenderer.removeListener(name.toString(), (event, args) => callback(args));
     }
 }
 
