@@ -45,17 +45,15 @@ class DirectoryPanelImpl extends React.Component<IProps, IState> {
             <>
                 <Box display="flex" my={1}>
                     <Box flexGrow={1} display="flex" flexDirection="column" justifyContent="center">
-                        <Typography className="directory-panel__caption">{!!path ? path : l10n.chooseDir}</Typography>
+                        <Typography className="directory-panel__caption">
+                            {isOk(path) ? path : l10n.chooseDir}
+                        </Typography>
                     </Box>
                     <Box>
                         <Button onClick={this.handleOpenDialog}>{l10n.open}</Button>
                     </Box>
                 </Box>
-                {!!path && (
-                    <Box mb={10} display="flex" justifyContent="center">
-                        <DirectorySummary filesCount={filesCount} sizeMb={sizeMb} />
-                    </Box>
-                )}
+                {isOk(path) && <DirectorySummary targetPath={path} filesCount={filesCount} sizeMb={sizeMb} />}
             </>
         );
     }
