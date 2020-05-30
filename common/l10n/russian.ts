@@ -8,4 +8,5 @@ export const russian: Translation = {
     dirInfo: (filesCount, sizeMb) => `Всего файлов: ${filesCount}, размер: ${sizeMb} Мб`,
     searchExactDoubles: "Искать идеальные дубликаты",
     searchCatalogueConflicts: "Искать конфликты в каталоге",
+    start: "Начать",
 };

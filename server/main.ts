@@ -21,13 +21,14 @@ const launchElectron = () => {
 
         if (isDev) {
             mainWindow.webContents.openDevTools();
+            mainWindow.maximize();
         }
     };
 
     Menu.setApplicationMenu(new Menu());
 
     ipc.main.getDirectoryInfo(async (args) => {
-        return searcher.getDirectoryInfo(args.path);
+        return searcher.getDirectoryInfo(args.targetPath);
     });
 
     app.whenReady().then(() => {

@@ -1,8 +1,9 @@
 import { createTypesafeIpc, createTypesafeIpcChannel } from "./ipc/ipc-creator";
-import { IDirectoryInfo } from "./types";
+import { IDirectoryInfo, IDrectoryParams, ISearchParams, IStartResult } from "./types";
 
 const IpcSchema = {
-    getDirectoryInfo: createTypesafeIpcChannel<{ path: string }, IDirectoryInfo>(),
+    getDirectoryInfo: createTypesafeIpcChannel<IDrectoryParams, IDirectoryInfo>(),
+    startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
 };
 
 export const ipc = createTypesafeIpc(IpcSchema);

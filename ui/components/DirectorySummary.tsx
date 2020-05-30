@@ -24,7 +24,7 @@ export const DirectorySummary = ({ targetPath, filesCount, sizeMb }: IProps) => 
     return (
         <>
             <Typography align="center">{l10n.dirInfo(filesCount, sizeMb.toFixed(2))}</Typography>
-            <SearchPanel />
+            <SearchPanel targetPath={targetPath} />
         </>
     );
 };

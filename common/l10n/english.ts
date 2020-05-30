@@ -6,4 +6,5 @@ export const english = {
     dirInfo: (filesCount: string | number, sizeMb: string | number) => `Total files: ${filesCount}, size: ${sizeMb} Mb`,
     searchExactDoubles: "Search exact doubles",
     searchCatalogueConflicts: "Search catalogue conflicts",
+    start: "Start",
 };

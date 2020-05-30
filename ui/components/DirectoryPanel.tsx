@@ -31,7 +31,7 @@ class DirectoryPanelImpl extends React.Component<IProps, IState> {
     componentDidUpdate(_: IProps, prevState: IState) {
         if (isOk(this.state.path) && this.state.path !== prevState.path) {
             this.setState({ filesCount: undefined, sizeMb: undefined });
-            ipc.renderer.getDirectoryInfo({ path: this.state.path }).then((result) => {
+            ipc.renderer.getDirectoryInfo({ targetPath: this.state.path }).then((result) => {
                 this.setState({ filesCount: result.filesCount, sizeMb: result.sizeMb });
             });
         }
