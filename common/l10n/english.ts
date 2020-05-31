@@ -10,4 +10,5 @@ export const english = {
     cancel: "Cancel",
     errorPath: (msg: string) => `Unable to get directory info: ${msg}`,
     errorOpenPath: (msg: string) => `Unable to open path with dialog: ${msg}`,
+    searchFinished: "Search finished",
 };

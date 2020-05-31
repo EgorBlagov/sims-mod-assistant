@@ -12,4 +12,5 @@ export const russian: Translation = {
     cancel: "Отменить",
     errorPath: (msg: string) => `Не удалось получить информацию о директории: ${msg}`,
     errorOpenPath: (msg: string) => `Не удалось открыть директории через диалог: ${msg}`,
+    searchFinished: "Поиск завершен",
 };

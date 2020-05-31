@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ipc, IpcSchema } from "../common/ipc";
-import { TIpcEventHandler, TIpcOutput, TIpcSchema } from "../common/ipc/ipc-creator";
+import { ipc, IpcSchema } from "../../common/ipc";
+import { TIpcEventHandler, TIpcOutput, TIpcSchema } from "../../common/ipc/ipc-creator";
 
 type TIpcHooksOutput<T extends TIpcSchema> = {
     use: {

@@ -44,7 +44,7 @@ export const DirectoryPanel = () => {
             .showOpenDialog({ properties: ["openDirectory"] })
             .then((res) => {
                 if (!res.canceled && res.filePaths[0] !== path) {
-                    setPath(res.filePaths[0]); // TODO: on path change settings also change due to stack-like design of panels
+                    setPath(res.filePaths[0]); // TODO: on path change settings also change due to stack-like design of panels, consider redux integration
                     ipc.renderer.rpc.interruptSearch(); // it's Async
                 }
                 setDialogOpen(false);

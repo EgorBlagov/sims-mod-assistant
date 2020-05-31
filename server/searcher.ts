@@ -45,7 +45,7 @@ class Searcher implements ISearcher {
                 result.sizeMb += (await fs.promises.stat(entryPath)).size / MB;
             }
         }
-        logger.info(`Directory Info: ${targetPath}: total size: ${result.sizeMb} MB`);
+        logger.info(`Directory Info: ${targetPath}: total size: ${result.sizeMb.toFixed(2)} MB`);
         return result;
     }
 
