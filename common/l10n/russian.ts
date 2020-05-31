@@ -10,4 +10,6 @@ export const russian: Translation = {
     searchCatalogueConflicts: "Искать конфликты в каталоге",
     start: "Начать",
     cancel: "Отменить",
+    errorPath: (msg: string) => `Не удалось получить информацию о директории: ${msg}`,
+    errorOpenPath: (msg: string) => `Не удалось открыть директории через диалог: ${msg}`,
 };
