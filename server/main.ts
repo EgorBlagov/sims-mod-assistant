@@ -32,12 +32,16 @@ const launchElectron = () => {
     app.whenReady().then(() => {
         const wnd = createWindow();
 
+        searcher.ee.on.searchProgress((data) => ipc.main.emit.searchProgress(wnd, data));
+        searcher.ee.on.searchResult((data) => ipc.main.emit.searchResult(wnd, data));
+        searcher.ee.on.searchError((data) => ipc.main.emit.searchError(wnd, data));
+
         ipc.main.handleRpc.getDirectoryInfo(async (args) => {
             return searcher.getDirectoryInfo(args.targetPath);
         });
 
         ipc.main.handleRpc.startSearch(async (args) => {
-            return searcher.startSearch(args.targetPath, args, wnd); // TODO: remove wnd from business logic
+            return searcher.startSearch(args.targetPath, args);
         });
     });
 

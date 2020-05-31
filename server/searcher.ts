@@ -1,22 +1,29 @@
-import { BrowserWindow } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-import { ipc } from "../common/ipc";
-import { IDirectoryInfo, ISearchParams, ISearchResult, IStartResult } from "../common/types";
+import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
+import { IDirectoryInfo, ISearchParams, ISearchProgress, ISearchResult, IStartResult } from "../common/types";
 import { logger } from "./logging";
 
 const MB: number = 1024 * 1024;
 
+const SearcherEventSchema = {
+    searchResult: createTypesafeEvent<ISearchResult>(),
+    searchProgress: createTypesafeEvent<ISearchProgress>(),
+    searchError: createTypesafeEvent<string>(),
+};
+
 interface ISearcher {
     getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo>;
-    startSearch(targetPath: string, params: ISearchParams, mainWindow: BrowserWindow): IStartResult;
+    startSearch(targetPath: string, params: ISearchParams): IStartResult;
+    readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
 }
 
 class Searcher implements ISearcher {
     private currentSearchTicket: number;
-
+    public readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
     constructor() {
         this.currentSearchTicket = 0;
+        this.ee = createTypesafeEventEmitter(SearcherEventSchema);
     }
 
     async getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo> {
@@ -41,15 +48,15 @@ class Searcher implements ISearcher {
         return result;
     }
 
-    startSearch(targetPath: string, params: ISearchParams, wnd: BrowserWindow): IStartResult {
+    startSearch(targetPath: string, params: ISearchParams): IStartResult {
         this.currentSearchTicket++;
 
-        this.startSearchProgress(this.currentSearchTicket, targetPath, params, wnd)
+        this.startSearchProgress(this.currentSearchTicket, targetPath, params)
             .then((result) => {
-                ipc.main.emit.searchResult(wnd, result); // remove IPC from business logic
+                this.ee.emit.searchResult(result);
             })
             .catch((error) => {
-                ipc.main.emit.searchError(wnd, error);
+                this.ee.emit.searchError(error);
             });
 
         return {
@@ -61,14 +68,13 @@ class Searcher implements ISearcher {
         ticketId: number,
         targetPath: string,
         params: ISearchParams,
-        wnd: BrowserWindow,
     ): Promise<ISearchResult> {
         for (let i = 0; i < 10; i++) {
             await this.timeout(1000); // TEMPORARY
             if (ticketId !== this.currentSearchTicket) {
                 return; // Handle interruption
             }
-            ipc.main.emit.searchProgress(wnd, { ticketId, progress: (i + 1) * 10 }); // remove IPC from business logic
+            this.ee.emit.searchProgress({ ticketId, progress: (i + 1) * 10 });
         }
 
         return {};
