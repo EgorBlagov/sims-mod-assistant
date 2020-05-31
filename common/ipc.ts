@@ -5,6 +5,7 @@ export const IpcSchema = {
     rpc: {
         getDirectoryInfo: createTypesafeIpcChannel<IDrectoryParams, IDirectoryInfo>(),
         startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
+        interruptSearch: createTypesafeIpcChannel<void, void>(),
     },
     mainEvents: {
         searchResult: createTypesafeIpcEvent<ISearchResult>(),

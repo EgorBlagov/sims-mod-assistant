@@ -1,4 +1,4 @@
-import { FormControlLabel, FormGroup, Switch } from "@material-ui/core";
+import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import * as React from "react";
 import { ISearchParams } from "../../common/types";
 import { useL10n } from "../utils/L10n";
@@ -34,7 +34,7 @@ export const SearchParametersForm = ({ params, setParams, editable }: IProps) =>
         <FormGroup>
             <FormControlLabel
                 control={
-                    <Switch
+                    <Checkbox
                         disabled={!editable}
                         checked={params.searchMd5}
                         onChange={handleChange}
@@ -45,7 +45,7 @@ export const SearchParametersForm = ({ params, setParams, editable }: IProps) =>
             />
             <FormControlLabel
                 control={
-                    <Switch
+                    <Checkbox
                         disabled={!editable}
                         checked={params.searchTgi}
                         onChange={handleChange}

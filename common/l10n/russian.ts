@@ -9,4 +9,5 @@ export const russian: Translation = {
     searchExactDoubles: "Искать идеальные дубликаты",
     searchCatalogueConflicts: "Искать конфликты в каталоге",
     start: "Начать",
+    cancel: "Отменить",
 };

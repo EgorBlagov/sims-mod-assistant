@@ -43,6 +43,10 @@ const launchElectron = () => {
         ipc.main.handleRpc.startSearch(async (args) => {
             return searcher.startSearch(args.targetPath, args);
         });
+
+        ipc.main.handleRpc.interruptSearch(async () => {
+            searcher.interruptSearch();
+        });
     });
 
     app.on("window-all-closed", () => {

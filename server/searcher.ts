@@ -15,6 +15,7 @@ const SearcherEventSchema = {
 interface ISearcher {
     getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo>;
     startSearch(targetPath: string, params: ISearchParams): IStartResult;
+    interruptSearch(): void;
     readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
 }
 
@@ -64,15 +65,20 @@ class Searcher implements ISearcher {
         };
     }
 
+    interruptSearch(): void {
+        this.currentSearchTicket++;
+    }
+
     private async startSearchProgress(
         ticketId: number,
         targetPath: string,
         params: ISearchParams,
     ): Promise<ISearchResult> {
         for (let i = 0; i < 10; i++) {
-            await this.timeout(1000); // TEMPORARY
+            await this.timeout(1000);
             if (ticketId !== this.currentSearchTicket) {
-                return; // Handle interruption
+                logger.warn("Search interrupted");
+                return;
             }
             this.ee.emit.searchProgress({ ticketId, progress: (i + 1) * 10 });
         }

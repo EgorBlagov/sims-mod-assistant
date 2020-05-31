@@ -7,4 +7,5 @@ export const english = {
     searchExactDoubles: "Search exact doubles",
     searchCatalogueConflicts: "Search catalogue conflicts",
     start: "Start",
+    cancel: "Cancel",
 };

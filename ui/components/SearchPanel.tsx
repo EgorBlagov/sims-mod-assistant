@@ -30,9 +30,19 @@ export const SearchPanel = ({ targetPath }: IProps) => {
         });
     };
 
+    const interruptSearch = () => {
+        ipc.renderer.rpc.interruptSearch().then(() => {
+            setSearchTicketId(undefined);
+            setProgress(0);
+        });
+    };
+
     const rest = isOk(searchTicketId) ? (
-        <Box my={1}>
-            <ProgressBar progress={progress} />
+        <Box my={1} display="flex" alignItems="center">
+            <Box flex="auto" mr={1}>
+                <ProgressBar progress={progress} />
+            </Box>
+            <Button onClick={interruptSearch}>{l10n.cancel}</Button>
         </Box>
     ) : (
         <Box display="flex" justifyContent="center">
