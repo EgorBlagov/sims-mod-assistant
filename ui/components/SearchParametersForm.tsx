@@ -11,9 +11,10 @@ enum ParameterNames {
 interface IProps {
     params: ISearchParams;
     setParams: (newParams: ISearchParams) => void;
+    editable: boolean;
 }
 
-export const SearchParametersForm = ({ params, setParams }: IProps) => {
+export const SearchParametersForm = ({ params, setParams, editable }: IProps) => {
     const [l10n, _] = useL10n();
 
     const setterMap = {
@@ -33,13 +34,23 @@ export const SearchParametersForm = ({ params, setParams }: IProps) => {
         <FormGroup>
             <FormControlLabel
                 control={
-                    <Switch checked={params.searchMd5} onChange={handleChange} name={ParameterNames.SearchExact} />
+                    <Switch
+                        disabled={!editable}
+                        checked={params.searchMd5}
+                        onChange={handleChange}
+                        name={ParameterNames.SearchExact}
+                    />
                 }
                 label={l10n.searchExactDoubles}
             />
             <FormControlLabel
                 control={
-                    <Switch checked={params.searchTgi} onChange={handleChange} name={ParameterNames.SearchCatalogue} />
+                    <Switch
+                        disabled={!editable}
+                        checked={params.searchTgi}
+                        onChange={handleChange}
+                        name={ParameterNames.SearchCatalogue}
+                    />
                 }
                 label={l10n.searchCatalogueConflicts}
             />

@@ -31,7 +31,9 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     };
 
     const rest = isOk(searchTicketId) ? (
-        <ProgressBar progress={progress} />
+        <Box my={1}>
+            <ProgressBar progress={progress} />
+        </Box>
     ) : (
         <Box display="flex" justifyContent="center">
             <Button color="primary" variant="contained" onClick={startSearch}>
@@ -41,7 +43,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     );
     return (
         <>
-            <SearchParametersForm params={params} setParams={setParams} />
+            <SearchParametersForm editable={!isOk(searchTicketId)} params={params} setParams={setParams} />
             {rest}
         </>
     );
