@@ -1,6 +1,7 @@
 /* Pretending to be a separate tool */
 
 import { BrowserWindow, Event, ipcMain, ipcRenderer } from "electron";
+import { isOk } from "../tools";
 
 type TIpcCallback<TArg, TReturn> = (args: TArg) => Promise<TReturn>;
 type TIpcRegisterHandler<TArg, TReturn> = (callback: TIpcCallback<TArg, TReturn>) => void;
@@ -11,6 +12,7 @@ export type TIpcEventHandler<TArg> = (event: Event, args: TArg) => void;
 type TIpcWindowEventEmitter<TArg> = (window: BrowserWindow, args: TArg) => void;
 type TIpcEventOn<TArg> = (handler: TIpcEventHandler<TArg>) => void;
 type TIpcEventOff<TArg> = TIpcEventOn<TArg>;
+type Errorable<T> = T & { error: Error };
 
 export type TIpcSchema = {
     rpc: {
@@ -64,7 +66,11 @@ class IpcCreator<T extends TIpcSchema> {
     private createTypesafeMainApi<TArg = void, TReturn = void>(channelName: string): TIpcMainApi<TArg, TReturn> {
         return (callback) => {
             ipcMain.handle(channelName, async (event, args) => {
-                return callback(args);
+                try {
+                    return await callback(args);
+                } catch (error) {
+                    return { error };
+                }
             });
         };
     }
@@ -72,8 +78,14 @@ class IpcCreator<T extends TIpcSchema> {
     private createTypesafeRendererApi<TArg = void, TReturn = void>(
         channelName: string,
     ): TIpcRendererApi<TArg, TReturn> {
-        return (args) => {
-            return ipcRenderer.invoke(channelName, args);
+        return async (args) => {
+            const result: Errorable<TReturn> = await ipcRenderer.invoke(channelName, args);
+
+            if (isOk(result.error)) {
+                throw result.error;
+            }
+
+            return result;
         };
     }
 
