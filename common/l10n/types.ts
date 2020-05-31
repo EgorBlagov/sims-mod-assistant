@@ -1,6 +1,6 @@
 import { english } from "./english";
 
-type Formatter = (...args: (string | number)[]) => string;
+type Formatter = (...args: (string | number | Date)[]) => string;
 
 interface LSchemaMeta {
     [key: string]: string | Formatter;

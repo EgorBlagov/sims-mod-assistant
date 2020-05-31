@@ -75,16 +75,64 @@ class Searcher implements ISearcher {
         params: ISearchParams,
     ): Promise<ISearchResult> {
         for (let i = 0; i < 10; i++) {
-            await this.timeout(250);
+            await this.timeout(25);
             if (ticketId !== this.currentSearchTicket) {
                 logger.warn("Search interrupted");
                 return;
             }
             this.ee.emit.searchProgress({ ticketId, progress: (i + 1) * 10 });
         }
-        await this.timeout(500);
+        await this.timeout(50);
 
-        return {};
+        return {
+            entries: [
+                {
+                    original: {
+                        date: new Date(),
+                        path: "C://1",
+                        basename: "1",
+                    },
+                    duplicates: [
+                        {
+                            date: new Date(),
+                            path: "C://2",
+                            basename: "2",
+                            duplicateChecks: { Catalogue: true, Exact: false },
+                        },
+                        {
+                            date: new Date(),
+                            path: "C://3",
+
+                            basename: "3",
+                            duplicateChecks: { Catalogue: true, Exact: true },
+                        },
+                    ],
+                },
+                {
+                    original: {
+                        date: new Date(),
+                        path: "C://4",
+                        basename: "4",
+                    },
+                    duplicates: [
+                        {
+                            date: new Date(),
+                            path: "C://5",
+
+                            basename: "5",
+                            duplicateChecks: { Catalogue: true, Exact: true },
+                        },
+                        {
+                            date: new Date(),
+                            path: "C://6",
+
+                            basename: "6",
+                            duplicateChecks: { Catalogue: false, Exact: true },
+                        },
+                    ],
+                },
+            ],
+        };
     }
 
     private timeout(ms: number): Promise<void> {

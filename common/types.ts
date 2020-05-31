@@ -18,7 +18,30 @@ export interface ISearchParams {
     searchTgi: boolean;
 }
 
-export interface ISearchResult {}
+export enum DoubleTypes {
+    Exact,
+    Catalogue,
+}
+
+export interface IFileDescription {
+    path: string;
+    date: Date;
+    basename: string;
+}
+export interface IFileDuplicate extends IFileDescription {
+    duplicateChecks: {
+        [K in keyof typeof DoubleTypes]: boolean;
+    };
+}
+
+export interface ISearchEntry {
+    original: IFileDescription;
+    duplicates: IFileDuplicate[];
+}
+
+export interface ISearchResult {
+    entries: ISearchEntry[];
+}
 
 export interface ISearchProgress {
     ticketId: TTicketId;

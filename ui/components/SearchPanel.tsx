@@ -70,12 +70,11 @@ export const SearchPanel = ({ targetPath }: IProps) => {
                     </Button>
                 </Box>
             </Collapse>
-
-            <Collapse in={isOk(result)} style={{ overflowY: "scroll" }}>
-                <Box my={1}>
-                    <FilesArea />
-                </Box>
-            </Collapse>
+            <Box my={1} overflow="auto">
+                <Collapse in={isOk(result)}>
+                    <FilesArea searchInfo={result} />
+                </Collapse>
+            </Box>
         </>
     );
 };
