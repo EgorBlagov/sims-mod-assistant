@@ -81,7 +81,7 @@ class IpcCreator<T extends TIpcSchema> {
         return async (args) => {
             const result: Errorable<TReturn> = await ipcRenderer.invoke(channelName, args);
 
-            if (isOk(result.error)) {
+            if (isOk(result) && isOk(result.error)) {
                 throw result.error;
             }
 
