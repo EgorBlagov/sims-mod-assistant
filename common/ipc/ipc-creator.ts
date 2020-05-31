@@ -1,20 +1,18 @@
 /* Pretending to be a separate tool */
 
-import { BrowserWindow, Event, ipcMain, IpcMain, ipcRenderer, IpcRenderer } from "electron";
+import { BrowserWindow, Event, ipcMain, ipcRenderer } from "electron";
 
 type TIpcCallback<TArg, TReturn> = (args: TArg) => Promise<TReturn>;
 type TIpcRegisterHandler<TArg, TReturn> = (callback: TIpcCallback<TArg, TReturn>) => void;
 type TIpcRendererApi<TArg, TReturn> = TIpcCallback<TArg, TReturn>;
 type TIpcMainApi<TArg, TReturn> = TIpcRegisterHandler<TArg, TReturn>;
 
-type TIpcEventHandler<TArg> = (event: Event, args: TArg) => void;
+export type TIpcEventHandler<TArg> = (event: Event, args: TArg) => void;
 type TIpcWindowEventEmitter<TArg> = (window: BrowserWindow, args: TArg) => void;
 type TIpcEventOn<TArg> = (handler: TIpcEventHandler<TArg>) => void;
 type TIpcEventOff<TArg> = TIpcEventOn<TArg>;
 
-type TIpcSource = IpcMain | IpcRenderer;
-
-type TIpcSchema = {
+export type TIpcSchema = {
     rpc: {
         [channelName: string]: ReturnType<typeof createTypesafeIpcChannel>;
     };
@@ -23,7 +21,7 @@ type TIpcSchema = {
     };
 };
 
-type TIpcOutput<T extends TIpcSchema> = {
+export type TIpcOutput<T extends TIpcSchema> = {
     renderer: {
         rpc: { [K in keyof T["rpc"]]: TIpcRendererApi<T["rpc"][K]["args"], T["rpc"][K]["return"]> };
         on: { [K in keyof T["mainEvents"]]: TIpcEventOn<T["mainEvents"][K]["args"]> };
@@ -87,8 +85,8 @@ class IpcCreator<T extends TIpcSchema> {
 }
 
 export function createTypesafeIpc<T extends TIpcSchema>(ipcSchema: T): TIpcOutput<T> {
-    const ipcUtil = new IpcCreator<T>(ipcSchema);
-    return ipcUtil.interface;
+    const ipcCreator = new IpcCreator<T>(ipcSchema);
+    return ipcCreator.interface;
 }
 
 export function createTypesafeIpcChannel<TArg extends any | void, TReturn extends any | void>() {
