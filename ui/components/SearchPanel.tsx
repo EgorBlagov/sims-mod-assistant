@@ -1,11 +1,12 @@
 import { Box, Button, Collapse } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { ISearchParams, ISearchResult, TTicketId } from "../../common/types";
 import { ipcHooks } from "../utils/hooks";
 import { useL10n } from "../utils/L10n";
+import { useNotification } from "../utils/notifications";
+import { FilesArea } from "./FilesArea";
 import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
 
@@ -19,7 +20,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
     const [progress, setProgress] = React.useState<number>(0);
     const [result, setResult] = React.useState<ISearchResult>();
-
+    const notification = useNotification();
     ipcHooks.use.searchProgress((__, args) => {
         if (searchTicketId === args.ticketId) {
             setProgress(args.progress);
@@ -27,9 +28,12 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     });
 
     ipcHooks.use.searchResult((__, searchResult) => {
-        setResult(searchResult);
-        setSearchTicketId(undefined);
-        setProgress(0);
+        if (isOk(searchResult)) {
+            setResult(searchResult);
+            setSearchTicketId(undefined);
+            setProgress(0);
+            notification.showSuccess(l10n.searchFinished);
+        }
     });
 
     const startSearch = () => {
@@ -66,11 +70,10 @@ export const SearchPanel = ({ targetPath }: IProps) => {
                     </Button>
                 </Box>
             </Collapse>
-            <Collapse in={isOk(result)}>
+
+            <Collapse in={isOk(result)} style={{ overflowY: "scroll" }}>
                 <Box my={1}>
-                    <Alert variant="filled" severity="success">
-                        {l10n.searchFinished}
-                    </Alert>
+                    <FilesArea />
                 </Box>
             </Collapse>
         </>

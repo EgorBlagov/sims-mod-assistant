@@ -75,13 +75,14 @@ class Searcher implements ISearcher {
         params: ISearchParams,
     ): Promise<ISearchResult> {
         for (let i = 0; i < 10; i++) {
-            await this.timeout(1000);
+            await this.timeout(250);
             if (ticketId !== this.currentSearchTicket) {
                 logger.warn("Search interrupted");
                 return;
             }
             this.ee.emit.searchProgress({ ticketId, progress: (i + 1) * 10 });
         }
+        await this.timeout(500);
 
         return {};
     }
