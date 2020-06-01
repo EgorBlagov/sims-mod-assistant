@@ -13,7 +13,7 @@ interface IProps {
 }
 
 function SlideTransition(props) {
-    return <Slide {...props} direction="up" />;
+    return <Slide {...props} direction="down" />;
 }
 
 export const NotificationSnackbar = ({ message, type, visible, setVisible }: IProps) => {
@@ -32,6 +32,7 @@ export const NotificationSnackbar = ({ message, type, visible, setVisible }: IPr
             onClose={handleClose}
             autoHideDuration={SNACKBAR_AUTOHIDE_DURATION}
             TransitionComponent={SlideTransition}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
             <Alert variant="filled" severity={type} onClose={handleClose}>
                 {message}
