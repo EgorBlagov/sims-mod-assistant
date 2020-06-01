@@ -1,4 +1,5 @@
-import { Box, Chip, Divider, List, ListItemText, makeStyles } from "@material-ui/core";
+import { Box, Chip, Divider, List, ListItem, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
+import { shell } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
 import { isOk } from "../../common/tools";
@@ -16,23 +17,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const getShowFileHandler = (path: string) => () => shell.showItemInFolder(path);
+
 const DuplicateEntry = ({ duplicate }: { duplicate: IFileDuplicate }) => {
     const [l10n, __] = useL10n();
     return (
         <>
-            <ListItemText primary={duplicate.basename} secondary={l10n.date(duplicate.date)} />
-            <Box display="flex">
+            <ListItem button={true} onClick={getShowFileHandler(duplicate.path)}>
+                <Tooltip title={duplicate.path}>
+                    <ListItemText primary={duplicate.basename} secondary={l10n.date(duplicate.date)} />
+                </Tooltip>
                 {duplicate.duplicateChecks.Catalogue && (
                     <Box ml={1}>
-                        <Chip label={l10n.catalogueDuplicate} color="primary" />
+                        <Chip size="small" label={l10n.catalogueDuplicate} color="primary" />
                     </Box>
                 )}
                 {duplicate.duplicateChecks.Exact && (
                     <Box ml={1}>
-                        <Chip label={l10n.exactDuplicate} color="secondary" />
+                        <Chip size="small" label={l10n.exactDuplicate} color="secondary" />
                     </Box>
                 )}
-            </Box>
+            </ListItem>
         </>
     );
 };
@@ -44,12 +49,17 @@ export const FilesArea = ({ searchInfo }: IProps) => {
     if (!isOk(searchInfo)) {
         return null;
     }
+
     return (
         <List>
             {_.map(searchInfo.entries, (x) => (
                 <React.Fragment key={x.original.path}>
-                    <ListItemText primary={x.original.basename} secondary={l10n.date(x.original.date)} />
-                    <List disablePadding={true} className={classes.nested}>
+                    <ListItem button={true} onClick={getShowFileHandler(x.original.path)}>
+                        <Tooltip title={x.original.path}>
+                            <ListItemText primary={x.original.basename} secondary={l10n.date(x.original.date)} />
+                        </Tooltip>
+                    </ListItem>
+                    <List disablePadding={true} className={classes.nested} dense={true}>
                         {_.map(x.duplicates, (duplicate, j) => (
                             <DuplicateEntry key={duplicate.path} duplicate={duplicate} />
                         ))}
