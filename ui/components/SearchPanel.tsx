@@ -1,4 +1,5 @@
-import { Box, Button, Collapse } from "@material-ui/core";
+import { Box, Button, Collapse, Slide } from "@material-ui/core";
+import * as _ from "lodash";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
@@ -15,19 +16,19 @@ interface IProps {
 }
 
 export const SearchPanel = ({ targetPath }: IProps) => {
-    const [l10n, _] = useL10n();
+    const [l10n, __] = useL10n();
     const [params, setParams] = React.useState<ISearchParams>({ searchMd5: true, searchTgi: false });
     const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
     const [progress, setProgress] = React.useState<number>(0);
     const [result, setResult] = React.useState<ISearchResult>();
     const notification = useNotification();
-    ipcHooks.use.searchProgress((__, args) => {
+    ipcHooks.use.searchProgress((___, args) => {
         if (searchTicketId === args.ticketId) {
             setProgress(args.progress);
         }
     });
 
-    ipcHooks.use.searchResult((__, searchResult) => {
+    ipcHooks.use.searchResult((___, searchResult) => {
         if (isOk(searchResult)) {
             setResult(searchResult);
             setSearchTicketId(undefined);
@@ -52,6 +53,14 @@ export const SearchPanel = ({ targetPath }: IProps) => {
         });
     };
 
+    const getTotalDuplicates = (res: ISearchResult): number => {
+        if (!isOk(res)) {
+            return 0;
+        }
+
+        return _.reduce(res.entries, (sum, entry) => (sum += entry.duplicates.length), 0);
+    };
+
     return (
         <>
             <SearchParametersForm editable={!isOk(searchTicketId)} params={params} setParams={setParams} />
@@ -70,11 +79,17 @@ export const SearchPanel = ({ targetPath }: IProps) => {
                     </Button>
                 </Box>
             </Collapse>
-            <Box my={1} overflow="auto">
+            <Box my={1} overflow="auto" flexGrow={1}>
                 <Collapse in={isOk(result)}>
                     <FilesArea searchInfo={result} />
                 </Collapse>
             </Box>
+
+            <Slide in={isOk(result)} direction="up">
+                <Button color="secondary" variant="contained">
+                    {l10n.moveDuplicates}
+                </Button>
+            </Slide>
         </>
     );
 };

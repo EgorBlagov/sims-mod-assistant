@@ -14,5 +14,5 @@ export const english = {
     exactDuplicate: "Exact duplicate",
     catalogueDuplicate: "Catalogue overlap",
     date: (d: Date) => d.toLocaleString("en-US"),
-    moveDuplicates: "Move all duplicates",
+    moveDuplicates: "Move all duplicates to separate directory",
 };

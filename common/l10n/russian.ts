@@ -16,5 +16,5 @@ export const russian: Translation = {
     exactDuplicate: "Полная копия",
     catalogueDuplicate: "Перекрытие в каталоге",
     date: (d: Date) => d.toLocaleString("ru-RU"),
-    moveDuplicates: "Переместить все дубликаты",
+    moveDuplicates: "Переместить все дубликаты в отдельную папку",
 };
