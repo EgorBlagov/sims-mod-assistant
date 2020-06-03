@@ -7,7 +7,7 @@ import { ISearchParams, ISearchResult, TTicketId } from "../../common/types";
 import { ipcHooks } from "../utils/hooks";
 import { useL10n } from "../utils/L10n";
 import { useNotification } from "../utils/notifications";
-import { FilesArea } from "./FilesArea";
+import { FilesArea } from "./files-area/FilesArea";
 import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
 import { StartButton } from "./StartButton";

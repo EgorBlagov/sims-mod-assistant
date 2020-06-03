@@ -20,7 +20,7 @@ export const DirectoryPanel = () => {
     const [path, setPath] = React.useState<string>();
     const [filesCount, setFilesCount] = React.useState<number>();
     const [sizeMb, setSizeMb] = React.useState<number>();
-    const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
+    const [openDisabled, setOpenDisabled] = React.useState<boolean>(false);
 
     const directoryPathStyles = useStyles();
 
@@ -28,7 +28,7 @@ export const DirectoryPanel = () => {
         if (isOk(path)) {
             setFilesCount(undefined);
             setSizeMb(undefined);
-            setDialogOpen(true);
+            setOpenDisabled(true);
             ipc.renderer.rpc
                 .getDirectoryInfo({ targetPath: path })
                 .then((result) => {
@@ -40,13 +40,14 @@ export const DirectoryPanel = () => {
                     setPath(undefined);
                 })
                 .finally(() => {
-                    setDialogOpen(false);
+                    setOpenDisabled(false);
                 });
         }
     }, [path]);
 
     const handleOpenDialog = () => {
-        setDialogOpen(true);
+        setOpenDisabled(true);
+
         remote.dialog
             .showOpenDialog({ properties: ["openDirectory"] })
             .then((res) => {
@@ -54,11 +55,11 @@ export const DirectoryPanel = () => {
                     setPath(res.filePaths[0]); // TODO: on path change settings also change due to stack-like design of panels, consider redux integration
                     ipc.renderer.rpc.interruptSearch(); // it's Async
                 }
-                setDialogOpen(false);
             })
             .catch((error: Error) => {
                 notification.showError(l10n.errorOpenPath(error.message));
-            });
+            })
+            .finally(() => setOpenDisabled(false));
     };
 
     return (
@@ -68,7 +69,7 @@ export const DirectoryPanel = () => {
                     <Typography className={directoryPathStyles.root}>{isOk(path) ? path : l10n.chooseDir}</Typography>
                 </Box>
                 <Box>
-                    <Button onClick={handleOpenDialog} disabled={dialogOpen}>
+                    <Button onClick={handleOpenDialog} disabled={openDisabled}>
                         {l10n.open}
                     </Button>
                 </Box>
