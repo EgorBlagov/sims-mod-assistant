@@ -1,12 +1,17 @@
-import { Box, Button, Typography } from "@material-ui/core";
+import { Box, Button, makeStyles, Typography } from "@material-ui/core";
 import { remote } from "electron";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { useL10n } from "../utils/L10n";
 import { useNotification } from "../utils/notifications";
-import "./DirectoryPanel.css";
 import { DirectorySummary } from "./DirectorySummary";
+
+const useStyles = makeStyles({
+    root: {
+        overflowWrap: "anywhere",
+    },
+});
 
 export const DirectoryPanel = () => {
     const [l10n, _] = useL10n();
@@ -16,6 +21,8 @@ export const DirectoryPanel = () => {
     const [filesCount, setFilesCount] = React.useState<number>();
     const [sizeMb, setSizeMb] = React.useState<number>();
     const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
+
+    const directoryPathStyles = useStyles();
 
     React.useEffect(() => {
         if (isOk(path)) {
@@ -58,7 +65,7 @@ export const DirectoryPanel = () => {
         <>
             <Box display="flex" my={1}>
                 <Box flexGrow={1} display="flex" flexDirection="column" justifyContent="center">
-                    <Typography className="directory-panel__caption">{isOk(path) ? path : l10n.chooseDir}</Typography>
+                    <Typography className={directoryPathStyles.root}>{isOk(path) ? path : l10n.chooseDir}</Typography>
                 </Box>
                 <Box>
                     <Button onClick={handleOpenDialog} disabled={dialogOpen}>
