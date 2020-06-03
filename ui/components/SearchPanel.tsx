@@ -10,6 +10,7 @@ import { useNotification } from "../utils/notifications";
 import { FilesArea } from "./FilesArea";
 import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
+import { StartButton } from "./StartButton";
 
 interface IProps {
     targetPath: string;
@@ -74,9 +75,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             </Collapse>
             <Collapse in={!isOk(searchTicketId)}>
                 <Box display="flex" justifyContent="center">
-                    <Button color="primary" variant="contained" onClick={startSearch}>
-                        {l10n.start}
-                    </Button>
+                    <StartButton params={params} onClick={startSearch} />
                 </Box>
             </Collapse>
             <Box my={1} overflow="auto" flexGrow={1}>

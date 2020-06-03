@@ -15,4 +15,5 @@ export const english = {
     catalogueDuplicate: "Catalogue overlap",
     date: (d: Date) => d.toLocaleString("en-US"),
     moveDuplicates: "Move all duplicates to separate directory",
+    enableForSearch: "Enable at least one options to start search",
 };
