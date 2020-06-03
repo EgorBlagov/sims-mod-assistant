@@ -5,17 +5,17 @@ export const english = {
     open: "Open",
     dirInfo: (filesCount: string | number, sizeMb: string | number) => `Total files: ${filesCount}, size: ${sizeMb} Mb`,
     searchExactDoubles: "Search exact doubles",
-    searchCatalogueConflicts: "Search catalogue conflicts",
+    searchCatalogConflicts: "Search catalog conflicts",
     start: "Start",
     cancel: "Cancel",
     errorPath: (msg: string) => `Unable to get directory info: ${msg}`,
     errorOpenPath: (msg: string) => `Unable to open path with dialog: ${msg}`,
     searchFinished: "Search finished",
     exactDuplicate: "Exact duplicate",
-    catalogueDuplicate: "Catalogue overlap",
+    catalogDuplicate: "Catalog overlap",
     date: (d: Date) => d.toLocaleString("en-US"),
     moveDuplicates: "Move all duplicates to separate directory",
     enableForSearch: "Enable at least one options to start search",
-    catalogueDuplicateDescription:
+    catalogDuplicateDescription:
         "Object Catalog or Object Definition (Type, Group and Id) are same as in original file",
 };

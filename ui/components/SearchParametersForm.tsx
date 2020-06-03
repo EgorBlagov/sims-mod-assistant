@@ -5,7 +5,7 @@ import { useL10n } from "../utils/L10n";
 
 enum ParameterNames {
     SearchExact = "SearchExact",
-    SearchCatalogue = "SearchCatalogue",
+    SearchCatalog = "SearchCatalog",
 }
 
 interface IProps {
@@ -21,8 +21,8 @@ export const SearchParametersForm = ({ params, setParams, editable }: IProps) =>
         [ParameterNames.SearchExact]: (searchExact: boolean) => {
             setParams({ ...params, searchMd5: searchExact });
         },
-        [ParameterNames.SearchCatalogue]: (searchCatalogue: boolean) => {
-            setParams({ ...params, searchTgi: searchCatalogue });
+        [ParameterNames.SearchCatalog]: (searchCatalog: boolean) => {
+            setParams({ ...params, searchTgi: searchCatalog });
         },
     };
 
@@ -49,10 +49,10 @@ export const SearchParametersForm = ({ params, setParams, editable }: IProps) =>
                         disabled={!editable}
                         checked={params.searchTgi}
                         onChange={handleChange}
-                        name={ParameterNames.SearchCatalogue}
+                        name={ParameterNames.SearchCatalog}
                     />
                 }
-                label={l10n.searchCatalogueConflicts}
+                label={l10n.searchCatalogConflicts}
             />
         </FormGroup>
     );

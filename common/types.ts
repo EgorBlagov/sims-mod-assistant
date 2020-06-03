@@ -20,7 +20,7 @@ export interface ISearchParams {
 
 export enum DoubleTypes {
     Exact,
-    Catalogue,
+    Catalog,
 }
 
 export interface IFileDescription {

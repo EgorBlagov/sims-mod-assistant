@@ -27,10 +27,10 @@ const DuplicateEntry = ({ duplicate }: { duplicate: IFileDuplicate }) => {
                 <Tooltip title={duplicate.path}>
                     <ListItemText primary={duplicate.basename} secondary={l10n.date(duplicate.date)} />
                 </Tooltip>
-                {duplicate.duplicateChecks.Catalogue && (
-                    <Tooltip title={l10n.catalogueDuplicateDescription}>
+                {duplicate.duplicateChecks.Catalog && (
+                    <Tooltip title={l10n.catalogDuplicateDescription}>
                         <Box ml={1}>
-                            <Chip size="small" label={l10n.catalogueDuplicate} color="primary" />
+                            <Chip size="small" label={l10n.catalogDuplicate} color="primary" />
                         </Box>
                     </Tooltip>
                 )}

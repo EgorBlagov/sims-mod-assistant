@@ -97,14 +97,14 @@ class Searcher implements ISearcher {
                             date: new Date(),
                             path: "C://2",
                             basename: "2",
-                            duplicateChecks: { Catalogue: true, Exact: false },
+                            duplicateChecks: { Catalog: true, Exact: false },
                         },
                         {
                             date: new Date(),
                             path: "C://3",
 
                             basename: "3",
-                            duplicateChecks: { Catalogue: true, Exact: true },
+                            duplicateChecks: { Catalog: true, Exact: true },
                         },
                     ],
                 },
@@ -120,14 +120,14 @@ class Searcher implements ISearcher {
                             path: "C://5",
 
                             basename: "5",
-                            duplicateChecks: { Catalogue: true, Exact: true },
+                            duplicateChecks: { Catalog: true, Exact: true },
                         },
                         {
                             date: new Date(),
                             path: "C://6",
 
                             basename: "6",
-                            duplicateChecks: { Catalogue: false, Exact: true },
+                            duplicateChecks: { Catalog: false, Exact: true },
                         },
                     ],
                 },
