@@ -16,4 +16,6 @@ export const english = {
     date: (d: Date) => d.toLocaleString("en-US"),
     moveDuplicates: "Move all duplicates to separate directory",
     enableForSearch: "Enable at least one options to start search",
+    catalogueDuplicateDescription:
+        "Object Catalog or Object Definition (Type, Group and Id) are same as in original file",
 };

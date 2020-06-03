@@ -85,7 +85,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             </Box>
 
             <Slide in={isOk(result)} direction="up">
-                <Button color="secondary" variant="contained">
+                <Button color="primary" variant="contained">
                     {l10n.moveDuplicates}
                 </Button>
             </Slide>

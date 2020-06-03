@@ -18,4 +18,5 @@ export const russian: Translation = {
     date: (d: Date) => d.toLocaleString("ru-RU"),
     moveDuplicates: "Переместить все дубликаты в отдельную папку",
     enableForSearch: "Включите хотя бы один параметр чтобы запустить поиск",
+    catalogueDuplicateDescription: "Object Catalog или Object Definition (Type, Group и Id) такие же как и у оригинала",
 };

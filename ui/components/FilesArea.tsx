@@ -28,9 +28,11 @@ const DuplicateEntry = ({ duplicate }: { duplicate: IFileDuplicate }) => {
                     <ListItemText primary={duplicate.basename} secondary={l10n.date(duplicate.date)} />
                 </Tooltip>
                 {duplicate.duplicateChecks.Catalogue && (
-                    <Box ml={1}>
-                        <Chip size="small" label={l10n.catalogueDuplicate} color="primary" />
-                    </Box>
+                    <Tooltip title={l10n.catalogueDuplicateDescription}>
+                        <Box ml={1}>
+                            <Chip size="small" label={l10n.catalogueDuplicate} color="primary" />
+                        </Box>
+                    </Tooltip>
                 )}
                 {duplicate.duplicateChecks.Exact && (
                     <Box ml={1}>
