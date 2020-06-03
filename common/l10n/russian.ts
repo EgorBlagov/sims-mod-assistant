@@ -19,4 +19,6 @@ export const russian: Translation = {
     moveDuplicates: "Переместить все дубликаты в отдельную папку",
     enableForSearch: "Включите хотя бы один параметр чтобы запустить поиск",
     catalogDuplicateDescription: "Object Catalog или Object Definition (Type, Group и Id) такие же как и у оригинала",
+    duplicates: "Дубликаты",
+    skippedFiles: "Пропущенные файлы",
 };

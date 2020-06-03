@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Slide } from "@material-ui/core";
+import { Box, Button, Collapse, Grow, Slide } from "@material-ui/core";
 import * as _ from "lodash";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
@@ -73,16 +73,12 @@ export const SearchPanel = ({ targetPath }: IProps) => {
                     <Button onClick={interruptSearch}>{l10n.cancel}</Button>
                 </Box>
             </Collapse>
-            <Collapse in={!isOk(searchTicketId)}>
+            <Grow in={!isOk(searchTicketId)}>
                 <Box display="flex" justifyContent="center">
                     <StartButton params={params} onClick={startSearch} />
                 </Box>
-            </Collapse>
-            <Box my={1} overflow="auto" flexGrow={1}>
-                <Collapse in={isOk(result)}>
-                    <FilesArea searchInfo={result} />
-                </Collapse>
-            </Box>
+            </Grow>
+            <FilesArea searchInfo={result} />
 
             <Slide in={isOk(result)} direction="up">
                 <Button color="primary" variant="contained">

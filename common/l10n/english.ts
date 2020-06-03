@@ -18,4 +18,6 @@ export const english = {
     enableForSearch: "Enable at least one options to start search",
     catalogDuplicateDescription:
         "Object Catalog or Object Definition (Type, Group and Id) are same as in original file",
+    duplicates: "Duplicates",
+    skippedFiles: "Skipped files",
 };
