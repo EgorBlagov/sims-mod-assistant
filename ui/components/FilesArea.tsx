@@ -1,4 +1,16 @@
-import { Box, Chip, Divider, List, ListItem, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
+import {
+    Avatar,
+    Box,
+    Chip,
+    Divider,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    makeStyles,
+    SvgIcon,
+    Tooltip,
+} from "@material-ui/core";
 import { shell } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
@@ -57,6 +69,13 @@ export const FilesArea = ({ searchInfo }: IProps) => {
             {_.map(searchInfo.entries, (x) => (
                 <React.Fragment key={x.original.path}>
                     <ListItem button={true} onClick={getShowFileHandler(x.original.path)}>
+                        <ListItemIcon>
+                            <Avatar>
+                                <SvgIcon>
+                                    <path d="M12,0L6,12l6,12l6-12L12,0z M12,4.2l3.9,7.8H8.1L12,4.2z" />
+                                </SvgIcon>
+                            </Avatar>
+                        </ListItemIcon>
                         <Tooltip title={x.original.path}>
                             <ListItemText primary={x.original.basename} secondary={l10n.date(x.original.date)} />
                         </Tooltip>
