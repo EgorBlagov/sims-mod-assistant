@@ -1,5 +1,5 @@
 import { Avatar, Box, Chip, List, ListItem, ListItemIcon, ListItemText, Tooltip } from "@material-ui/core";
-import { Error } from "@material-ui/icons";
+import Error from "@material-ui/icons/Error";
 import * as _ from "lodash";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
@@ -32,7 +32,7 @@ export const SkipsList = ({ searchInfo }: IProps) => {
     return (
         <List>
             {_.map(searchInfo.skips, (x) => (
-                <ListItem button={true} onClick={getShowFileHandler(x.path)}>
+                <ListItem key={x.path} button={true} onClick={getShowFileHandler(x.path)}>
                     <ListItemIcon>
                         <Avatar>
                             <Error />

@@ -1,5 +1,4 @@
 import { Box, Button, Collapse, Grow, Slide } from "@material-ui/core";
-import * as _ from "lodash";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
@@ -52,14 +51,6 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             setSearchTicketId(undefined);
             setProgress(0);
         });
-    };
-
-    const getTotalDuplicates = (res: ISearchResult): number => {
-        if (!isOk(res)) {
-            return 0;
-        }
-
-        return _.reduce(res.duplicates, (sum, entry) => (sum += entry.duplicates.length), 0);
     };
 
     return (

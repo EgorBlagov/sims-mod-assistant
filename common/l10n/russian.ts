@@ -19,6 +19,10 @@ export const russian: Translation = {
     moveDuplicates: "Переместить все дубликаты в отдельную папку",
     enableForSearch: "Включите хотя бы один параметр чтобы запустить поиск",
     catalogDuplicateDescription: "Object Catalog или Object Definition (Type, Group и Id) такие же как и у оригинала",
-    duplicates: "Дубликаты",
-    skippedFiles: "Пропущенные файлы",
+    duplicates: (count: number) => `Дубликаты (${count})`,
+    skippedFiles: (count: number) => `Пропущенные файлы (${count})`,
+    unsupportedIndexType: "Неподдерживаемый Index Type",
+    unsupportedSimsVersion: "Неподдерживаемая версия Пакета",
+    unsupportedIndexTypeTooltip: "Формат Пакета не поддерживается программой",
+    unsupportedSimsVersionTooltip: "Возможно это не Пакет Sims 4",
 };

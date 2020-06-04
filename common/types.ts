@@ -39,8 +39,18 @@ export interface ISearchEntry {
     duplicates: IFileDuplicate[];
 }
 
+export enum SkipReasons {
+    UnsupportedSimsVersion,
+    UnsupportedIndexType,
+}
+
+export interface ISkippedFile extends IFileDescription {
+    reason: SkipReasons;
+}
+
 export interface ISearchResult {
-    entries: ISearchEntry[];
+    duplicates: ISearchEntry[];
+    skips: ISkippedFile[];
 }
 
 export interface ISearchProgress {
