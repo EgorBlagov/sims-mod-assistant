@@ -5,6 +5,7 @@ import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";
 import { DuplicatesList } from "./DuplicatesList";
+import { SkipsList } from "./SkipsList";
 
 interface IProps {
     searchInfo: ISearchResult;
@@ -20,6 +21,7 @@ const useStyles = makeStyles({
         overflow: "auto",
     },
 });
+
 export const FilesArea = ({ searchInfo }: IProps) => {
     const [l10n, __] = useL10n();
     const [tab, setTab] = React.useState<Tabs>(Tabs.Duplicates);
@@ -41,6 +43,9 @@ export const FilesArea = ({ searchInfo }: IProps) => {
                     </AppBar>
                     <TabPanel value={Tabs.Duplicates} className={classes.tabScrollable}>
                         <DuplicatesList searchInfo={searchInfo} />
+                    </TabPanel>
+                    <TabPanel value={Tabs.Skips} className={classes.tabScrollable}>
+                        <SkipsList searchInfo={searchInfo} />
                     </TabPanel>
                 </TabContext>
             </Box>

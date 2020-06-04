@@ -1,5 +1,4 @@
 import { Avatar, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
-import { shell } from "electron";
 import * as _ from "lodash";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
@@ -7,6 +6,7 @@ import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";
 import { SimsIcon } from "../icons/SimsIcon";
 import { DuplicateEntry } from "./DuplicateEntry";
+import { getShowFileHandler } from "./tools";
 
 interface IProps {
     searchInfo: ISearchResult;
@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 export const DuplicatesList = ({ searchInfo }: IProps) => {
     const [l10n, __] = useL10n();
     const classes = useStyles();
-    const getShowFileHandler = (path: string) => () => shell.showItemInFolder(path);
 
     if (!isOk(searchInfo)) {
         return null;
@@ -30,7 +29,7 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
 
     return (
         <List>
-            {_.map(searchInfo.entries, (x) => (
+            {_.map(searchInfo.duplicates, (x) => (
                 <React.Fragment key={x.original.path}>
                     <ListItem button={true} onClick={getShowFileHandler(x.original.path)}>
                         <ListItemIcon>

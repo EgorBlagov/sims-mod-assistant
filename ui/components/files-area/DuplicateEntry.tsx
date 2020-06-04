@@ -1,8 +1,8 @@
 import { Box, Chip, ListItem, ListItemText, Tooltip } from "@material-ui/core";
-import { shell } from "electron";
 import * as React from "react";
 import { IFileDuplicate } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";
+import { getShowFileHandler } from "./tools";
 
 interface IProps {
     duplicate: IFileDuplicate;
@@ -10,8 +10,6 @@ interface IProps {
 
 export const DuplicateEntry = ({ duplicate }: IProps) => {
     const [l10n, __] = useL10n();
-
-    const getShowFileHandler = (path: string) => () => shell.showItemInFolder(path);
 
     return (
         <ListItem button={true} onClick={getShowFileHandler(duplicate.path)}>

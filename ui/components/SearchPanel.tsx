@@ -59,7 +59,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             return 0;
         }
 
-        return _.reduce(res.entries, (sum, entry) => (sum += entry.duplicates.length), 0);
+        return _.reduce(res.duplicates, (sum, entry) => (sum += entry.duplicates.length), 0);
     };
 
     return (
