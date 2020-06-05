@@ -48,7 +48,7 @@
         "build:ui": "npm run build:ui:tsc && parcel build ui/index.html --public-url ./ -d dist/client --target electron",
         "build:ui:tsc": "tsc --build ui/tsconfig.json",
         "build:server": "tsc --build server/tsconfig.json",
-        "start": "electron dist/main.js"
+        "start": "electron dist/server/main.js"
     },
     "pre-commit": [
         "lint"
