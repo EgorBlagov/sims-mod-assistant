@@ -19,7 +19,7 @@ export const LanguageButton = ({ setLanguage }: IProps) => {
 
     return (
         <>
-            <Button variant="contained" onClick={handleClickOpen}>
+            <Button size="small" onClick={handleClickOpen}>
                 {l10n.language}
             </Button>
             <Dialog onClose={handleClickLanguage(language)} aria-labelledby="language-dialog-title" open={dialogOpen}>
