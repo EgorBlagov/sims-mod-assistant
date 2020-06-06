@@ -19,7 +19,7 @@ type TChipMap = {
 };
 
 export const SkipsList = ({ searchInfo }: IProps) => {
-    const [l10n, __] = useL10n();
+    const [l10n] = useL10n();
 
     if (!isOk(searchInfo)) {
         return null;

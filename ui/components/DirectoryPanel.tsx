@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 });
 
 export const DirectoryPanel = () => {
-    const [l10n, _] = useL10n();
+    const [l10n] = useL10n();
     const notification = useNotification();
 
     const [path, setPath] = React.useState<string>();

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const DuplicatesList = ({ searchInfo }: IProps) => {
-    const [l10n, __] = useL10n();
+    const [l10n] = useL10n();
     const classes = useStyles();
     const pathClasses = usePathStyles();
 

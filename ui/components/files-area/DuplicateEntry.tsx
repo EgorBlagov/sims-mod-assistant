@@ -9,7 +9,7 @@ interface IProps {
 }
 
 export const DuplicateEntry = ({ duplicate }: IProps) => {
-    const [l10n, __] = useL10n();
+    const [l10n] = useL10n();
     const classes = usePathStyles();
 
     return (

@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 });
 
 export const FilesArea = ({ searchInfo }: IProps) => {
-    const [l10n, __] = useL10n();
+    const [l10n] = useL10n();
     const [tab, setTab] = React.useState<Tabs>(Tabs.Duplicates);
     const classes = useStyles();
 

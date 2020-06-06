@@ -9,7 +9,7 @@ interface IProps {
 }
 
 export const StartButton = ({ onClick, params }: IProps) => {
-    const [l10n, _] = useL10n();
+    const [l10n] = useL10n();
 
     const canStart = params.searchMd5 || params.searchTgi;
     const popper = canStart ? () => null : undefined; // => null is to disable tooltip

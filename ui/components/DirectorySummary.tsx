@@ -11,7 +11,7 @@ interface IProps {
 }
 
 export const DirectorySummary = ({ targetPath, filesCount, sizeMb }: IProps) => {
-    const [l10n, _] = useL10n();
+    const [l10n] = useL10n();
 
     if (!isOk(filesCount) || !isOk(sizeMb)) {
         return (

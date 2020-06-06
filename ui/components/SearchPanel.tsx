@@ -17,7 +17,7 @@ interface IProps {
 }
 
 export const SearchPanel = ({ targetPath }: IProps) => {
-    const [l10n, __] = useL10n();
+    const [l10n] = useL10n();
     const [params, setParams] = React.useState<ISearchParams>({ searchMd5: true, searchTgi: false });
     const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
     const [searchStartTime, setSearchStartTime] = React.useState<Date>();
