@@ -5,6 +5,7 @@ import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter }
 import { IDirectoryInfo, ISearchParams, ISearchProgress, ISearchResult, IStartResult } from "../common/types";
 import { Analyzer } from "./analyzer";
 import { logger } from "./logging";
+import { IFileWithStats } from "./types";
 
 const MB: number = 1024 * 1024;
 
@@ -60,8 +61,9 @@ class Searcher implements ISearcher {
             .then((result) => {
                 this.ee.emit.searchResult(result);
             })
-            .catch((error) => {
-                this.ee.emit.searchError(error);
+            .catch((error: Error) => {
+                logger.error(error);
+                this.ee.emit.searchError(error.toString());
             });
 
         return {
@@ -96,14 +98,15 @@ class Searcher implements ISearcher {
 
         for (const file of allFiles) {
             if (ticketId !== this.currentSearchTicket) {
-                logger.warn("Search interrupted");
-                return { duplicates: [], skips: [] };
+                throw new Error("Search Interrupted"); // localize
             }
 
             await analyzer.pushFile(file);
 
             mbPassed += file.stats.size / MB;
-            this.ee.emit.searchProgress({ ticketId, progress: mbPassed / mbTotal });
+
+            const searchProgress = { ticketId, progress: mbPassed / mbTotal };
+            this.ee.emit.searchProgress(searchProgress);
         }
 
         return analyzer.summary;
