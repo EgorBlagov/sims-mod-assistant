@@ -6,6 +6,7 @@ export const russian: Translation = {
     chooseDir: "Выберите папку",
     open: "Открыть",
     dirInfo: (filesCount, sizeMb) => `Всего файлов: ${filesCount}, размер: ${sizeMb} Мб`,
+    searchMode: "Режим поиска",
     searchExactDoubles: "Искать идеальные дубликаты",
     searchCatalogConflicts: "Искать конфликты в каталоге",
     start: "Начать",

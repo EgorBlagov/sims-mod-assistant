@@ -4,6 +4,7 @@ export const english = {
     chooseDir: "Choose a directory",
     open: "Open",
     dirInfo: (filesCount: string | number, sizeMb: string | number) => `Total files: ${filesCount}, size: ${sizeMb} Mb`,
+    searchMode: "Search mode",
     searchExactDoubles: "Search exact doubles",
     searchCatalogConflicts: "Search catalog conflicts",
     start: "Start",
