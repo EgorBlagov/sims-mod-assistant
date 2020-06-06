@@ -24,4 +24,8 @@ export const english = {
     unsupportedSimsVersion: "Unsupported Package version",
     unsupportedIndexTypeTooltip: "Package contents format is not supported by the application",
     unsupportedSimsVersionTooltip: "Might be not Sims 4 package at all",
+    notPackage: "Not package",
+    notPackageDescription: "File is not any Sims package",
+    unableToParse: "Unable to parse",
+    unableToParseDescription: "Unexpected error occured during parse",
 };

@@ -25,4 +25,8 @@ export const russian: Translation = {
     unsupportedSimsVersion: "Неподдерживаемая версия Пакета",
     unsupportedIndexTypeTooltip: "Формат Пакета не поддерживается программой",
     unsupportedSimsVersionTooltip: "Возможно это не Пакет Sims 4",
+    notPackage: "Не Пакет",
+    notPackageDescription: "Файл не является Пакетом Sims",
+    unableToParse: "Не удалось распознать",
+    unableToParseDescription: "Неизвестная ошибка во время распознавания файла",
 };
