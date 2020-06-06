@@ -1,9 +1,18 @@
+import { SkipReasons } from "../../common/types";
+
 export enum DbpfErrors {
     NotDbpf = "NotDbpf",
     UnsupportedDbpfFormat = "UnsupportedDbpfFormat",
     UnsupportedIndexType = "UnsupportedDbpfIndexType",
     UnknownError = "UnknownDbpfError",
 }
+
+export const DbpfToSkipReason: Record<DbpfErrors, SkipReasons> = {
+    NotDbpf: SkipReasons.NotPackage,
+    UnknownDbpfError: SkipReasons.UnableToParse,
+    UnsupportedDbpfFormat: SkipReasons.UnsupportedSimsVersion,
+    UnsupportedDbpfIndexType: SkipReasons.UnsupportedIndexType,
+};
 
 export function throwDbpfError(type: DbpfErrors, msg?: string): never {
     const err = new Error(msg);

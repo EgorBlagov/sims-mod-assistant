@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import * as path from "path";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
 import { IDirectoryInfo, ISearchParams, ISearchProgress, ISearchResult, IStartResult } from "../common/types";
+import { Analyzer } from "./analyzer";
 import { logger } from "./logging";
 
 const MB: number = 1024 * 1024;
@@ -13,7 +14,7 @@ const SearcherEventSchema = {
     searchError: createTypesafeEvent<string>(),
 };
 
-interface ISearcher {
+export interface ISearcher {
     getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo>;
     startSearch(targetPath: string, params: ISearchParams): IStartResult;
     interruptSearch(): void;
@@ -45,12 +46,10 @@ class Searcher implements ISearcher {
     }
 
     async getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo> {
-        const allFiles = await this.getAllFilesInDirectory(targetPath);
-        const stats = await Promise.all(_.map(allFiles, (f) => fs.promises.stat(f)));
-
+        const allFiles = await this.getFilesAllWithStats(targetPath);
         return {
             filesCount: allFiles.length,
-            sizeMb: _.reduce(stats, (sum, file) => sum + file.size / MB, 0),
+            sizeMb: _.reduce(allFiles, (sum, file) => sum + file.stats.size / MB, 0),
         };
     }
 
@@ -74,29 +73,40 @@ class Searcher implements ISearcher {
         this.currentSearchTicket++;
     }
 
+    private async getFilesAllWithStats(targetPath: string): Promise<IFileWithStats[]> {
+        const allFiles = await this.getAllFilesInDirectory(targetPath);
+        return Promise.all(
+            _.map(allFiles, async (f) => ({
+                path: f,
+                stats: await fs.promises.stat(f),
+            })),
+        );
+    }
+
     private async startSearchProgress(
         ticketId: number,
         targetPath: string,
         params: ISearchParams,
     ): Promise<ISearchResult> {
-        for (let i = 0; i < 10; i++) {
-            await this.timeout(25);
+        const allFiles = await this.getFilesAllWithStats(targetPath);
+        const analyzer = new Analyzer(params);
+
+        let mbPassed = 0;
+        const mbTotal = _.reduce(allFiles, (sum, f) => sum + f.stats.size / MB, 0);
+
+        for (const file of allFiles) {
             if (ticketId !== this.currentSearchTicket) {
                 logger.warn("Search interrupted");
-                return;
+                return { duplicates: [], skips: [] };
             }
-            this.ee.emit.searchProgress({ ticketId, progress: (i + 1) * 10 });
+
+            await analyzer.pushFile(file);
+
+            mbPassed += file.stats.size / MB;
+            this.ee.emit.searchProgress({ ticketId, progress: mbPassed / mbTotal });
         }
-        await this.timeout(50);
 
-        return {
-            duplicates: [],
-            skips: [],
-        };
-    }
-
-    private timeout(ms: number): Promise<void> {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+        return analyzer.summary;
     }
 }
 

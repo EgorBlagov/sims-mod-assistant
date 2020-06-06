@@ -42,6 +42,8 @@ export interface ISearchEntry {
 export enum SkipReasons {
     UnsupportedSimsVersion,
     UnsupportedIndexType,
+    NotPackage,
+    UnableToParse,
 }
 
 export interface ISkippedFile extends IFileDescription {
