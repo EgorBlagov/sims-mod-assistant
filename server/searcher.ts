@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as _ from "lodash";
 import * as path from "path";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
 import { IDirectoryInfo, ISearchParams, ISearchProgress, ISearchResult, IStartResult } from "../common/types";
@@ -27,26 +28,30 @@ class Searcher implements ISearcher {
         this.ee = createTypesafeEventEmitter(SearcherEventSchema);
     }
 
-    async getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo> {
-        const result: IDirectoryInfo = {
-            filesCount: 0,
-            sizeMb: 0,
-        };
-
+    async getAllFilesInDirectory(targetPath: string): Promise<fs.PathLike[]> {
+        const result: fs.PathLike[] = [];
         const contents = await fs.promises.readdir(targetPath, { withFileTypes: true });
         for (const entry of contents) {
             const entryPath = path.join(targetPath, entry.name);
             if (entry.isDirectory()) {
-                const subDir = await this.getDirectoryInfo(entryPath);
-                result.filesCount += subDir.filesCount;
-                result.sizeMb += subDir.sizeMb;
+                const innerFiles = await this.getAllFilesInDirectory(entryPath);
+                result.push(...innerFiles);
             } else {
-                result.filesCount++;
-                result.sizeMb += (await fs.promises.stat(entryPath)).size / MB;
+                result.push(entryPath);
             }
         }
-        logger.info(`Directory Info: ${targetPath}: total size: ${result.sizeMb.toFixed(2)} MB`);
+
         return result;
+    }
+
+    async getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo> {
+        const allFiles = await this.getAllFilesInDirectory(targetPath);
+        const stats = await Promise.all(_.map(allFiles, (f) => fs.promises.stat(f)));
+
+        return {
+            filesCount: allFiles.length,
+            sizeMb: _.reduce(stats, (sum, file) => sum + file.size / MB, 0),
+        };
     }
 
     startSearch(targetPath: string, params: ISearchParams): IStartResult {
@@ -85,53 +90,8 @@ class Searcher implements ISearcher {
         await this.timeout(50);
 
         return {
-            entries: [
-                {
-                    original: {
-                        date: new Date(),
-                        path: "C://1",
-                        basename: "1",
-                    },
-                    duplicates: [
-                        {
-                            date: new Date(),
-                            path: "C://2",
-                            basename: "2",
-                            duplicateChecks: { Catalog: true, Exact: false },
-                        },
-                        {
-                            date: new Date(),
-                            path: "C://3",
-
-                            basename: "3",
-                            duplicateChecks: { Catalog: true, Exact: true },
-                        },
-                    ],
-                },
-                {
-                    original: {
-                        date: new Date(),
-                        path: "C://4",
-                        basename: "4",
-                    },
-                    duplicates: [
-                        {
-                            date: new Date(),
-                            path: "C://5",
-
-                            basename: "5",
-                            duplicateChecks: { Catalog: true, Exact: true },
-                        },
-                        {
-                            date: new Date(),
-                            path: "C://6",
-
-                            basename: "6",
-                            duplicateChecks: { Catalog: false, Exact: true },
-                        },
-                    ],
-                },
-            ],
+            duplicates: [],
+            skips: [],
         };
     }
 
