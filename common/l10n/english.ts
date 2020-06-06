@@ -29,4 +29,6 @@ export const english = {
     notPackageDescription: "File is not any Sims package",
     unableToParse: "Unable to parse",
     unableToParseDescription: "Unexpected error occured during parse",
+    momentLibLocale: "en",
+    calculatingTime: "estimation...",
 };

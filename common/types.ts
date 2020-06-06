@@ -57,5 +57,10 @@ export interface ISearchResult {
 
 export interface ISearchProgress {
     ticketId: TTicketId;
-    progress: number;
+    progressRelative: number;
+}
+
+export interface ISearchError {
+    errorMessage: string;
+    ticketId: TTicketId;
 }

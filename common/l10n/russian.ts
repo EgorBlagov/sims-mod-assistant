@@ -30,4 +30,6 @@ export const russian: Translation = {
     notPackageDescription: "Файл не является Пакетом Sims",
     unableToParse: "Не удалось распознать",
     unableToParseDescription: "Неизвестная ошибка во время распознавания файла",
+    momentLibLocale: "ru",
+    calculatingTime: "оценка...",
 };

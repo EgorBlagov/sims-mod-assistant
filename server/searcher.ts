@@ -2,7 +2,14 @@ import * as fs from "fs";
 import * as _ from "lodash";
 import * as path from "path";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
-import { IDirectoryInfo, ISearchParams, ISearchProgress, ISearchResult, IStartResult } from "../common/types";
+import {
+    IDirectoryInfo,
+    ISearchError,
+    ISearchParams,
+    ISearchProgress,
+    ISearchResult,
+    IStartResult,
+} from "../common/types";
 import { Analyzer } from "./analyzer";
 import { logger } from "./logging";
 import { IFileWithStats } from "./types";
@@ -12,7 +19,7 @@ const MB: number = 1024 * 1024;
 const SearcherEventSchema = {
     searchResult: createTypesafeEvent<ISearchResult>(),
     searchProgress: createTypesafeEvent<ISearchProgress>(),
-    searchError: createTypesafeEvent<string>(),
+    searchError: createTypesafeEvent<ISearchError>(),
 };
 
 export interface ISearcher {
@@ -56,18 +63,18 @@ class Searcher implements ISearcher {
 
     startSearch(targetPath: string, params: ISearchParams): IStartResult {
         this.currentSearchTicket++;
-
-        this.startSearchProgress(this.currentSearchTicket, targetPath, params)
+        const launchSearchId = this.currentSearchTicket;
+        this.startSearchProgress(launchSearchId, targetPath, params)
             .then((result) => {
                 this.ee.emit.searchResult(result);
             })
             .catch((error: Error) => {
                 logger.error(error);
-                this.ee.emit.searchError(error.toString());
+                this.ee.emit.searchError({ errorMessage: error.toString(), ticketId: launchSearchId });
             });
 
         return {
-            searchTicketId: this.currentSearchTicket,
+            searchTicketId: launchSearchId,
         };
     }
 
@@ -105,7 +112,7 @@ class Searcher implements ISearcher {
 
             mbPassed += file.stats.size / MB;
 
-            const searchProgress = { ticketId, progress: mbPassed / mbTotal };
+            const searchProgress = { ticketId, progressRelative: mbPassed / mbTotal };
             this.ee.emit.searchProgress(searchProgress);
         }
 

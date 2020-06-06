@@ -6,6 +6,7 @@ import { ISearchParams, ISearchResult, TTicketId } from "../../common/types";
 import { ipcHooks } from "../utils/hooks";
 import { useL10n } from "../utils/L10n";
 import { useNotification } from "../utils/notifications";
+import { EstimatedTime } from "./EstimatedTime";
 import { FilesArea } from "./files-area/FilesArea";
 import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
@@ -19,12 +20,13 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const [l10n, __] = useL10n();
     const [params, setParams] = React.useState<ISearchParams>({ searchMd5: true, searchTgi: false });
     const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
-    const [progress, setProgress] = React.useState<number>(0);
+    const [searchStartTime, setSearchStartTime] = React.useState<Date>();
+    const [progressRelative, setProgressRelative] = React.useState<number>(0);
     const [result, setResult] = React.useState<ISearchResult>();
     const notification = useNotification();
     ipcHooks.use.searchProgress((___, args) => {
         if (searchTicketId === args.ticketId) {
-            setProgress(args.progress * 100); // Fix
+            setProgressRelative(args.progressRelative);
         }
     });
 
@@ -32,15 +34,19 @@ export const SearchPanel = ({ targetPath }: IProps) => {
         if (isOk(searchResult)) {
             setResult(searchResult);
             setSearchTicketId(undefined);
-            setProgress(0);
+            setSearchStartTime(undefined);
+            setProgressRelative(0);
             notification.showSuccess(l10n.searchFinished);
         }
     });
 
-    ipcHooks.use.searchError((___, error) => {
-        notification.showError(error);
-        setSearchTicketId(undefined);
-        setProgress(0);
+    ipcHooks.use.searchError((___, { errorMessage, ticketId }) => {
+        notification.showError(errorMessage);
+        if (ticketId === searchTicketId) {
+            setSearchTicketId(undefined);
+            setSearchStartTime(undefined);
+            setProgressRelative(0);
+        }
     });
 
     const startSearch = () => {
@@ -48,6 +54,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             setResult(undefined);
             ipc.renderer.rpc.startSearch({ targetPath, ...params }).then((res) => {
                 setSearchTicketId(res.searchTicketId);
+                setSearchStartTime(new Date());
             });
         }
     };
@@ -55,7 +62,8 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const interruptSearch = () => {
         ipc.renderer.rpc.interruptSearch().then(() => {
             setSearchTicketId(undefined);
-            setProgress(0);
+            setSearchStartTime(undefined);
+            setProgressRelative(0);
         });
     };
 
@@ -65,8 +73,12 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             <Collapse in={isOk(searchTicketId)}>
                 <Box my={1} display="flex" alignItems="center">
                     <Box flex="auto" mr={1}>
-                        <ProgressBar progress={progress} />
+                        <ProgressBar progressRelative={progressRelative} />
                     </Box>
+                    <Box mr={1}>
+                        <EstimatedTime progressRelative={progressRelative} startTime={searchStartTime} />
+                    </Box>
+
                     <Button onClick={interruptSearch}>{l10n.cancel}</Button>
                 </Box>
             </Collapse>

@@ -2,7 +2,7 @@ import { LinearProgress, makeStyles } from "@material-ui/core";
 import * as React from "react";
 
 interface IProps {
-    progress: number;
+    progressRelative: number;
 }
 
 const useStyles = makeStyles(() => ({
@@ -15,8 +15,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-export const ProgressBar = ({ progress }: IProps) => {
+export const ProgressBar = ({ progressRelative }: IProps) => {
     const classes = useStyles();
-
-    return <LinearProgress value={progress} variant="determinate" classes={classes} />;
+    return <LinearProgress value={progressRelative * 100} variant="determinate" classes={classes} />;
 };
