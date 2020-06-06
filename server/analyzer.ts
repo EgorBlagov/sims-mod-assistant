@@ -60,13 +60,13 @@ export class Analyzer {
                     sameKey.push(file);
                 }
             }
-        } catch (err) {
-            logger.error(err);
+        } catch (error) {
+            logger.warn(`Skip: ${path.basename(file.path.toString())}: ${error.name}`);
             this.summary.skips.push({
                 basename: path.basename(file.path.toString()),
                 date: file.stats.mtime,
                 path: file.path.toString(),
-                reason: this.getReason(err),
+                reason: this.getReason(error),
             });
         }
     }
@@ -157,16 +157,20 @@ export class Analyzer {
         const dbpfDefinition = _.filter(dbpf.records, (r) => r.resourceType === 0xc0db5ae7)[0];
         const toTgi = (rec: IDbpfRecord): string => `${rec.resourceType}${rec.resourceGroup}${rec.instance}`;
 
-        const result: TFileKeys = {
-            Md5Hash: await md5(file.path.toString()),
-        };
+        const result: TFileKeys = {};
 
-        if (isOk(dbpfCatalog)) {
-            result.TgiCatalog = toTgi(dbpfCatalog);
+        if (this.params.searchMd5) {
+            result.Md5Hash = await md5(file.path.toString());
         }
 
-        if (isOk(dbpfDefinition)) {
-            result.TgiDefinition = toTgi(dbpfDefinition);
+        if (this.params.searchTgi) {
+            if (isOk(dbpfCatalog)) {
+                result.TgiCatalog = toTgi(dbpfCatalog);
+            }
+
+            if (isOk(dbpfDefinition)) {
+                result.TgiDefinition = toTgi(dbpfDefinition);
+            }
         }
 
         return result;
