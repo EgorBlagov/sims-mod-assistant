@@ -11,6 +11,13 @@ interface IProps {
     searchInfo: ISearchResult;
 }
 
+type TChipMap = {
+    [K in SkipReasons]: {
+        label: string;
+        tooltip: string;
+    };
+};
+
 export const SkipsList = ({ searchInfo }: IProps) => {
     const [l10n, __] = useL10n();
 
@@ -18,7 +25,7 @@ export const SkipsList = ({ searchInfo }: IProps) => {
         return null;
     }
 
-    const chipMap = {
+    const chipMap: TChipMap = {
         [SkipReasons.UnsupportedIndexType]: {
             label: l10n.unsupportedIndexType,
             tooltip: l10n.unsupportedIndexTypeTooltip,
@@ -26,6 +33,15 @@ export const SkipsList = ({ searchInfo }: IProps) => {
         [SkipReasons.UnsupportedSimsVersion]: {
             label: l10n.unsupportedSimsVersion,
             tooltip: l10n.unsupportedSimsVersionTooltip,
+        },
+        [SkipReasons.NotPackage]: {
+            label: l10n.notPackage,
+            tooltip: l10n.notPackageDescription,
+        },
+
+        [SkipReasons.UnableToParse]: {
+            label: l10n.unableToParse,
+            tooltip: l10n.unableToParseDescription,
         },
     };
 

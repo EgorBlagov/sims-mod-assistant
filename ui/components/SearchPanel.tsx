@@ -24,7 +24,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const notification = useNotification();
     ipcHooks.use.searchProgress((___, args) => {
         if (searchTicketId === args.ticketId) {
-            setProgress(args.progress);
+            setProgress(args.progress * 100); // Fix
         }
     });
 
@@ -35,6 +35,12 @@ export const SearchPanel = ({ targetPath }: IProps) => {
             setProgress(0);
             notification.showSuccess(l10n.searchFinished);
         }
+    });
+
+    ipcHooks.use.searchError((___, error) => {
+        notification.showError(error);
+        setSearchTicketId(undefined);
+        setProgress(0);
     });
 
     const startSearch = () => {
