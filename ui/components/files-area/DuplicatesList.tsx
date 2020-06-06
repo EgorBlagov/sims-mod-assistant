@@ -1,4 +1,14 @@
-import { Avatar, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
+import {
+    Avatar,
+    Divider,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    makeStyles,
+    Tooltip,
+    Typography,
+} from "@material-ui/core";
 import * as _ from "lodash";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
@@ -6,7 +16,7 @@ import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";
 import { SimsIcon } from "../icons/SimsIcon";
 import { DuplicateEntry } from "./DuplicateEntry";
-import { getShowFileHandler } from "./tools";
+import { getShowFileHandler, usePathStyles } from "./tools";
 
 interface IProps {
     searchInfo: ISearchResult;
@@ -22,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 export const DuplicatesList = ({ searchInfo }: IProps) => {
     const [l10n, __] = useL10n();
     const classes = useStyles();
+    const pathClasses = usePathStyles();
 
     if (!isOk(searchInfo)) {
         return null;
@@ -37,8 +48,16 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                                 <SimsIcon />
                             </Avatar>
                         </ListItemIcon>
+                        <ListItemText
+                            className={pathClasses.base}
+                            primary={x.original.basename}
+                            secondary={l10n.date(x.original.date)}
+                        />
+
                         <Tooltip title={x.original.path}>
-                            <ListItemText primary={x.original.basename} secondary={l10n.date(x.original.date)} />
+                            <Typography color="textSecondary" className={pathClasses.path}>
+                                {x.original.path}
+                            </Typography>
                         </Tooltip>
                     </ListItem>
                     <List disablePadding={true} className={classes.nested} dense={true}>

@@ -1,8 +1,8 @@
-import { Box, Chip, ListItem, ListItemText, Tooltip } from "@material-ui/core";
+import { Box, Chip, ListItem, ListItemText, Tooltip, Typography } from "@material-ui/core";
 import * as React from "react";
 import { IFileDuplicate } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";
-import { getShowFileHandler } from "./tools";
+import { getShowFileHandler, usePathStyles } from "./tools";
 
 interface IProps {
     duplicate: IFileDuplicate;
@@ -10,12 +10,18 @@ interface IProps {
 
 export const DuplicateEntry = ({ duplicate }: IProps) => {
     const [l10n, __] = useL10n();
+    const classes = usePathStyles();
 
     return (
         <ListItem button={true} onClick={getShowFileHandler(duplicate.path)}>
+            <ListItemText className={classes.base} primary={duplicate.basename} secondary={l10n.date(duplicate.date)} />
+
             <Tooltip title={duplicate.path}>
-                <ListItemText primary={duplicate.basename} secondary={l10n.date(duplicate.date)} />
+                <Typography color="textSecondary" className={classes.path}>
+                    {duplicate.path}
+                </Typography>
             </Tooltip>
+
             {duplicate.duplicateChecks.Catalog && (
                 <Tooltip title={l10n.catalogDuplicateDescription}>
                     <Box ml={1}>
