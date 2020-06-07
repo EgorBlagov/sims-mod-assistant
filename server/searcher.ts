@@ -11,6 +11,9 @@ import {
     IStartResult,
 } from "../common/types";
 import { Analyzer } from "./analyzer";
+import { KeyTypes } from "./analyzer/analyzer";
+import { DbpfClassifier } from "./analyzer/classifiers/dbpf-classifier";
+import { Md5Classifier } from "./analyzer/classifiers/md5-classifier";
 import { logger } from "./logging";
 import { IFileWithStats } from "./types";
 
@@ -99,6 +102,12 @@ class Searcher implements ISearcher {
     ): Promise<ISearchResult> {
         const allFiles = await this.getFilesAllWithStats(targetPath);
         const analyzer = new Analyzer(params);
+        if (params.searchMd5) {
+            analyzer.setClassifier(KeyTypes.Md5Hash, new Md5Classifier());
+        }
+        if (params.searchTgi) {
+            analyzer.setClassifier(KeyTypes.Tgi, new DbpfClassifier());
+        }
 
         let mbPassed = 0;
         const mbTotal = _.reduce(allFiles, (sum, f) => sum + f.stats.size / MB, 0);

@@ -1,16 +1,14 @@
 import * as _ from "lodash";
 import * as path from "path";
-import { isOk } from "../common/tools";
-import { IFileDuplicate, ISearchParams, ISearchResult, ISkippedFile, SkipReasons } from "../common/types";
-import { IDbpfRecord, readDbpf } from "./dbpf";
-import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "./dbpf/errors";
-import { logger } from "./logging";
-import { md5 } from "./md5";
-import { IFileWithStats } from "./types";
+import { IFileDuplicate, ISearchParams, ISearchResult, ISkippedFile, SkipReasons } from "../../common/types";
+import { readDbpf } from "../dbpf";
+import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "../dbpf/errors";
+import { logger } from "../logging";
+import { IFileWithStats } from "../types";
+import { IFileClassifier } from "./classifiers/file-classifier";
 
-enum KeyTypes {
-    TgiCatalog = "TgiCatalog",
-    TgiDefinition = "TgiDefinition",
+export enum KeyTypes { // collect at one place
+    Tgi = "Tgi",
     Md5Hash = "Md5Hash",
 }
 
@@ -20,8 +18,11 @@ type TCopyTree = {
     };
 };
 
-type TFileKeys = {
-    [K in KeyTypes]?: string;
+type TFileKeyInfo = [KeyTypes, string];
+type TFileKeys = TFileKeyInfo[];
+
+type TClassifiers = {
+    [K in KeyTypes]?: IFileClassifier;
 };
 
 export class Analyzer {
@@ -29,20 +30,26 @@ export class Analyzer {
 
     private copyTree: TCopyTree;
     private skips: ISkippedFile[];
+    private classifiers: TClassifiers;
 
     constructor(params: ISearchParams) {
         this.params = params;
         this.skips = [];
         this.copyTree = {};
+        this.classifiers = {};
+    }
+
+    public setClassifier(key: KeyTypes, classifier: IFileClassifier): void {
+        this.classifiers[key] = classifier;
     }
 
     public async pushFile(file: IFileWithStats): Promise<void> {
         try {
+            const dbpf = await readDbpf(file.path.toString()); // TODO: redesign, trying to read to exclude non dbpf and exclude super big files
+
             const keys = await this.getFileKeys(file);
 
-            for (const key of Object.keys(keys)) {
-                const keyType = key as KeyTypes;
-                const keyValue = keys[keyType];
+            for (const [keyType, keyValue] of keys) {
                 if (!(keyType in this.copyTree)) {
                     this.copyTree[keyType] = {};
                 }
@@ -129,9 +136,7 @@ export class Analyzer {
                     path: duplicate.duplicate.path.toString(),
                     date: duplicate.duplicate.stats.mtime,
                     duplicateChecks: {
-                        Catalog:
-                            duplicate.criterias.includes(KeyTypes.TgiCatalog) ||
-                            duplicate.criterias.includes(KeyTypes.TgiDefinition),
+                        Catalog: duplicate.criterias.includes(KeyTypes.Tgi),
                         Exact: duplicate.criterias.includes(KeyTypes.Md5Hash),
                     },
                 });
@@ -151,26 +156,12 @@ export class Analyzer {
     }
 
     private async getFileKeys(file: IFileWithStats): Promise<TFileKeys> {
-        const dbpf = await readDbpf(file.path.toString());
+        const result: TFileKeys = [];
 
-        const dbpfCatalog = _.filter(dbpf.records, (r) => r.resourceType === 0x319e4f1d)[0];
-        const dbpfDefinition = _.filter(dbpf.records, (r) => r.resourceType === 0xc0db5ae7)[0];
-        const toTgi = (rec: IDbpfRecord): string => `${rec.resourceType}${rec.resourceGroup}${rec.instance}`;
-
-        const result: TFileKeys = {};
-
-        if (this.params.searchMd5) {
-            result.Md5Hash = await md5(file.path.toString());
-        }
-
-        if (this.params.searchTgi) {
-            if (isOk(dbpfCatalog)) {
-                result.TgiCatalog = toTgi(dbpfCatalog);
-            }
-
-            if (isOk(dbpfDefinition)) {
-                result.TgiDefinition = toTgi(dbpfDefinition);
-            }
+        for (const keyType of Object.keys(this.classifiers)) {
+            const fileKeys = await this.classifiers[keyType as KeyTypes].getKeys(file.path.toString());
+            const keysWithTypes: TFileKeyInfo[] = _.map(fileKeys, (k) => [keyType as KeyTypes, k]);
+            result.push(...keysWithTypes);
         }
 
         return result;
