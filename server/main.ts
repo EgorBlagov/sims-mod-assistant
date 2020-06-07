@@ -49,6 +49,10 @@ const launchElectron = () => {
         ipc.main.handleRpc.interruptSearch(async () => {
             searcher.interruptSearch();
         });
+
+        ipc.main.handleRpc.setLanguage(async (language) => {
+            searcher.setLanguage(language);
+        });
     });
 
     app.on("window-all-closed", () => {

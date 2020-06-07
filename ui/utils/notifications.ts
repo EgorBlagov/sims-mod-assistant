@@ -18,8 +18,7 @@ interface INotificationApi {
 
 export const NotificationContext = React.createContext<INotificationContext>(undefined);
 
-export function useNotification(): INotificationApi {
-    const ctx = React.useContext(NotificationContext);
+export function createNotificationApiFromContext(ctx: INotificationContext): INotificationApi {
     return {
         showSuccess: (msg) => {
             ctx.setType(NotificationTypes.Success);
@@ -32,4 +31,9 @@ export function useNotification(): INotificationApi {
             ctx.setVisible(true);
         },
     };
+}
+
+export function useNotification(): INotificationApi {
+    const ctx = React.useContext(NotificationContext);
+    return createNotificationApiFromContext(ctx);
 }

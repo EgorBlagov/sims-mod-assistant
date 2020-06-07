@@ -32,4 +32,5 @@ export const russian: Translation = {
     unableToParseDescription: "Неизвестная ошибка во время распознавания файла",
     momentLibLocale: "ru",
     calculatingTime: "оценка...",
+    searchInterrupted: "Поиск прерван",
 };

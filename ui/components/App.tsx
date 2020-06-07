@@ -1,7 +1,13 @@
 import * as React from "react";
+import { ipc } from "../../common/ipc";
 import { Language } from "../../common/l10n";
 import { LanguageContext } from "../utils/L10n";
-import { INotificationContext, NotificationContext, NotificationTypes } from "../utils/notifications";
+import {
+    createNotificationApiFromContext,
+    INotificationContext,
+    NotificationContext,
+    NotificationTypes,
+} from "../utils/notifications";
 import { Main } from "./Main";
 import { NotificationSnackbar } from "./NotificationSnackbar";
 
@@ -22,6 +28,10 @@ export class App extends React.Component<{}, IState> {
     };
 
     setLanguage = (newLanguage: Language) => {
+        ipc.renderer.rpc.setLanguage(newLanguage).catch((err) => {
+            // Notification context is not available here
+            createNotificationApiFromContext(this.createNotificationContext()).showError(err);
+        });
         this.setState({ currentLanguage: newLanguage });
     };
 

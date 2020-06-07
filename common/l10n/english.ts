@@ -31,4 +31,5 @@ export const english = {
     unableToParseDescription: "Unexpected error occured during parse",
     momentLibLocale: "en",
     calculatingTime: "estimation...",
+    searchInterrupted: "Search interrupted",
 };

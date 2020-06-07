@@ -1,9 +1,10 @@
 import { english } from "./english";
 
 type Formatter = (...args: (string | number | Date)[]) => string;
+type TLanguageSchemaEntry = string | Formatter;
 
 interface LSchemaMeta {
-    [key: string]: string | Formatter;
+    [key: string]: TLanguageSchemaEntry;
 }
 
 export type Translation = typeof english;

@@ -2,7 +2,6 @@ import * as _ from "lodash";
 import * as path from "path";
 import { DoubleTypes, IFileDuplicate, ISearchResult, ISkippedFile, SkipReasons } from "../../common/types";
 import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "../dbpf/errors";
-import { logger } from "../logging";
 import { IFileWithStats } from "../types";
 import { IFileClassifier } from "./classifiers/file-classifier";
 
@@ -84,7 +83,6 @@ export class Analyzer {
                 }
             }
         } catch (error) {
-            logger.warn(`Skip: ${path.basename(file.path)}: ${error.name}`);
             this.summary.skips.push({
                 basename: path.basename(file.path),
                 date: file.stats.mtime,

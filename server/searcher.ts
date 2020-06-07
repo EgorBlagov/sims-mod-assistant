@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as _ from "lodash";
 import * as path from "path";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
+import { l10n, Language, Translation } from "../common/l10n";
 import {
     DoubleTypes,
     IDirectoryInfo,
@@ -31,14 +32,26 @@ export interface ISearcher {
     startSearch(targetPath: string, params: ISearchParams): IStartResult;
     interruptSearch(): void;
     readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
+    setLanguage(newLangauge: Language): void;
 }
 
 class Searcher implements ISearcher {
     private currentSearchTicket: number;
     public readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
+    private language: Language;
+
     constructor() {
         this.currentSearchTicket = 0;
+        this.language = Language.English;
         this.ee = createTypesafeEventEmitter(SearcherEventSchema);
+    }
+
+    setLanguage(newLangauge: Language): void {
+        this.language = newLangauge;
+    }
+
+    private get l10n(): Translation {
+        return l10n[this.language];
     }
 
     async getAllFilesInDirectory(targetPath: string): Promise<fs.PathLike[]> {
@@ -106,18 +119,22 @@ class Searcher implements ISearcher {
 
         let mbPassed = 0;
         const mbTotal = _.reduce(allFiles, (sum, f) => sum + f.stats.size / MB, 0);
+        const fileTenthCount = Math.round(allFiles.length / 10);
+        for (let i = 0; i < allFiles.length; i++) {
+            const file = allFiles[i];
 
-        for (const file of allFiles) {
             if (ticketId !== this.currentSearchTicket) {
-                throw new Error("Search Interrupted"); // localize
+                throw new Error(this.l10n.searchInterrupted);
             }
 
             await analyzer.pushFile(file);
 
             mbPassed += file.stats.size / MB;
 
-            const searchProgress = { ticketId, progressRelative: mbPassed / mbTotal };
-            this.ee.emit.searchProgress(searchProgress);
+            if (i % fileTenthCount === 0) {
+                const searchProgress = { ticketId, progressRelative: mbPassed / mbTotal };
+                this.ee.emit.searchProgress(searchProgress);
+            }
         }
 
         return analyzer.summary;
