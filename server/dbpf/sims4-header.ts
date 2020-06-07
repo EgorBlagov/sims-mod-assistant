@@ -2,6 +2,8 @@ import { Sizes } from "./constants";
 import { DbpfErrors, throwDbpfError } from "./errors";
 import { IDbpfHeader } from "./interfaces";
 
+export const DBPF_HEADER_SIZE = Sizes.Long * 17;
+
 export class Sims4Header implements IDbpfHeader {
     magic: string;
     major: number;

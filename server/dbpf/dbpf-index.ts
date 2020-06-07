@@ -4,18 +4,25 @@ import { DbpfErrors, throwDbpfError } from "./errors";
 import { IDbpfHeader, IDbpfIndex, IDbpfRecord } from "./interfaces";
 
 export class BasicDbpfIndex implements IDbpfIndex {
-    type: number;
+    private type: number;
     private header: IDbpfHeader;
+    public records: IDbpfRecord[];
 
     constructor(buffer: Buffer, header: IDbpfHeader) {
         this.header = header;
-        this.type = buffer.readInt32LE(this.header.indexOffset);
+        this.type = buffer.readInt32LE(this.indexOffset);
 
         if (this.type !== 0) {
             // We only support this index type
             // hence common data size is always 0 and index item size is always 32
             throwDbpfError(DbpfErrors.UnsupportedIndexType);
         }
+
+        this.records = this.parseRecords(buffer);
+    }
+
+    private get indexOffset() {
+        return 0;
     }
 
     public parseRecords(buffer: Buffer): IDbpfRecord[] {
@@ -23,10 +30,7 @@ export class BasicDbpfIndex implements IDbpfIndex {
 
         for (let i = 0; i < this.header.recordCount; i++) {
             result.push(
-                this.parseRecord(
-                    buffer,
-                    this.header.indexOffset + Sizes.Long + this.commonDataSize + i * this.itemSize,
-                ),
+                this.parseRecord(buffer, this.indexOffset + Sizes.Long + this.commonDataSize + i * this.itemSize),
             );
         }
 
