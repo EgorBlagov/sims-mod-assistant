@@ -1,12 +1,11 @@
-import { Avatar, Box, Chip, List, ListItem, ListItemIcon, ListItemText, Tooltip } from "@material-ui/core";
+import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip } from "@material-ui/core";
 import Error from "@material-ui/icons/Error";
-import * as _ from "lodash";
 import * as React from "react";
+import * as ReactList from "react-list";
 import { isOk } from "../../../common/tools";
 import { ISearchResult, SkipReasons } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";
 import { getShowFileHandler } from "./tools";
-
 interface IProps {
     searchInfo: ISearchResult;
 }
@@ -45,26 +44,28 @@ export const SkipsList = ({ searchInfo }: IProps) => {
         },
     };
 
-    return (
-        <List>
-            {_.map(searchInfo.skips, (x) => (
-                <ListItem key={x.path} button={true} onClick={getShowFileHandler(x.path)}>
-                    <ListItemIcon>
-                        <Avatar>
-                            <Error />
-                        </Avatar>
-                    </ListItemIcon>
-                    <Tooltip title={x.path}>
-                        <ListItemText primary={x.basename} secondary={l10n.date(x.date)} />
-                    </Tooltip>
+    const renderItem = (index, key) => {
+        const x = searchInfo.skips[index];
 
-                    <Tooltip title={chipMap[x.reason].tooltip}>
-                        <Box ml={1}>
-                            <Chip label={chipMap[x.reason].label} color="secondary" />
-                        </Box>
-                    </Tooltip>
-                </ListItem>
-            ))}
-        </List>
-    );
+        return (
+            <ListItem key={key} button={true} onClick={getShowFileHandler(x.path)}>
+                <ListItemIcon>
+                    <Avatar>
+                        <Error />
+                    </Avatar>
+                </ListItemIcon>
+                <Tooltip title={x.path}>
+                    <ListItemText primary={x.basename} secondary={l10n.date(x.date)} />
+                </Tooltip>
+
+                <Tooltip title={chipMap[x.reason].tooltip}>
+                    <Box ml={1}>
+                        <Chip label={chipMap[x.reason].label} color="secondary" />
+                    </Box>
+                </Tooltip>
+            </ListItem>
+        );
+    };
+
+    return <ReactList itemRenderer={renderItem} length={searchInfo.skips.length} type="uniform" />;
 };
