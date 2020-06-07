@@ -64,3 +64,8 @@ export interface ISearchError {
     errorMessage: string;
     ticketId: TTicketId;
 }
+
+export interface IMoveParams {
+    info: ISearchResult;
+    targetDir: string;
+}

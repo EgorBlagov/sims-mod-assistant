@@ -3,6 +3,7 @@ import { Language } from "./l10n";
 import {
     IDirectoryInfo,
     IDrectoryParams,
+    IMoveParams,
     ISearchError,
     ISearchParams,
     ISearchProgress,
@@ -16,6 +17,7 @@ export const IpcSchema = {
         startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
         interruptSearch: createTypesafeIpcChannel<void, void>(),
         setLanguage: createTypesafeIpcChannel<Language, void>(),
+        moveDuplicates: createTypesafeIpcChannel<IMoveParams, void>(),
     },
     mainEvents: {
         searchResult: createTypesafeIpcEvent<ISearchResult>(),

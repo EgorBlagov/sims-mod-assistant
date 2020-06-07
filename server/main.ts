@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
 import { ipc } from "../common/ipc";
+import { mover } from "./mover";
 import { searcher } from "./searcher";
 
 const clientPath = path.join(__dirname, "..", "client");
@@ -52,6 +53,10 @@ const launchElectron = () => {
 
         ipc.main.handleRpc.setLanguage(async (language) => {
             searcher.setLanguage(language);
+        });
+
+        ipc.main.handleRpc.moveDuplicates(async (params) => {
+            await mover.move(params);
         });
     });
 

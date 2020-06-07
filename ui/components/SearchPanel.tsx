@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Grow, Slide } from "@material-ui/core";
+import { Box, Button, Collapse, Grow } from "@material-ui/core";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
@@ -8,6 +8,7 @@ import { useL10n } from "../utils/L10n";
 import { useNotification } from "../utils/notifications";
 import { EstimatedTime } from "./EstimatedTime";
 import { FilesArea } from "./files-area/FilesArea";
+import { MoveButton } from "./MoveButton";
 import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
 import { StartButton } from "./StartButton";
@@ -24,6 +25,14 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const [progressRelative, setProgressRelative] = React.useState<number>(0);
     const [result, setResult] = React.useState<ISearchResult>();
     const notification = useNotification();
+
+    const resetSearchState = () => {
+        setResult(undefined);
+        setSearchTicketId(undefined);
+        setSearchStartTime(undefined);
+        setProgressRelative(0);
+    };
+
     ipcHooks.use.searchProgress((___, args) => {
         if (searchTicketId === args.ticketId) {
             setProgressRelative(args.progressRelative);
@@ -32,10 +41,8 @@ export const SearchPanel = ({ targetPath }: IProps) => {
 
     ipcHooks.use.searchResult((___, searchResult) => {
         if (isOk(searchResult)) {
+            resetSearchState();
             setResult(searchResult);
-            setSearchTicketId(undefined);
-            setSearchStartTime(undefined);
-            setProgressRelative(0);
             notification.showSuccess(l10n.searchFinished);
         }
     });
@@ -43,9 +50,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     ipcHooks.use.searchError((___, { errorMessage, ticketId }) => {
         notification.showError(errorMessage);
         if (ticketId === searchTicketId) {
-            setSearchTicketId(undefined);
-            setSearchStartTime(undefined);
-            setProgressRelative(0);
+            resetSearchState();
         }
     });
 
@@ -61,9 +66,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
 
     const interruptSearch = () => {
         ipc.renderer.rpc.interruptSearch().then(() => {
-            setSearchTicketId(undefined);
-            setSearchStartTime(undefined);
-            setProgressRelative(0);
+            resetSearchState();
         });
     };
 
@@ -88,12 +91,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
                 </Box>
             </Grow>
             <FilesArea searchInfo={result} />
-
-            <Slide in={isOk(result)} direction="up">
-                <Button color="primary" variant="contained">
-                    {l10n.moveDuplicates}
-                </Button>
-            </Slide>
+            <MoveButton searchInfo={result} resetSearchState={resetSearchState} />
         </>
     );
 };

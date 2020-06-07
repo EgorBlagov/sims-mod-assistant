@@ -33,4 +33,6 @@ export const russian: Translation = {
     momentLibLocale: "ru",
     calculatingTime: "оценка...",
     searchInterrupted: "Поиск прерван",
+    moveSuccess: "Все дубликаты успешно пермещены",
+    errorMove: (msg: string) => `Не удалось переместить файлы: ${msg}`,
 };

@@ -32,4 +32,6 @@ export const english = {
     momentLibLocale: "en",
     calculatingTime: "estimation...",
     searchInterrupted: "Search interrupted",
+    moveSuccess: "All files has been moved successfully",
+    errorMove: (msg: string) => `Unable to move files: ${msg}`,
 };
