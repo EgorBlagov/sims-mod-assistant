@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { isOk } from "../../../common/tools";
 import { IDbpfRecord, readDbpf } from "../../dbpf";
-import { Types as DbpfResourceTypes } from "../../dbpf/constants";
+import { DbpfResourceTypes } from "../../dbpf/constants";
 import { IFileClassifier } from "./file-classifier";
 
 export class DbpfClassifier implements IFileClassifier {

@@ -3,7 +3,7 @@ export enum Sizes {
     Short = 2,
 }
 
-export enum Types {
+export enum DbpfResourceTypes {
     Catalog = 0x319e4f1d,
     Definition = 0xc0db5ae7,
 }

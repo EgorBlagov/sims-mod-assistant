@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import * as path from "path";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
 import {
+    DoubleTypes,
     IDirectoryInfo,
     ISearchError,
     ISearchParams,
@@ -11,7 +12,6 @@ import {
     IStartResult,
 } from "../common/types";
 import { Analyzer } from "./analyzer";
-import { KeyTypes } from "./analyzer/analyzer";
 import { DbpfClassifier } from "./analyzer/classifiers/dbpf-classifier";
 import { Md5Classifier } from "./analyzer/classifiers/md5-classifier";
 import { readDbpf } from "./dbpf";
@@ -127,15 +127,15 @@ class Searcher implements ISearcher {
         const analyzer = new Analyzer();
 
         if (params.searchMd5) {
-            analyzer.setClassifier(KeyTypes.Md5Hash, new Md5Classifier());
+            analyzer.setClassifier("md5-hash", new Md5Classifier(), DoubleTypes.Exact);
         }
 
         if (params.searchTgi) {
-            analyzer.setClassifier(KeyTypes.Tgi, new DbpfClassifier());
+            analyzer.setClassifier("type-group-id-catalog", new DbpfClassifier(), DoubleTypes.Catalog);
         }
 
         analyzer.setValidator(async (f: IFileWithStats) => {
-            await readDbpf(f.path.toString()); // we read dbpf twice, 1 - to validate, 2 - from DbpfClassifier
+            await readDbpf(f.path.toString()); // now we read dbpf twice, 1 - to validate, 2 - from DbpfClassifier
         });
         return analyzer;
     }

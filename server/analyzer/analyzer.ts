@@ -1,40 +1,40 @@
 import * as _ from "lodash";
 import * as path from "path";
-import { IFileDuplicate, ISearchResult, ISkippedFile, SkipReasons } from "../../common/types";
+import { DoubleTypes, IFileDuplicate, ISearchResult, ISkippedFile, SkipReasons } from "../../common/types";
 import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "../dbpf/errors";
 import { logger } from "../logging";
 import { IFileWithStats } from "../types";
 import { IFileClassifier } from "./classifiers/file-classifier";
 
-export enum KeyTypes { // collect at one place (metadata like)
-    Tgi = "Tgi",
-    Md5Hash = "Md5Hash",
-}
-
+type TKeyType = string;
 type TCopyTree = {
-    [K in KeyTypes]?: {
-        [x: string]: IFileWithStats[];
+    [tKeyType: string]: {
+        [keyValue: string]: IFileWithStats[];
     };
 };
 
-type TFileKeyInfo = [KeyTypes, string];
+type TFileKeyInfo = [TKeyType, string];
 type TFileKeys = TFileKeyInfo[];
-
 type TClassifiers = {
-    [K in KeyTypes]?: IFileClassifier;
+    [tKeyType: string]: {
+        getter: IFileClassifier;
+        type: DoubleTypes;
+    };
 };
+
+type TDuplicates = Record<
+    string,
+    {
+        duplicate: IFileWithStats;
+        collisions: TKeyType[];
+    }
+>;
 
 type TAggregatedByOriginals = Record<
     string,
     {
         original: IFileWithStats;
-        duplicates: Record<
-            string,
-            {
-                duplicate: IFileWithStats;
-                criterias: KeyTypes[];
-            }
-        >;
+        duplicates: TDuplicates;
     }
 >;
 
@@ -53,8 +53,11 @@ export class Analyzer {
         this.validator = () => null;
     }
 
-    public setClassifier(key: KeyTypes, classifier: IFileClassifier): void {
-        this.classifiers[key] = classifier;
+    public setClassifier(key: TKeyType, classifier: IFileClassifier, doubleType: DoubleTypes): void {
+        this.classifiers[key] = {
+            getter: classifier,
+            type: doubleType,
+        };
     }
 
     public setValidator(validator: TValidator) {
@@ -104,8 +107,8 @@ export class Analyzer {
         const duplicatesMap: TAggregatedByOriginals = {};
 
         for (const keyType of Object.keys(this.copyTree)) {
-            for (const keyValue of Object.keys(this.copyTree[keyType as KeyTypes])) {
-                const similars = this.copyTree[keyType as KeyTypes][keyValue];
+            for (const keyValue of Object.keys(this.copyTree[keyType])) {
+                const similars = this.copyTree[keyType][keyValue];
                 const original = similars[0];
                 const duplicates = similars.slice(1);
                 if (duplicates.length > 0) {
@@ -120,11 +123,11 @@ export class Analyzer {
                         if (!(duplicate.path.toString() in currentDuplicates)) {
                             currentDuplicates[duplicate.path.toString()] = {
                                 duplicate,
-                                criterias: [],
+                                collisions: [],
                             };
 
                             const currentDuplicateInfo = currentDuplicates[duplicate.path.toString()];
-                            currentDuplicateInfo.criterias.push(keyType as KeyTypes);
+                            currentDuplicateInfo.collisions.push(keyType);
                         }
                     }
                 }
@@ -150,8 +153,10 @@ export class Analyzer {
                     path: duplicate.duplicate.path.toString(),
                     date: duplicate.duplicate.stats.mtime,
                     duplicateChecks: {
-                        Catalog: duplicate.criterias.includes(KeyTypes.Tgi),
-                        Exact: duplicate.criterias.includes(KeyTypes.Md5Hash),
+                        Catalog: duplicate.collisions
+                            .map((x) => this.classifiers[x].type)
+                            .includes(DoubleTypes.Catalog),
+                        Exact: duplicate.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Exact),
                     },
                 });
             }
@@ -173,8 +178,8 @@ export class Analyzer {
         const result: TFileKeys = [];
 
         for (const keyType of Object.keys(this.classifiers)) {
-            const fileKeys = await this.classifiers[keyType as KeyTypes].getKeys(file.path.toString());
-            const keysWithTypes: TFileKeyInfo[] = _.map(fileKeys, (k) => [keyType as KeyTypes, k]);
+            const fileKeys = await this.classifiers[keyType].getter.getKeys(file.path.toString());
+            const keysWithTypes: TFileKeyInfo[] = _.map(fileKeys, (k) => [keyType, k]);
             result.push(...keysWithTypes);
         }
 
