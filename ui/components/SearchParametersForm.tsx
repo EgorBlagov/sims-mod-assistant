@@ -40,11 +40,13 @@ export const SearchParametersForm = ({ params, setParams, editable }: IProps) =>
                 <FormControlLabel
                     value={ParameterNames.SearchExact}
                     control={<Radio />}
+                    disabled={!editable}
                     label={l10n.searchExactDoubles}
                 />
                 <FormControlLabel
                     value={ParameterNames.SearchCatalog}
                     control={<Radio />}
+                    disabled={!editable}
                     label={l10n.searchCatalogConflicts}
                 />
             </RadioGroup>
