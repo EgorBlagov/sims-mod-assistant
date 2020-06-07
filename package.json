@@ -11,6 +11,7 @@
         "@types/lodash": "^4.14.152",
         "@types/node": "^12.12.6",
         "@types/react": "^16.9.35",
+        "@types/react-list": "^0.8.5",
         "@types/winston": "^2.4.4",
         "concurrently": "^5.2.0",
         "electron": "^9.0.0",
@@ -37,6 +38,7 @@
         "moment": "^2.26.0",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
+        "react-list": "^0.8.15",
         "winston": "^3.2.1"
     },
     "scripts": {
