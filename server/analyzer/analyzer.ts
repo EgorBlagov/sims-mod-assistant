@@ -1,13 +1,12 @@
 import * as _ from "lodash";
 import * as path from "path";
-import { IFileDuplicate, ISearchParams, ISearchResult, ISkippedFile, SkipReasons } from "../../common/types";
-import { readDbpf } from "../dbpf";
+import { IFileDuplicate, ISearchResult, ISkippedFile, SkipReasons } from "../../common/types";
 import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "../dbpf/errors";
 import { logger } from "../logging";
 import { IFileWithStats } from "../types";
 import { IFileClassifier } from "./classifiers/file-classifier";
 
-export enum KeyTypes { // collect at one place
+export enum KeyTypes { // collect at one place (metadata like)
     Tgi = "Tgi",
     Md5Hash = "Md5Hash",
 }
@@ -25,27 +24,46 @@ type TClassifiers = {
     [K in KeyTypes]?: IFileClassifier;
 };
 
-export class Analyzer {
-    private params: ISearchParams;
+type TAggregatedByOriginals = Record<
+    string,
+    {
+        original: IFileWithStats;
+        duplicates: Record<
+            string,
+            {
+                duplicate: IFileWithStats;
+                criterias: KeyTypes[];
+            }
+        >;
+    }
+>;
 
+type TValidator = (file: IFileWithStats) => Promise<void | never>; // should raise if invalid
+
+export class Analyzer {
     private copyTree: TCopyTree;
     private skips: ISkippedFile[];
     private classifiers: TClassifiers;
+    private validator: TValidator;
 
-    constructor(params: ISearchParams) {
-        this.params = params;
+    constructor() {
         this.skips = [];
         this.copyTree = {};
         this.classifiers = {};
+        this.validator = () => null;
     }
 
     public setClassifier(key: KeyTypes, classifier: IFileClassifier): void {
         this.classifiers[key] = classifier;
     }
 
+    public setValidator(validator: TValidator) {
+        this.validator = validator;
+    }
+
     public async pushFile(file: IFileWithStats): Promise<void> {
         try {
-            const dbpf = await readDbpf(file.path.toString()); // TODO: redesign, trying to read to exclude non dbpf and exclude super big files
+            await this.validator(file);
 
             const keys = await this.getFileKeys(file);
 
@@ -79,24 +97,11 @@ export class Analyzer {
     }
 
     public get summary(): ISearchResult {
-        const result: ISearchResult = {
-            duplicates: [],
-            skips: this.skips,
-        };
+        return this.aggregateResult(this.aggregateByOriginals());
+    }
 
-        const duplicatesMap: Record<
-            string,
-            {
-                original: IFileWithStats;
-                duplicates: Record<
-                    string,
-                    {
-                        duplicate: IFileWithStats;
-                        criterias: KeyTypes[];
-                    }
-                >;
-            }
-        > = {};
+    private aggregateByOriginals() {
+        const duplicatesMap: TAggregatedByOriginals = {};
 
         for (const keyType of Object.keys(this.copyTree)) {
             for (const keyValue of Object.keys(this.copyTree[keyType as KeyTypes])) {
@@ -125,6 +130,15 @@ export class Analyzer {
                 }
             }
         }
+
+        return duplicatesMap;
+    }
+
+    private aggregateResult(duplicatesMap: TAggregatedByOriginals): ISearchResult {
+        const result: ISearchResult = {
+            duplicates: [],
+            skips: this.skips,
+        };
 
         for (const origPath of Object.keys(duplicatesMap)) {
             const origEntry = duplicatesMap[origPath];

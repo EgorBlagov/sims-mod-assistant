@@ -14,6 +14,7 @@ import { Analyzer } from "./analyzer";
 import { KeyTypes } from "./analyzer/analyzer";
 import { DbpfClassifier } from "./analyzer/classifiers/dbpf-classifier";
 import { Md5Classifier } from "./analyzer/classifiers/md5-classifier";
+import { readDbpf } from "./dbpf";
 import { logger } from "./logging";
 import { IFileWithStats } from "./types";
 
@@ -101,13 +102,7 @@ class Searcher implements ISearcher {
         params: ISearchParams,
     ): Promise<ISearchResult> {
         const allFiles = await this.getFilesAllWithStats(targetPath);
-        const analyzer = new Analyzer(params);
-        if (params.searchMd5) {
-            analyzer.setClassifier(KeyTypes.Md5Hash, new Md5Classifier());
-        }
-        if (params.searchTgi) {
-            analyzer.setClassifier(KeyTypes.Tgi, new DbpfClassifier());
-        }
+        const analyzer = this.createAnalyzer(params);
 
         let mbPassed = 0;
         const mbTotal = _.reduce(allFiles, (sum, f) => sum + f.stats.size / MB, 0);
@@ -126,6 +121,23 @@ class Searcher implements ISearcher {
         }
 
         return analyzer.summary;
+    }
+
+    private createAnalyzer(params: ISearchParams): Analyzer {
+        const analyzer = new Analyzer();
+
+        if (params.searchMd5) {
+            analyzer.setClassifier(KeyTypes.Md5Hash, new Md5Classifier());
+        }
+
+        if (params.searchTgi) {
+            analyzer.setClassifier(KeyTypes.Tgi, new DbpfClassifier());
+        }
+
+        analyzer.setValidator(async (f: IFileWithStats) => {
+            await readDbpf(f.path.toString()); // we read dbpf twice, 1 - to validate, 2 - from DbpfClassifier
+        });
+        return analyzer;
     }
 }
 
