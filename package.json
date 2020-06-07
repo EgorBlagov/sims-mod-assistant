@@ -1,5 +1,6 @@
 {
     "name": "sims-mod-assistant",
+    "nameLong": "Sims 4 mod assistant",
     "version": "1.0.0",
     "description": "Simple Electron based Application to help Sims 4 players handle their thousands of mods",
     "main": "index.js",
@@ -73,5 +74,12 @@
         "semi": true,
         "printWidth": 120,
         "singleQuote": false
+    },
+    "contacts": {
+        "authorEmail": "e.m.blagov@gmail.com",
+        "authorGithub": "github.com/EgorBlagov",
+        "assistant": "opasnostya",
+        "assistantEmail": "avchrnnk@gmail.com",
+        "assistantPatreon": "www.patreon.com/opasnostya"
     }
 }

@@ -22,8 +22,8 @@ export const LanguageButton = ({ setLanguage }: IProps) => {
             <Button size="small" onClick={handleClickOpen}>
                 {l10n.language}
             </Button>
-            <Dialog onClose={handleClickLanguage(language)} aria-labelledby="language-dialog-title" open={dialogOpen}>
-                <DialogTitle id="language-dialog-title">{l10n.selectLangauge}</DialogTitle>
+            <Dialog onClose={handleClickLanguage(language)} open={dialogOpen}>
+                <DialogTitle>{l10n.selectLangauge}</DialogTitle>
                 <List>
                     {_.map(Object.values(Language), (x) => (
                         <ListItem button={true} onClick={handleClickLanguage(x)} key={x} selected={x === language}>

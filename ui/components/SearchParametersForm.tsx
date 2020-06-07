@@ -34,8 +34,6 @@ export const SearchParametersForm = ({ params, setParams, editable }: IProps) =>
         <FormGroup>
             <FormLabel component="legend">{l10n.searchMode}</FormLabel>
             <RadioGroup
-                aria-label="gender"
-                name="gender1"
                 value={params.searchTgi ? ParameterNames.SearchCatalog : ParameterNames.SearchExact}
                 onChange={handleChange}
             >

@@ -35,4 +35,9 @@ export const russian: Translation = {
     searchInterrupted: "Поиск прерван",
     moveSuccess: "Все дубликаты успешно пермещены",
     errorMove: (msg: string) => `Не удалось переместить файлы: ${msg}`,
+    about: "О программе",
+    author: "Автор",
+    assistant: "Ассистент и Вдохновитель",
+    description:
+        "Небольшое приложение для игроков Sims 4 для быстрого и удобного поиска дубликатов и конфликтных дополнений",
 };

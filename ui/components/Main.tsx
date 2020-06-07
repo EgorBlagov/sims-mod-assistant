@@ -2,6 +2,7 @@ import { Box, Container, Divider } from "@material-ui/core";
 import * as React from "react";
 import { Language } from "../../common/l10n";
 import { LocalizedProps, withL10n } from "../utils/L10n";
+import { AboutButton } from "./about/AboutButton";
 import { DirectoryPanel } from "./DirectoryPanel";
 import { LanguageButton } from "./LanguageButton";
 import "./Main.scss";
@@ -22,6 +23,7 @@ class MainImpl extends React.Component<IProps> {
                 <Box display="flex" flexDirection="column" height="100%">
                     <Box display="flex" justifyContent="flex-end" mb={1}>
                         <LanguageButton setLanguage={this.handleChangeLanguage} />
+                        <AboutButton />
                     </Box>
 
                     <Divider variant="middle" />

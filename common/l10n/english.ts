@@ -34,4 +34,8 @@ export const english = {
     searchInterrupted: "Search interrupted",
     moveSuccess: "All files has been moved successfully",
     errorMove: (msg: string) => `Unable to move files: ${msg}`,
+    about: "About",
+    author: "Author",
+    assistant: "Assistant & Inspiration",
+    description: "Simple application to help Sims 4 players in searching and removing duplicates and conflicting mods",
 };
