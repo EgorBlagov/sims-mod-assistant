@@ -1,7 +1,7 @@
 import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip } from "@material-ui/core";
 import Error from "@material-ui/icons/Error";
 import * as React from "react";
-import * as ReactList from "react-list";
+import ReactList from "react-list";
 import { isOk } from "../../../common/tools";
 import { ISearchResult, SkipReasons } from "../../../common/types";
 import { useL10n } from "../../utils/L10n";

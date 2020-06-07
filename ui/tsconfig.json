@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "jsx": "react",
-        "noEmit": true
+        "noEmit": true,
+        "esModuleInterop": true
     },
     "include": ["./**/*", "../common/**/*"]
 }
