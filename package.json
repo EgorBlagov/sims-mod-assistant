@@ -3,7 +3,7 @@
     "nameLong": "Sims 4 mod assistant",
     "version": "1.0.0",
     "description": "Simple Electron based Application to help Sims 4 players handle their thousands of mods",
-    "main": "index.js",
+    "main": "dist/server/main.js",
     "devDependencies": {
         "@types/axios": "^0.14.0",
         "@types/classnames": "^2.2.10",
@@ -16,6 +16,7 @@
         "@types/winston": "^2.4.4",
         "concurrently": "^5.2.0",
         "electron": "^9.0.0",
+        "electron-packager": "^14.2.1",
         "nodemon": "^2.0.4",
         "parcel-bundler": "^1.12.4",
         "pre-commit": "^1.2.2",
@@ -47,13 +48,15 @@
         "watch-server-bundled": "set NODE_ENV=development&& nodemon -e js,html --watch dist/**/* --exec \"electron dist/server/main.js\"",
         "watch-client": "parcel watch ui/index.html --public-url ./ -d dist/client --target electron",
         "watch-client-tsc": "tsc --build ui/tsconfig.json --watch",
-        "watch-server": "tsc --build server/tsconfig.json --watch",
+        "watch-server": "npm run copy:assets && tsc --build server/tsconfig.json --watch",
         "lint": "prettier --write {server,ui}/**/*.{tsx,ts,css} && tslint --fix {server,ui}/**/*.{ts,tsx}",
         "build": "rm -rf dist && npm run build:ui && npm run build:server",
         "build:ui": "npm run build:ui:tsc && parcel build ui/index.html --public-url ./ -d dist/client --target electron",
         "build:ui:tsc": "tsc --build ui/tsconfig.json",
-        "build:server": "tsc --build server/tsconfig.json",
-        "start": "electron dist/server/main.js"
+        "build:server": "npm run copy:assets && tsc --build server/tsconfig.json",
+        "start": "electron dist/server/main.js",
+        "bundle": "npm run build && electron-packager . --overwrite --asar --icon=assets/icon.ico --prune --out=release-builds",
+        "copy:assets": "node copy-assets.js"
     },
     "pre-commit": [
         "lint"
