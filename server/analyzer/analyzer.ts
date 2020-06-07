@@ -121,10 +121,9 @@ export class Analyzer {
                                 duplicate,
                                 collisions: [],
                             };
-
-                            const currentDuplicateInfo = currentDuplicates[duplicate.path];
-                            currentDuplicateInfo.collisions.push(keyType);
                         }
+                        const currentDuplicateInfo = currentDuplicates[duplicate.path];
+                        currentDuplicateInfo.collisions.push(keyType);
                     }
                 }
             }
