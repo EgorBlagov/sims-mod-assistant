@@ -29,14 +29,11 @@ type TDuplicates = Record<
         collisions: TKeyType[];
     }
 >;
-
-type TAggregatedByOriginals = Record<
-    string,
-    {
-        original: IFileWithStats;
-        duplicates: TDuplicates;
-    }
->;
+type TAggregatedFileEntry = {
+    original: IFileWithStats;
+    duplicates: TDuplicates;
+};
+type TAggregatedByOriginals = Record<string, TAggregatedFileEntry>;
 
 type TValidator = (file: IFileWithStats) => Promise<void | never>; // should raise if invalid
 
@@ -67,9 +64,7 @@ export class Analyzer {
     public async pushFile(file: IFileWithStats): Promise<void> {
         try {
             await this.validator(file);
-
             const keys = await this.getFileKeys(file);
-
             for (const [keyType, keyValue] of keys) {
                 if (!(keyType in this.copyTree)) {
                     this.copyTree[keyType] = {};
@@ -111,6 +106,7 @@ export class Analyzer {
                 const similars = this.copyTree[keyType][keyValue];
                 const original = similars[0];
                 const duplicates = similars.slice(1);
+
                 if (duplicates.length > 0) {
                     if (!(original.path in duplicatesMap)) {
                         duplicatesMap[original.path.toString()] = {
@@ -145,21 +141,7 @@ export class Analyzer {
 
         for (const origPath of Object.keys(duplicatesMap)) {
             const origEntry = duplicatesMap[origPath];
-            const duplicates: IFileDuplicate[] = [];
-            for (const duplicatePath of Object.keys(origEntry.duplicates)) {
-                const duplicate = origEntry.duplicates[duplicatePath];
-                duplicates.push({
-                    basename: path.basename(duplicate.duplicate.path.toString()),
-                    path: duplicate.duplicate.path.toString(),
-                    date: duplicate.duplicate.stats.mtime,
-                    duplicateChecks: {
-                        Catalog: duplicate.collisions
-                            .map((x) => this.classifiers[x].type)
-                            .includes(DoubleTypes.Catalog),
-                        Exact: duplicate.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Exact),
-                    },
-                });
-            }
+            const duplicates: IFileDuplicate[] = this.duplicatesToList(origEntry);
 
             result.duplicates.push({
                 original: {
@@ -172,6 +154,20 @@ export class Analyzer {
         }
 
         return result;
+    }
+
+    private duplicatesToList(fileEntry: TAggregatedFileEntry) {
+        return _.map(fileEntry.duplicates, (d) => {
+            return {
+                basename: path.basename(d.duplicate.path.toString()),
+                path: d.duplicate.path.toString(),
+                date: d.duplicate.stats.mtime,
+                duplicateChecks: {
+                    Catalog: d.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Catalog),
+                    Exact: d.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Exact),
+                },
+            };
+        });
     }
 
     private async getFileKeys(file: IFileWithStats): Promise<TFileKeys> {
