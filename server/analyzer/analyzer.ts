@@ -84,11 +84,11 @@ export class Analyzer {
                 }
             }
         } catch (error) {
-            logger.warn(`Skip: ${path.basename(file.path.toString())}: ${error.name}`);
+            logger.warn(`Skip: ${path.basename(file.path)}: ${error.name}`);
             this.summary.skips.push({
-                basename: path.basename(file.path.toString()),
+                basename: path.basename(file.path),
                 date: file.stats.mtime,
-                path: file.path.toString(),
+                path: file.path,
                 reason: this.getReason(error),
             });
         }
@@ -109,20 +109,20 @@ export class Analyzer {
 
                 if (duplicates.length > 0) {
                     if (!(original.path in duplicatesMap)) {
-                        duplicatesMap[original.path.toString()] = {
+                        duplicatesMap[original.path] = {
                             original,
                             duplicates: {},
                         };
                     }
-                    const currentDuplicates = duplicatesMap[original.path.toString()].duplicates;
+                    const currentDuplicates = duplicatesMap[original.path].duplicates;
                     for (const duplicate of duplicates) {
-                        if (!(duplicate.path.toString() in currentDuplicates)) {
-                            currentDuplicates[duplicate.path.toString()] = {
+                        if (!(duplicate.path in currentDuplicates)) {
+                            currentDuplicates[duplicate.path] = {
                                 duplicate,
                                 collisions: [],
                             };
 
-                            const currentDuplicateInfo = currentDuplicates[duplicate.path.toString()];
+                            const currentDuplicateInfo = currentDuplicates[duplicate.path];
                             currentDuplicateInfo.collisions.push(keyType);
                         }
                     }
@@ -145,8 +145,8 @@ export class Analyzer {
 
             result.duplicates.push({
                 original: {
-                    basename: path.basename(origEntry.original.path.toString()),
-                    path: origEntry.original.path.toString(),
+                    basename: path.basename(origEntry.original.path),
+                    path: origEntry.original.path,
                     date: origEntry.original.stats.mtime,
                 },
                 duplicates,
@@ -159,8 +159,8 @@ export class Analyzer {
     private duplicatesToList(fileEntry: TAggregatedFileEntry) {
         return _.map(fileEntry.duplicates, (d) => {
             return {
-                basename: path.basename(d.duplicate.path.toString()),
-                path: d.duplicate.path.toString(),
+                basename: path.basename(d.duplicate.path),
+                path: d.duplicate.path,
                 date: d.duplicate.stats.mtime,
                 duplicateChecks: {
                     Catalog: d.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Catalog),
@@ -174,7 +174,7 @@ export class Analyzer {
         const result: TFileKeys = [];
 
         for (const keyType of Object.keys(this.classifiers)) {
-            const fileKeys = await this.classifiers[keyType].getter.getKeys(file.path.toString());
+            const fileKeys = await this.classifiers[keyType].getter.getKeys(file.path);
             const keysWithTypes: TFileKeyInfo[] = _.map(fileKeys, (k) => [keyType, k]);
             result.push(...keysWithTypes);
         }

@@ -90,7 +90,7 @@ class Searcher implements ISearcher {
         const allFiles = await this.getAllFilesInDirectory(targetPath);
         return Promise.all(
             _.map(allFiles, async (f) => ({
-                path: f,
+                path: f.toString(),
                 stats: await fs.promises.stat(f),
             })),
         );
