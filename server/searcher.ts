@@ -20,6 +20,7 @@ import { logger } from "./logging";
 import { IFileWithStats } from "./types";
 
 const MB: number = 1024 * 1024;
+const PROGRESS_FRACTION = 50;
 
 const SearcherEventSchema = {
     searchResult: createTypesafeEvent<ISearchResult>(),
@@ -119,7 +120,7 @@ class Searcher implements ISearcher {
 
         let mbPassed = 0;
         const mbTotal = _.reduce(allFiles, (sum, f) => sum + f.stats.size / MB, 0);
-        const fileTenthCount = Math.round(allFiles.length / 10);
+        const fractionCount = Math.round(allFiles.length / PROGRESS_FRACTION);
         for (let i = 0; i < allFiles.length; i++) {
             const file = allFiles[i];
 
@@ -131,7 +132,7 @@ class Searcher implements ISearcher {
 
             mbPassed += file.stats.size / MB;
 
-            if (i % fileTenthCount === 0) {
+            if (i % fractionCount === 0) {
                 const searchProgress = { ticketId, progressRelative: mbPassed / mbTotal };
                 this.ee.emit.searchProgress(searchProgress);
             }
