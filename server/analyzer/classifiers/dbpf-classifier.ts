@@ -7,7 +7,14 @@ export class DbpfClassifier implements IFileClassifier {
     async getKeys(path: string): Promise<string[]> {
         const dbpf = await readDbpf(path);
         const toTgi = (rec: IDbpfRecord): string => `${rec.resourceType}${rec.resourceGroup}${rec.instance}`;
-        const typesToCheck = [DbpfResourceTypes.Catalog, DbpfResourceTypes.Definition];
+        const typesToCheck = [
+            DbpfResourceTypes.Catalog,
+            DbpfResourceTypes.Definition,
+            DbpfResourceTypes.Skintone,
+            DbpfResourceTypes.CasPart,
+            DbpfResourceTypes.HotSpotControl,
+        ];
+
         return _(dbpf.records)
             .filter((r) => typesToCheck.includes(r.resourceType))
             .map(toTgi)

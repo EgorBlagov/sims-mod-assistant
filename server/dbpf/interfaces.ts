@@ -25,5 +25,5 @@ export interface IDbpfPackage {
 }
 
 export interface IDbpfIndex {
-    parseRecords(buffer: Buffer): IDbpfRecord[];
+    records: IDbpfRecord[];
 }
