@@ -8,6 +8,7 @@ import {
     NotificationContext,
     NotificationTypes,
 } from "../utils/notifications";
+import "./common.css";
 import { Main } from "./Main";
 import { NotificationSnackbar } from "./NotificationSnackbar";
 

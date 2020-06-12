@@ -1,37 +1,37 @@
-import { Box, Container, Divider } from "@material-ui/core";
+import { Box, Container, Divider, makeStyles } from "@material-ui/core";
 import * as React from "react";
 import { Language } from "../../common/l10n";
-import { LocalizedProps, withL10n } from "../utils/L10n";
 import { AboutButton } from "./about/AboutButton";
 import { DirectoryPanel } from "./DirectoryPanel";
 import { LanguageButton } from "./LanguageButton";
-import "./Main.scss";
 
-interface IOwnProps {
+interface IProps {
     setLanguage: (l: Language) => void;
 }
-type IProps = LocalizedProps<IOwnProps>;
 
-class MainImpl extends React.Component<IProps> {
-    handleChangeLanguage = (newLanguage: Language) => {
-        this.props.setLanguage(newLanguage);
-    };
+const useStyles = makeStyles({
+    root: {
+        overflow: "hidden",
+        height: "100vh",
+        paddingTop: "1em",
+        paddingBottom: "1em",
+    },
+});
 
-    render() {
-        return (
-            <Container className="main__wrapper">
-                <Box display="flex" flexDirection="column" height="100%">
-                    <Box display="flex" justifyContent="flex-end" mb={1}>
-                        <LanguageButton setLanguage={this.handleChangeLanguage} />
-                        <AboutButton />
-                    </Box>
+export const Main = ({ setLanguage }: IProps) => {
+    const classes = useStyles();
 
-                    <Divider variant="middle" />
-                    <DirectoryPanel />
+    return (
+        <Container className={classes.root}>
+            <Box display="flex" flexDirection="column" height="100%">
+                <Box display="flex" justifyContent="flex-end" mb={1}>
+                    <LanguageButton setLanguage={setLanguage} />
+                    <AboutButton />
                 </Box>
-            </Container>
-        );
-    }
-}
 
-export const Main = withL10n(MainImpl);
+                <Divider variant="middle" />
+                <DirectoryPanel />
+            </Box>
+        </Container>
+    );
+};
