@@ -1,16 +1,18 @@
 import { Button, Dialog, DialogTitle, List, ListItem, ListItemText } from "@material-ui/core";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { Language } from "../../common/l10n";
+import { ActionCreators } from "../redux/actions";
 import { useL10n } from "../utils/L10n";
 
-interface IProps {
-    setLanguage: (newLanguage: Language) => void;
-}
-
-export const LanguageButton = ({ setLanguage }: IProps) => {
+export const LanguageButton = () => {
     const [l10n, language] = useL10n();
     const [dialogOpen, setDialogOpen] = React.useState(false);
+
+    const dispatch = useDispatch();
+    const setLanguage = (l: Language) => dispatch(ActionCreators.setLanguage(l));
+
     const handleClickOpen = () => setDialogOpen(true);
     const handleClickLanguage = (value: Language) => () => {
         setDialogOpen(false);

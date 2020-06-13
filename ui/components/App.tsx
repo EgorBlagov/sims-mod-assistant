@@ -1,7 +1,8 @@
 import * as React from "react";
+import { connect } from "react-redux";
 import { ipc } from "../../common/ipc";
 import { Language } from "../../common/l10n";
-import { LanguageContext } from "../utils/L10n";
+import { TState } from "../redux/reducers";
 import {
     createNotificationApiFromContext,
     INotificationContext,
@@ -13,28 +14,30 @@ import { Main } from "./Main";
 import { NotificationSnackbar } from "./NotificationSnackbar";
 
 interface IState {
-    currentLanguage: Language;
-
     notificationMessage: string;
     notificationType: NotificationTypes;
     notificationVisible: boolean;
 }
 
-export class App extends React.Component<{}, IState> {
+interface IProps {
+    language: Language;
+}
+
+class AppImpl extends React.Component<IProps, IState> {
     state: IState = {
-        currentLanguage: Language.English,
         notificationMessage: undefined,
         notificationType: undefined,
         notificationVisible: false,
     };
 
-    setLanguage = (newLanguage: Language) => {
-        ipc.renderer.rpc.setLanguage(newLanguage).catch((err) => {
-            // Notification context is not available here
-            createNotificationApiFromContext(this.createNotificationContext()).showError(err);
-        });
-        this.setState({ currentLanguage: newLanguage });
-    };
+    componentDidUpdate(prevProps: IProps) {
+        if (prevProps.language !== this.props.language) {
+            ipc.renderer.rpc.setLanguage(this.props.language).catch((err) => {
+                // Notification context is not available here
+                createNotificationApiFromContext(this.createNotificationContext()).showError(err);
+            });
+        }
+    }
 
     createNotificationContext = (): INotificationContext => {
         return {
@@ -52,16 +55,20 @@ export class App extends React.Component<{}, IState> {
         const { notificationMessage, notificationType, notificationVisible } = this.state;
         return (
             <NotificationContext.Provider value={this.createNotificationContext()}>
-                <LanguageContext.Provider value={this.state.currentLanguage}>
-                    <Main setLanguage={this.setLanguage} />
-                    <NotificationSnackbar
-                        message={notificationMessage}
-                        type={notificationType}
-                        visible={notificationVisible}
-                        setVisible={this.handleNotificationSetVisible}
-                    />
-                </LanguageContext.Provider>
+                <Main />
+                <NotificationSnackbar
+                    message={notificationMessage}
+                    type={notificationType}
+                    visible={notificationVisible}
+                    setVisible={this.handleNotificationSetVisible}
+                />
             </NotificationContext.Provider>
         );
     }
 }
+
+const mapStateToProps = (state: TState): IProps => ({
+    language: state.language.language,
+});
+
+export const App = connect(mapStateToProps)(AppImpl);

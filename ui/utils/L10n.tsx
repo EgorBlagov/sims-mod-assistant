@@ -1,5 +1,7 @@
 import * as React from "react";
+import { useSelector } from "react-redux";
 import { l10n, Language, Translation } from "../../common/l10n";
+import { TState } from "../redux/reducers";
 
 export const LanguageContext = React.createContext(Language.English);
 
@@ -18,6 +20,6 @@ export function withL10n<T extends object>(
 }
 
 export function useL10n(): [Translation, Language] {
-    const language = React.useContext(LanguageContext);
+    const language = useSelector((state: TState) => state.language.language);
     return [l10n[language], language];
 }
