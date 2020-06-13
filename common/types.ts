@@ -19,11 +19,11 @@ export interface ISearchParams {
 }
 
 export enum DoubleTypes {
-    Exact,
-    Catalog,
-    Skintone,
-    Cas,
-    Slider,
+    Exact = "Exact",
+    Catalog = "Catalog",
+    Skintone = "Skintone",
+    Cas = "Cas",
+    Slider = "Slider",
 }
 
 export interface IFileDescription {

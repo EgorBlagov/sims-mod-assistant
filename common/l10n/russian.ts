@@ -14,12 +14,9 @@ export const russian: Translation = {
     errorPath: (msg: string) => `Не удалось получить информацию о директории: ${msg}`,
     errorOpenPath: (msg: string) => `Не удалось открыть директории через диалог: ${msg}`,
     searchFinished: "Поиск завершен",
-    exactDuplicate: "Полная копия",
-    catalogDuplicate: "Перекрытие в каталоге",
     date: (d: Date) => d.toLocaleString("ru-RU"),
     moveDuplicates: "Переместить все дубликаты в отдельную папку",
     enableForSearch: "Включите хотя бы один параметр чтобы запустить поиск",
-    catalogDuplicateDescription: "Object Catalog или Object Definition (Type, Group и Id) такие же как и у оригинала",
     duplicates: (count: number) => `Дубликаты (${count})`,
     skippedFiles: (count: number) => `Пропущенные файлы (${count})`,
     unsupportedSimsVersion: "Неподдерживаемая версия Пакета",
@@ -38,4 +35,19 @@ export const russian: Translation = {
     assistant: "Ассистент и Вдохновитель",
     description:
         "Небольшое приложение для игроков Sims 4 для быстрого и удобного поиска дубликатов и конфликтных дополнений",
+
+    exact: "Копия",
+    exactDescription: "Полная копия (MD5 хеш совпадает)",
+
+    catalog: "Каталог",
+    catalogDescription: "Предметы для строительства: столы, фонтаны, кровати...",
+
+    skintone: "Skintone",
+    skintoneDescription: "Макияж, особенности кожи, маски...",
+
+    cas: "CAS",
+    casDescription: "Одежда, волосы, обувь...",
+
+    slider: "Слайдер",
+    sliderDescription: "Слайдеры (Хот споты): форма рта, форма шеи...",
 };

@@ -12,13 +12,9 @@ export const english = {
     errorPath: (msg: string) => `Unable to get directory info: ${msg}`,
     errorOpenPath: (msg: string) => `Unable to open path with dialog: ${msg}`,
     searchFinished: "Search finished",
-    exactDuplicate: "Exact duplicate",
-    catalogDuplicate: "Catalog overlap",
     date: (d: Date) => d.toLocaleString("en-US"),
     moveDuplicates: "Move all duplicates to separate directory",
     enableForSearch: "Enable at least one options to start search",
-    catalogDuplicateDescription:
-        "Object Catalog or Object Definition (Type, Group and Id) are same as in original file",
     duplicates: (count: number) => `Duplicates (${count})`,
     skippedFiles: (count: number) => `Skipped files (${count})`,
     unsupportedSimsVersion: "Unsupported Package version",
@@ -36,4 +32,19 @@ export const english = {
     author: "Author",
     assistant: "Assistant & Inspiration",
     description: "Simple application to help Sims 4 players in searching and removing duplicates and conflicting mods",
+
+    exact: "Exact",
+    exactDescription: "Copy of file (MD5 hashes are same)",
+
+    catalog: "Catalog",
+    catalogDescription: "Build objects: tables, fountains, beds...",
+
+    skintone: "Skintone",
+    skintoneDescription: "Makeups, skin overlays, facemasks...",
+
+    cas: "CAS",
+    casDescription: "Clothes, hair, boots...",
+
+    slider: "Slider",
+    sliderDescription: "Sliders (hotspots): mouth shape, neck shape...",
 };

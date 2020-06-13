@@ -155,13 +155,10 @@ export class Analyzer {
 
     private duplicatesToList(fileEntry: TAggregatedFileEntry): IFileDuplicate[] {
         return _.map(fileEntry.duplicates, (d) => {
-            const duplicateChecks = _(Object.keys(DoubleTypes))
-                .map((x) => Number(x))
-                .filter((x) => !isNaN(x))
-                .reduce((res, x) => {
-                    res[x] = d.collisions.map((c) => this.classifiers[c].type).includes(x);
-                    return res;
-                }, {} as any);
+            const duplicateChecks = _(Object.keys(DoubleTypes)).reduce((res, doubleType: DoubleTypes) => {
+                res[doubleType] = d.collisions.map((c) => this.classifiers[c].type).includes(doubleType);
+                return res;
+            }, {} as any);
 
             return {
                 basename: path.basename(d.duplicate.path),

@@ -25,10 +25,6 @@ export const SkipsList = ({ searchInfo }: IProps) => {
     }
 
     const chipMap: TChipMap = {
-        [SkipReasons.UnsupportedIndexType]: {
-            label: l10n.unsupportedIndexType,
-            tooltip: l10n.unsupportedIndexTypeTooltip,
-        },
         [SkipReasons.UnsupportedSimsVersion]: {
             label: l10n.unsupportedSimsVersion,
             tooltip: l10n.unsupportedSimsVersionTooltip,
