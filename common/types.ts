@@ -21,6 +21,9 @@ export interface ISearchParams {
 export enum DoubleTypes {
     Exact,
     Catalog,
+    Skintone,
+    Cas,
+    Slider,
 }
 
 export interface IFileDescription {

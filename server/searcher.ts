@@ -16,6 +16,7 @@ import { Analyzer } from "./analyzer";
 import { DbpfClassifier } from "./analyzer/classifiers/dbpf-classifier";
 import { Md5Classifier } from "./analyzer/classifiers/md5-classifier";
 import { readDbpf } from "./dbpf";
+import { DbpfResourceTypes } from "./dbpf/constants";
 import { logger } from "./logging";
 import { IFileWithStats } from "./types";
 
@@ -149,7 +150,25 @@ class Searcher implements ISearcher {
         }
 
         if (params.searchTgi) {
-            analyzer.setClassifier("type-group-id-catalog", new DbpfClassifier(), DoubleTypes.Catalog);
+            analyzer.setClassifier(
+                "type-group-id-catalog",
+                new DbpfClassifier([DbpfResourceTypes.Catalog, DbpfResourceTypes.Definition]),
+                DoubleTypes.Catalog,
+            );
+
+            analyzer.setClassifier(
+                "type-group-skintone",
+                new DbpfClassifier([DbpfResourceTypes.Skintone]),
+                DoubleTypes.Skintone,
+            );
+
+            analyzer.setClassifier("type-group-cas", new DbpfClassifier([DbpfResourceTypes.CasPart]), DoubleTypes.Cas);
+
+            analyzer.setClassifier(
+                "type-group-hotspot",
+                new DbpfClassifier([DbpfResourceTypes.HotSpotControl]),
+                DoubleTypes.Slider,
+            );
         }
 
         analyzer.setValidator(async (f: IFileWithStats) => {

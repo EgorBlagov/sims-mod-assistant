@@ -119,10 +119,9 @@ export class Analyzer {
                                 duplicate,
                                 collisions: [],
                             };
-
-                            const currentDuplicateInfo = currentDuplicates[duplicate.path];
-                            currentDuplicateInfo.collisions.push(keyType);
                         }
+                        const currentDuplicateInfo = currentDuplicates[duplicate.path];
+                        currentDuplicateInfo.collisions.push(keyType);
                     }
                 }
             }
@@ -154,16 +153,21 @@ export class Analyzer {
         return result;
     }
 
-    private duplicatesToList(fileEntry: TAggregatedFileEntry) {
+    private duplicatesToList(fileEntry: TAggregatedFileEntry): IFileDuplicate[] {
         return _.map(fileEntry.duplicates, (d) => {
+            const duplicateChecks = _(Object.keys(DoubleTypes))
+                .map((x) => Number(x))
+                .filter((x) => !isNaN(x))
+                .reduce((res, x) => {
+                    res[x] = d.collisions.map((c) => this.classifiers[c].type).includes(x);
+                    return res;
+                }, {} as any);
+
             return {
                 basename: path.basename(d.duplicate.path),
                 path: d.duplicate.path,
                 date: d.duplicate.stats.mtime,
-                duplicateChecks: {
-                    Catalog: d.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Catalog),
-                    Exact: d.collisions.map((x) => this.classifiers[x].type).includes(DoubleTypes.Exact),
-                },
+                duplicateChecks,
             };
         });
     }
