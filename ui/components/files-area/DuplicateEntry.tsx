@@ -2,7 +2,7 @@ import { Box, Chip, ListItem, ListItemText, Tooltip, Typography } from "@materia
 import _ from "lodash";
 import * as React from "react";
 import { DoubleTypes, IFileDuplicate } from "../../../common/types";
-import { useL10n } from "../../utils/L10n";
+import { useL10n } from "../../utils/l10n-hooks";
 import { getShowFileHandler, usePathStyles } from "./tools";
 
 interface IProps {

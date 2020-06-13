@@ -2,7 +2,7 @@ import { Typography } from "@material-ui/core";
 import * as moment from "moment";
 import * as React from "react";
 import { isOk } from "../../common/tools";
-import { useL10n } from "../utils/L10n";
+import { useL10n } from "../utils/l10n-hooks";
 
 interface IProps {
     startTime: Date;

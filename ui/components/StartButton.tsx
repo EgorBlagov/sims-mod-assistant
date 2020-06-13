@@ -1,7 +1,7 @@
 import { Button, Tooltip } from "@material-ui/core";
 import * as React from "react";
 import { ISearchParams } from "../../common/types";
-import { useL10n } from "../utils/L10n";
+import { useL10n } from "../utils/l10n-hooks";
 
 interface IProps {
     onClick: () => void;

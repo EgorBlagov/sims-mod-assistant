@@ -1,7 +1,7 @@
 import { FormControlLabel, FormGroup, FormLabel, Radio, RadioGroup } from "@material-ui/core";
 import * as React from "react";
 import { ISearchParams } from "../../common/types";
-import { useL10n } from "../utils/L10n";
+import { useL10n } from "../utils/l10n-hooks";
 
 enum ParameterNames {
     SearchExact = "SearchExact",

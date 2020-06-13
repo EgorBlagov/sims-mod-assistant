@@ -6,7 +6,7 @@ import * as React from "react";
 import assistantAvatar from "../../../assets/assistant-avatar.png";
 import authorAvatar from "../../../assets/author-avatar.png";
 import pjson from "../../../package.json";
-import { useL10n } from "../../utils/L10n";
+import { useL10n } from "../../utils/l10n-hooks";
 import { PatreonIcon } from "../icons/PatreonIcon";
 import { Contact, IContact } from "./Contact";
 

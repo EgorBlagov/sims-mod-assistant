@@ -5,7 +5,7 @@ import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { ISearchResult } from "../../common/types";
 import { AppBackdrop } from "../utils/AppBackdrop";
-import { useL10n } from "../utils/L10n";
+import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
 
 interface IProps {

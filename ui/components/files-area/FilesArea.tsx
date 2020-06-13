@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
-import { useL10n } from "../../utils/L10n";
+import { useL10n } from "../../utils/l10n-hooks";
 import { DuplicatesList } from "./DuplicatesList";
 import { SkipsList } from "./SkipsList";
 
