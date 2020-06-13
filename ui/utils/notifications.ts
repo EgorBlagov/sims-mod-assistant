@@ -1,39 +1,26 @@
-import * as React from "react";
-
-export enum NotificationTypes {
-    Error = "error",
-    Success = "success",
-}
-
-export interface INotificationContext {
-    setType: (type: NotificationTypes) => void;
-    setMessage: (msg: string) => void;
-    setVisible: (visible: boolean) => void;
-}
+import { useDispatch } from "react-redux";
+import { ActionCreators } from "../redux/actions";
+import { NotificationTypes } from "../redux/types";
 
 interface INotificationApi {
     showError: (msg: string) => void;
     showSuccess: (msg: string) => void;
 }
 
-export const NotificationContext = React.createContext<INotificationContext>(undefined);
+export function createNotificationApiFromDispatch(dispatch): INotificationApi {
+    const show = (type: NotificationTypes) => (msg) => {
+        dispatch(ActionCreators.notificationSetType(type));
+        dispatch(ActionCreators.notificationSetMessage(msg));
+        dispatch(ActionCreators.notificationSetVisible(true));
+    };
 
-export function createNotificationApiFromContext(ctx: INotificationContext): INotificationApi {
     return {
-        showSuccess: (msg) => {
-            ctx.setType(NotificationTypes.Success);
-            ctx.setMessage(msg);
-            ctx.setVisible(true);
-        },
-        showError: (msg) => {
-            ctx.setType(NotificationTypes.Error);
-            ctx.setMessage(msg);
-            ctx.setVisible(true);
-        },
+        showSuccess: show(NotificationTypes.Success),
+        showError: show(NotificationTypes.Error),
     };
 }
 
 export function useNotification(): INotificationApi {
-    const ctx = React.useContext(NotificationContext);
-    return createNotificationApiFromContext(ctx);
+    const dispatch = useDispatch();
+    return createNotificationApiFromDispatch(dispatch);
 }

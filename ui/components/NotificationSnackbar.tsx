@@ -1,28 +1,27 @@
 import { Slide, Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import * as React from "react";
-import { NotificationTypes } from "../utils/notifications";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ActionCreators } from "../redux/actions";
+import { TState } from "../redux/reducers";
 
 const SNACKBAR_AUTOHIDE_DURATION: number = 5000;
-
-interface IProps {
-    message: string;
-    type: NotificationTypes;
-    visible: boolean;
-    setVisible: (visible: boolean) => void;
-}
 
 function SlideTransition(props) {
     return <Slide {...props} direction="down" />;
 }
 
-export const NotificationSnackbar = ({ message, type, visible, setVisible }: IProps) => {
+export const NotificationSnackbar = () => {
+    const { message, type, visible } = useSelector((state: TState) => state.notification);
+    const dispatch = useDispatch();
+    const hide = () => dispatch(ActionCreators.notificationSetVisible(false));
+
     const handleClose = (event: React.SyntheticEvent<any, Event>, reason?: SnackbarCloseReason) => {
         if (reason === "clickaway") {
             return;
         }
 
-        setVisible(false);
+        hide();
     };
 
     return (
