@@ -2,8 +2,7 @@ import { Box, Container, Divider, makeStyles } from "@material-ui/core";
 import * as React from "react";
 import { AboutButton } from "./about/AboutButton";
 import { DirectoryPanel } from "./DirectoryPanel";
-import { LanguageButton } from "./LanguageButton";
-
+import { SettingsButton } from "./settings/SettingsButton";
 const useStyles = makeStyles({
     root: {
         overflow: "hidden",
@@ -20,7 +19,7 @@ export const Main = () => {
         <Container className={classes.root}>
             <Box display="flex" flexDirection="column" height="100%">
                 <Box display="flex" justifyContent="flex-end" mb={1}>
-                    <LanguageButton />
+                    <SettingsButton />
                     <AboutButton />
                 </Box>
 

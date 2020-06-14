@@ -28,7 +28,7 @@ export const russian: Translation = {
     momentLibLocale: "ru",
     calculatingTime: "оценка...",
     searchInterrupted: "Поиск прерван",
-    moveSuccess: "Все дубликаты успешно пермещены",
+    moveSuccess: "Все дубликаты успешно перемещены",
     errorMove: (msg: string) => `Не удалось переместить файлы: ${msg}`,
     about: "О программе",
     author: "Автор",
@@ -50,4 +50,8 @@ export const russian: Translation = {
 
     slider: "Слайдер",
     sliderDescription: "Слайдеры (Хот споты): форма рта, форма шеи...",
+
+    settings: "Настройки",
+    simsStudioPath: "Папка с Sims4Studio (необязательно)",
+    simsStudioExeNotFound: "S4Studio.exe не найден",
 };

@@ -47,4 +47,8 @@ export const english = {
 
     slider: "Slider",
     sliderDescription: "Sliders (hotspots): mouth shape, neck shape...",
+
+    settings: "Settings",
+    simsStudioPath: "Sims4Studio directory (optional)",
+    simsStudioExeNotFound: "S4Studio.exe is not found",
 };
