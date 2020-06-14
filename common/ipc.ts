@@ -16,6 +16,7 @@ export const IpcSchema = {
         startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
         interruptSearch: createTypesafeIpcChannel<void, void>(),
         moveDuplicates: createTypesafeIpcChannel<IMoveParams, void>(),
+        isSimsStudioDir: createTypesafeIpcChannel<string, void>(),
     },
     mainEvents: {
         searchResult: createTypesafeIpcEvent<ISearchResult>(),

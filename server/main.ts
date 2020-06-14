@@ -3,6 +3,7 @@ import * as path from "path";
 import { ipc } from "../common/ipc";
 import { mover } from "./mover";
 import { searcher } from "./searcher";
+import { simsStudio } from "./sims-studio/sims-studio";
 
 const clientPath = path.join(__dirname, "..", "client");
 const isDev = process.env.NODE_ENV === "development";
@@ -54,6 +55,10 @@ const launchElectron = () => {
 
         ipc.main.handleRpc.moveDuplicates(async (params) => {
             await mover.move(params);
+        });
+
+        ipc.main.handleRpc.isSimsStudioDir(async (params) => {
+            return simsStudio.validateDir(params);
         });
     });
 

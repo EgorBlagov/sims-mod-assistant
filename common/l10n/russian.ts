@@ -53,7 +53,9 @@ export const russian: Translation = {
 
     settings: "Настройки",
     simsStudioPath: "Папка с Sims4Studio (необязательно)",
-    simsStudioExeNotFound: "S4Studio.exe не найден",
+    fileNotFound: (file: string) => `${file} не найден`,
+    studioValidPath: "Папка с Sims4Studio выбрана",
+    studioDisabled: (message: string) => `Не удалось найти Sims4Studio из настроек: ${message}`,
 
     settingsSaved: "Настройки успешно сохранены",
     settingsSaveError: (err: string) => `Не удалось сохранить настройки: ${err}`,

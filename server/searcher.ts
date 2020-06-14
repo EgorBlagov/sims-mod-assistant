@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as _ from "lodash";
-import * as path from "path";
 import { LocalizedError, LocalizedErrors } from "../common/errors";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
 import {
@@ -17,6 +16,7 @@ import { DbpfClassifier } from "./analyzer/classifiers/dbpf-classifier";
 import { Md5Classifier } from "./analyzer/classifiers/md5-classifier";
 import { readDbpf } from "./dbpf";
 import { DbpfResourceTypes } from "./dbpf/constants";
+import { getAllFilesInDirectory } from "./fs-util";
 import { logger } from "./logging";
 import { IFileWithStats } from "./types";
 
@@ -43,22 +43,6 @@ class Searcher implements ISearcher {
     constructor() {
         this.currentSearchTicket = 0;
         this.ee = createTypesafeEventEmitter(SearcherEventSchema);
-    }
-
-    async getAllFilesInDirectory(targetPath: string): Promise<fs.PathLike[]> {
-        const result: fs.PathLike[] = [];
-        const contents = await fs.promises.readdir(targetPath, { withFileTypes: true });
-        for (const entry of contents) {
-            const entryPath = path.join(targetPath, entry.name);
-            if (entry.isDirectory()) {
-                const innerFiles = await this.getAllFilesInDirectory(entryPath);
-                result.push(...innerFiles);
-            } else {
-                result.push(entryPath);
-            }
-        }
-
-        return result;
     }
 
     async getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo> {
@@ -91,7 +75,7 @@ class Searcher implements ISearcher {
     }
 
     private async getFilesAllWithStats(targetPath: string): Promise<IFileWithStats[]> {
-        const allFiles = await this.getAllFilesInDirectory(targetPath);
+        const allFiles = await getAllFilesInDirectory(targetPath);
         return Promise.all(
             _.map(allFiles, async (f) => ({
                 path: f.toString(),

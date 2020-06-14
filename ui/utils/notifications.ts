@@ -5,6 +5,7 @@ import { NotificationTypes } from "../redux/types";
 interface INotificationApi {
     showError: (msg: string) => void;
     showSuccess: (msg: string) => void;
+    showWarning: (msg: string) => void;
 }
 
 export function createNotificationApiFromDispatch(dispatch): INotificationApi {
@@ -17,6 +18,7 @@ export function createNotificationApiFromDispatch(dispatch): INotificationApi {
     return {
         showSuccess: show(NotificationTypes.Success),
         showError: show(NotificationTypes.Error),
+        showWarning: show(NotificationTypes.Warning),
     };
 }
 
