@@ -1,9 +1,7 @@
 import { Box, FormControl, ListItem, ListItemText, makeStyles, MenuItem, Select } from "@material-ui/core";
 import _ from "lodash";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { Language } from "../../../common/l10n";
-import * as ActionCreators from "../../redux/action-creators";
 import { useL10n } from "../../utils/l10n-hooks";
 
 const useStyles = makeStyles({
@@ -12,11 +10,13 @@ const useStyles = makeStyles({
     },
 });
 
-export const LanguageField = () => {
+interface IProps {
+    setLanguage: (l: Language) => void;
+}
+
+export const LanguageField = ({ setLanguage }: IProps) => {
     const [l10n, language] = useL10n();
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const setLanguage = (l: Language) => dispatch(ActionCreators.setLanguage(l));
 
     const handleSelectLanguage = (event) => {
         setLanguage(event.target.value);

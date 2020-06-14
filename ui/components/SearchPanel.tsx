@@ -1,5 +1,6 @@
 import { Box, Button, Collapse, Grow } from "@material-ui/core";
 import * as React from "react";
+import { getErrorMessage } from "../../common/errors";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { ISearchParams, ISearchResult, TTicketId } from "../../common/types";
@@ -47,8 +48,8 @@ export const SearchPanel = ({ targetPath }: IProps) => {
         }
     });
 
-    ipcHooks.use.searchError((___, { errorMessage, ticketId }) => {
-        notification.showError(errorMessage);
+    ipcHooks.use.searchError((___, { error, ticketId }) => {
+        notification.showError(getErrorMessage(error, l10n));
         if (ticketId === searchTicketId) {
             resetSearchState();
         }

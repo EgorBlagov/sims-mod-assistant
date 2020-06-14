@@ -1,3 +1,5 @@
+import { LocalizedErrors } from "./errors";
+
 export interface IDirectoryInfo {
     filesCount: number;
     sizeMb: number;
@@ -64,7 +66,7 @@ export interface ISearchProgress {
 }
 
 export interface ISearchError {
-    errorMessage: string;
+    error: LocalizedErrors | Error;
     ticketId: TTicketId;
 }
 

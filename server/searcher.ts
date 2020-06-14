@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as _ from "lodash";
 import * as path from "path";
+import { LocalizedError, LocalizedErrors } from "../common/errors";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
-import { l10n, Language, Translation } from "../common/l10n";
 import {
     DoubleTypes,
     IDirectoryInfo,
@@ -34,26 +34,15 @@ export interface ISearcher {
     startSearch(targetPath: string, params: ISearchParams): IStartResult;
     interruptSearch(): void;
     readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
-    setLanguage(newLangauge: Language): void;
 }
 
 class Searcher implements ISearcher {
     private currentSearchTicket: number;
     public readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
-    private language: Language;
 
     constructor() {
         this.currentSearchTicket = 0;
-        this.language = Language.English;
         this.ee = createTypesafeEventEmitter(SearcherEventSchema);
-    }
-
-    setLanguage(newLangauge: Language): void {
-        this.language = newLangauge;
-    }
-
-    private get l10n(): Translation {
-        return l10n[this.language];
     }
 
     async getAllFilesInDirectory(targetPath: string): Promise<fs.PathLike[]> {
@@ -87,9 +76,9 @@ class Searcher implements ISearcher {
             .then((result) => {
                 this.ee.emit.searchResult(result);
             })
-            .catch((error: Error) => {
+            .catch((error: LocalizedErrors | Error) => {
                 logger.error(error);
-                this.ee.emit.searchError({ errorMessage: error.toString(), ticketId: launchSearchId });
+                this.ee.emit.searchError({ error, ticketId: launchSearchId });
             });
 
         return {
@@ -126,7 +115,7 @@ class Searcher implements ISearcher {
             const file = allFiles[i];
 
             if (ticketId !== this.currentSearchTicket) {
-                throw new Error(this.l10n.searchInterrupted);
+                throw new LocalizedError("searchInterrupted");
             }
 
             await analyzer.pushFile(file);

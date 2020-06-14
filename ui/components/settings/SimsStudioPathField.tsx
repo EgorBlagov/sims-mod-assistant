@@ -12,21 +12,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const SimsStudioPathField = () => {
+interface IProps {
+    studioPath: string;
+    setStudioPath: (path: string) => void;
+}
+
+export const SimsStudioPathField = ({ studioPath, setStudioPath }: IProps) => {
     const [l10n] = useL10n();
     const classes = useStyles();
     const notification = useNotification();
-
-    const [simsStudioPath, setSimsStudioPath] = React.useState<string>();
     const [openDisabled, setOpenDisabled] = React.useState<boolean>(false);
+
     const handleOpenDialog = () => {
         setOpenDisabled(true);
 
         remote.dialog
             .showOpenDialog({ properties: ["openDirectory"] })
             .then((res) => {
-                if (!res.canceled && res.filePaths[0] !== simsStudioPath) {
-                    setSimsStudioPath(res.filePaths[0]);
+                if (!res.canceled && res.filePaths[0] !== studioPath) {
+                    setStudioPath(res.filePaths[0]);
                 }
             })
             .catch((error: Error) => {
@@ -42,7 +46,7 @@ export const SimsStudioPathField = () => {
                     className={classes.path}
                     error={true}
                     label={l10n.simsStudioPath}
-                    value={isOk(simsStudioPath) ? simsStudioPath : l10n.chooseDir}
+                    value={isOk(studioPath) ? studioPath : l10n.chooseDir}
                     helperText={l10n.simsStudioExeNotFound}
                     disabled={true}
                 />

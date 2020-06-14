@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 import { backdrop } from "./backdrop/reducers";
-import { language } from "./language/reducers";
 import { notification } from "./notification/reducers";
+import { settings } from "./settings/reducers";
 
 export const rootReducer = combineReducers({
-    language,
+    settings,
     notification,
     backdrop,
 });

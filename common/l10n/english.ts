@@ -51,4 +51,7 @@ export const english = {
     settings: "Settings",
     simsStudioPath: "Sims4Studio directory (optional)",
     simsStudioExeNotFound: "S4Studio.exe is not found",
+
+    settingsSaved: "Settings were saved successfully",
+    settingsSaveError: (err: string) => `Settings save error: ${err}`,
 };

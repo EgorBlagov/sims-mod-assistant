@@ -52,10 +52,6 @@ const launchElectron = () => {
             searcher.interruptSearch();
         });
 
-        ipc.main.handleRpc.setLanguage(async (language) => {
-            searcher.setLanguage(language);
-        });
-
         ipc.main.handleRpc.moveDuplicates(async (params) => {
             await mover.move(params);
         });

@@ -1,5 +1,4 @@
 import { createTypesafeIpc, createTypesafeIpcChannel, createTypesafeIpcEvent } from "./ipc/ipc-creator";
-import { Language } from "./l10n";
 import {
     IDirectoryInfo,
     IDrectoryParams,
@@ -16,7 +15,6 @@ export const IpcSchema = {
         getDirectoryInfo: createTypesafeIpcChannel<IDrectoryParams, IDirectoryInfo>(),
         startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
         interruptSearch: createTypesafeIpcChannel<void, void>(),
-        setLanguage: createTypesafeIpcChannel<Language, void>(),
         moveDuplicates: createTypesafeIpcChannel<IMoveParams, void>(),
     },
     mainEvents: {
