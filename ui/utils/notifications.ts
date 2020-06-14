@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { ActionCreators } from "../redux/actions";
+import * as ActionCreators from "../redux/action-creators";
 import { NotificationTypes } from "../redux/types";
 
 interface INotificationApi {

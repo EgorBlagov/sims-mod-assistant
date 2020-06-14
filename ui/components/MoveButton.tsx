@@ -4,7 +4,7 @@ import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { ISearchResult } from "../../common/types";
-import { AppBackdrop } from "../utils/AppBackdrop";
+import { useBackdropBound } from "../utils/backdrop-hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
 
@@ -17,6 +17,7 @@ export const MoveButton = ({ searchInfo, resetSearchState }: IProps) => {
     const [l10n] = useL10n();
     const notification = useNotification();
     const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
+    useBackdropBound(moveDisabled);
 
     const moveItems = async () => {
         setMoveDisabled(true);
@@ -43,7 +44,6 @@ export const MoveButton = ({ searchInfo, resetSearchState }: IProps) => {
                     {l10n.moveDuplicates}
                 </Button>
             </Slide>
-            <AppBackdrop show={moveDisabled} />
         </>
     );
 };

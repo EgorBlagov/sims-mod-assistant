@@ -3,7 +3,7 @@ import { remote } from "electron";
 import * as React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
-import { AppBackdrop } from "../utils/AppBackdrop";
+import { useBackdropBound } from "../utils/backdrop-hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
 import { DirectorySummary } from "./DirectorySummary";
@@ -46,6 +46,8 @@ export const DirectoryPanel = () => {
         }
     }, [path]);
 
+    useBackdropBound(openDisabled);
+
     const handleOpenDialog = () => {
         setOpenDisabled(true);
 
@@ -76,7 +78,6 @@ export const DirectoryPanel = () => {
                 </Box>
             </Box>
             {isOk(path) && <DirectorySummary targetPath={path} filesCount={filesCount} sizeMb={sizeMb} />}
-            <AppBackdrop show={openDisabled} />
         </>
     );
 };

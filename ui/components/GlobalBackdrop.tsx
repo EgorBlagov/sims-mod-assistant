@@ -1,5 +1,7 @@
 import { Backdrop, CircularProgress, makeStyles } from "@material-ui/core";
 import * as React from "react";
+import { useSelector } from "react-redux";
+import { TState } from "../redux/reducers";
 
 const useStyles = makeStyles((theme) => ({
     backdrop: {
@@ -8,15 +10,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface IProps {
-    show: boolean;
-}
-
-export const AppBackdrop = ({ show }: IProps) => {
+export const GlobalBackdrop = () => {
+    const visible = useSelector((state: TState) => state.backdrop.visible);
     const classes = useStyles();
 
     return (
-        <Backdrop className={classes.backdrop} open={show}>
+        <Backdrop className={classes.backdrop} open={visible}>
             <CircularProgress color="inherit" />
         </Backdrop>
     );

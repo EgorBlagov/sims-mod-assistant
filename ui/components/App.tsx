@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { ipc } from "../../common/ipc";
 import { Language } from "../../common/l10n";
-import { ActionCreators } from "../redux/actions";
+import * as ActionCreators from "../redux/action-creators";
 import { TState } from "../redux/reducers";
 import { createNotificationApiFromDispatch } from "../utils/notifications";
 import { loadSettings, saveSettings } from "../utils/settings";
 import "./common.css";
+import { GlobalBackdrop } from "./GlobalBackdrop";
 import { Main } from "./Main";
 import { NotificationSnackbar } from "./NotificationSnackbar";
 
@@ -50,6 +51,7 @@ class AppImpl extends React.Component<IProps> {
             <>
                 <Main />
                 <NotificationSnackbar />
+                <GlobalBackdrop />
             </>
         );
     }

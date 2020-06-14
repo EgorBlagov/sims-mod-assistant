@@ -3,7 +3,7 @@ import _ from "lodash";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Language } from "../../common/l10n";
-import { ActionCreators } from "../redux/actions";
+import * as ActionCreators from "../redux/action-creators";
 import { useL10n } from "../utils/l10n-hooks";
 
 export const LanguageButton = () => {

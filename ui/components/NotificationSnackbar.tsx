@@ -2,7 +2,7 @@ import { Slide, Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ActionCreators } from "../redux/actions";
+import * as ActionCreators from "../redux/action-creators";
 import { TState } from "../redux/reducers";
 
 const SNACKBAR_AUTOHIDE_DURATION: number = 5000;
