@@ -5,6 +5,7 @@ import { ipc } from "../../../common/ipc";
 import { isOk } from "../../../common/tools";
 import * as ActionCreators from "../../redux/action-creators";
 import { SettingsState } from "../../redux/settings/reducers";
+import { store } from "../../redux/store";
 import { useL10n } from "../l10n-hooks";
 import { useNotification } from "../notifications";
 import { loadSettings, saveSettings } from "./settings";
@@ -37,7 +38,7 @@ export const useLoadSettings = () => {
             }
         }
 
-        await saveSettings(loaded);
+        await saveSettings(store.getState().settings);
     };
 
     React.useEffect(() => {
