@@ -20,6 +20,7 @@ enum Tabs {
 const useStyles = makeStyles({
     tabScrollable: {
         overflow: "auto",
+        height: "100%",
     },
 });
 

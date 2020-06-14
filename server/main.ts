@@ -11,8 +11,8 @@ const isDev = process.env.NODE_ENV === "development";
 const launchElectron = () => {
     const createWindow = (): BrowserWindow => {
         const mainWindow = new BrowserWindow({
-            minWidth: 640,
-            minHeight: 480,
+            minWidth: 800,
+            minHeight: 800,
             width: 1024,
             height: 768,
             webPreferences: {
