@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Grow } from "@material-ui/core";
+import { Box, Grow } from "@material-ui/core";
 import * as React from "react";
 import { getErrorMessage } from "../../common/errors";
 import { ipc } from "../../common/ipc";
@@ -7,7 +7,6 @@ import { ISearchParams, ISearchResult, TTicketId } from "../../common/types";
 import { ipcHooks } from "../utils/hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
-import { EstimatedTime } from "./EstimatedTime";
 import { FilesArea } from "./files-area/FilesArea";
 import { MoveButton } from "./MoveButton";
 import { ProgressBar } from "./ProgressBar";
@@ -22,28 +21,25 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     const [l10n] = useL10n();
     const [params, setParams] = React.useState<ISearchParams>({ searchMd5: true, searchTgi: false });
     const [searchTicketId, setSearchTicketId] = React.useState<TTicketId>();
-    const [searchStartTime, setSearchStartTime] = React.useState<Date>();
-    const [progressRelative, setProgressRelative] = React.useState<number>(0);
-    const [result, setResult] = React.useState<ISearchResult>();
+    const [searchDone, setSearchDone] = React.useState<boolean>(false);
+    const [searchResult, setSearchResult] = React.useState<ISearchResult>(undefined);
     const notification = useNotification();
+    const isSearchInProgress = isOk(searchTicketId) && !searchDone;
 
     const resetSearchState = () => {
-        setResult(undefined);
+        setSearchDone(false);
         setSearchTicketId(undefined);
-        setSearchStartTime(undefined);
-        setProgressRelative(0);
+        setSearchResult(undefined);
     };
 
-    ipcHooks.use.searchProgress((___, args) => {
-        if (searchTicketId === args.ticketId) {
-            setProgressRelative(args.progressRelative);
-        }
-    });
+    ipcHooks.use.searchResult((___, ticketId) => {
+        if (ticketId === searchTicketId) {
+            ipc.renderer.rpc
+                .getSearchResult(ticketId)
+                .then((res) => setSearchResult(res))
+                .catch((err) => notification.showError(getErrorMessage(err, l10n)));
 
-    ipcHooks.use.searchResult((___, searchResult) => {
-        if (isOk(searchResult)) {
-            resetSearchState();
-            setResult(searchResult);
+            setSearchDone(true);
             notification.showSuccess(l10n.searchFinished);
         }
     });
@@ -56,11 +52,10 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     });
 
     const startSearch = () => {
-        if (!isOk(searchTicketId)) {
-            setResult(undefined);
+        if (!isSearchInProgress) {
+            resetSearchState();
             ipc.renderer.rpc.startSearch({ targetPath, ...params }).then((res) => {
                 setSearchTicketId(res.searchTicketId);
-                setSearchStartTime(new Date());
             });
         }
     };
@@ -73,26 +68,15 @@ export const SearchPanel = ({ targetPath }: IProps) => {
 
     return (
         <>
-            <SearchParametersForm editable={!isOk(searchTicketId)} params={params} setParams={setParams} />
-            <Collapse in={isOk(searchTicketId)}>
-                <Box my={1} display="flex" alignItems="center">
-                    <Box flex="auto" mr={1}>
-                        <ProgressBar progressRelative={progressRelative} />
-                    </Box>
-                    <Box mr={1}>
-                        <EstimatedTime progressRelative={progressRelative} startTime={searchStartTime} />
-                    </Box>
-
-                    <Button onClick={interruptSearch}>{l10n.cancel}</Button>
-                </Box>
-            </Collapse>
-            <Grow in={!isOk(searchTicketId)}>
+            <SearchParametersForm editable={!isSearchInProgress} params={params} setParams={setParams} />
+            <ProgressBar interruptSearch={interruptSearch} ticketId={searchTicketId} searchDone={searchDone} />
+            <Grow in={!isSearchInProgress}>
                 <Box display="flex" justifyContent="center">
                     <StartButton params={params} onClick={startSearch} />
                 </Box>
             </Grow>
-            <FilesArea searchInfo={result} />
-            <MoveButton searchInfo={result} resetSearchState={resetSearchState} />
+            <FilesArea searchInfo={searchResult} />
+            <MoveButton searchDone={searchDone} resetSearchState={resetSearchState} />
         </>
     );
 };

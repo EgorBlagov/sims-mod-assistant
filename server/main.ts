@@ -1,8 +1,9 @@
 import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
 import { ipc } from "../common/ipc";
+import { TTicketId } from "../common/types";
 import { mover } from "./mover";
-import { searcher } from "./searcher";
+import { searcher } from "./searcher/searcher";
 import { simsStudio } from "./sims-studio/sims-studio";
 
 const clientPath = path.join(__dirname, "..", "client");
@@ -59,6 +60,10 @@ const launchElectron = () => {
 
         ipc.main.handleRpc.isSimsStudioDir(async (params) => {
             return simsStudio.validateDir(params);
+        });
+
+        ipc.main.handleRpc.getSearchResult(async (ticketId: TTicketId) => {
+            return searcher.getSearchResult(ticketId);
         });
     });
 

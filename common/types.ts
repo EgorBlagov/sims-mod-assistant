@@ -46,7 +46,6 @@ export interface ISearchEntry {
 
 export enum SkipReasons {
     UnsupportedSimsVersion,
-
     NotPackage,
     UnableToParse,
 }
@@ -71,6 +70,5 @@ export interface ISearchError {
 }
 
 export interface IMoveParams {
-    info: ISearchResult;
     targetDir: string;
 }

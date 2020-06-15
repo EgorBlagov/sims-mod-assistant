@@ -56,4 +56,6 @@ export const english = {
 
     settingsSaved: "Settings were saved successfully",
     settingsSaveError: (err: string) => `Settings save error: ${err}`,
+
+    invalidTicketId: "Internal Error: Invalid search ticket id",
 };

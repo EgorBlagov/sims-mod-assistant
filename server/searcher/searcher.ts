@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as _ from "lodash";
-import { LocalizedError, LocalizedErrors } from "../common/errors";
-import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
+import { LocalizedError, LocalizedErrors } from "../../common/errors";
+import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../../common/event-emitter";
 import {
     DoubleTypes,
     IDirectoryInfo,
@@ -10,21 +10,23 @@ import {
     ISearchProgress,
     ISearchResult,
     IStartResult,
-} from "../common/types";
-import { Analyzer } from "./analyzer";
-import { DbpfClassifier } from "./analyzer/classifiers/dbpf-classifier";
-import { Md5Classifier } from "./analyzer/classifiers/md5-classifier";
-import { readDbpf } from "./dbpf";
-import { DbpfResourceTypes } from "./dbpf/constants";
-import { getAllFilesInDirectory } from "./fs-util";
-import { logger } from "./logging";
-import { IFileWithStats } from "./types";
+    TTicketId,
+} from "../../common/types";
+import { Analyzer } from "../analyzer";
+import { DbpfClassifier } from "../analyzer/classifiers/dbpf-classifier";
+import { Md5Classifier } from "../analyzer/classifiers/md5-classifier";
+import { readDbpf } from "../dbpf";
+import { DbpfResourceTypes } from "../dbpf/constants";
+import { getAllFilesInDirectory } from "../fs-util";
+import { logger } from "../logging";
+import { IFileWithStats } from "../types";
+import { ISavedSearchResult } from "./search-result";
 
 const MB: number = 1024 * 1024;
 const PROGRESS_FRACTION = 50;
 
 const SearcherEventSchema = {
-    searchResult: createTypesafeEvent<ISearchResult>(),
+    searchResult: createTypesafeEvent<TTicketId>(),
     searchProgress: createTypesafeEvent<ISearchProgress>(),
     searchError: createTypesafeEvent<ISearchError>(),
 };
@@ -33,15 +35,18 @@ export interface ISearcher {
     getDirectoryInfo(targetPath: string): Promise<IDirectoryInfo>;
     startSearch(targetPath: string, params: ISearchParams): IStartResult;
     interruptSearch(): void;
+    getSearchResult(ticketId: TTicketId): ISearchResult;
     readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
 }
 
 class Searcher implements ISearcher {
     private currentSearchTicket: number;
     public readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
+    private searchResult: ISavedSearchResult;
 
     constructor() {
         this.currentSearchTicket = 0;
+        this.searchResult = { ticketId: 0, result: undefined };
         this.ee = createTypesafeEventEmitter(SearcherEventSchema);
     }
 
@@ -58,7 +63,8 @@ class Searcher implements ISearcher {
         const launchSearchId = this.currentSearchTicket;
         this.startSearchProgress(launchSearchId, targetPath, params)
             .then((result) => {
-                this.ee.emit.searchResult(result);
+                this.saveSearchResult(launchSearchId, result);
+                this.ee.emit.searchResult(launchSearchId);
             })
             .catch((error: LocalizedErrors | Error) => {
                 logger.error(error);
@@ -72,6 +78,21 @@ class Searcher implements ISearcher {
 
     interruptSearch(): void {
         this.currentSearchTicket++;
+    }
+
+    getSearchResult(ticketId: TTicketId): ISearchResult {
+        if (ticketId !== this.searchResult.ticketId) {
+            throw new LocalizedError("invalidTicketId");
+        }
+
+        return this.searchResult.result;
+    }
+
+    private saveSearchResult(ticketId: number, result: ISearchResult) {
+        this.searchResult = {
+            ticketId,
+            result,
+        };
     }
 
     private async getFilesAllWithStats(targetPath: string): Promise<IFileWithStats[]> {

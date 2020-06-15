@@ -8,6 +8,7 @@ import {
     ISearchProgress,
     ISearchResult,
     IStartResult,
+    TTicketId,
 } from "./types";
 
 export const IpcSchema = {
@@ -17,9 +18,10 @@ export const IpcSchema = {
         interruptSearch: createTypesafeIpcChannel<void, void>(),
         moveDuplicates: createTypesafeIpcChannel<IMoveParams, void>(),
         isSimsStudioDir: createTypesafeIpcChannel<string, void>(),
+        getSearchResult: createTypesafeIpcChannel<TTicketId, ISearchResult>(),
     },
     mainEvents: {
-        searchResult: createTypesafeIpcEvent<ISearchResult>(),
+        searchResult: createTypesafeIpcEvent<TTicketId>(),
         searchError: createTypesafeIpcEvent<ISearchError>(),
         searchProgress: createTypesafeIpcEvent<ISearchProgress>(),
     },
