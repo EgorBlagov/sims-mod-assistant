@@ -40,8 +40,9 @@ export class Indexer {
     private async getFileKeys(filepath: string): Promise<TFileKeys> {
         const result: TFileKeys = [];
 
-        for (const keyType of Object.keys(this.classifiers)) {
-            const fileKeys = await this.classifiers[keyType as DoubleTypes].getKeys(filepath);
+        for (const classifierKey of Object.keys(this.classifiers)) {
+            const keyType: DoubleTypes = classifierKey as DoubleTypes;
+            const fileKeys = await this.classifiers[keyType].getKeys(filepath);
             const keysWithTypes: TFileKeys = _.map(fileKeys, (k) => [keyType, k]);
             result.push(...keysWithTypes);
         }

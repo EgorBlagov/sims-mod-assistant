@@ -10,7 +10,7 @@ export class DbpfClassifier implements IFileClassifier {
         this.resourceTypes = types;
     }
 
-    async getKeys(path: string): Promise<string[]> {
+    async getKeys(path: string): Promise<TKeyValue[]> {
         const dbpf = await readDbpf(path);
         const toTgi = (rec: IDbpfRecord): string =>
             `${rec.resourceType.toString(16).padStart(8, "0")}-${rec.resourceGroup
