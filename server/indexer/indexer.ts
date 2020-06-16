@@ -2,9 +2,9 @@ import * as _ from "lodash";
 import { DoubleTypes, ISkippedFile, SkipReasons } from "../../common/types";
 import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "../dbpf/errors";
 import { IFileClassifier } from "./classifiers/file-classifier";
-import { TClassifiers, TFileKeys, TIndex, TKeyType, TValidator } from "./types";
+import { TClassifiers, TFileKeys, TIndex, TValidator } from "./types";
 
-export class Analyzer {
+export class Indexer {
     private skips: ISkippedFile[];
     private classifiers: TClassifiers;
     private validator: TValidator;
@@ -16,11 +16,8 @@ export class Analyzer {
         this.validator = () => null;
     }
 
-    public setClassifier(key: TKeyType, classifier: IFileClassifier, doubleType: DoubleTypes): void {
-        this.classifiers[key] = {
-            getter: classifier,
-            type: doubleType,
-        };
+    public setClassifier(doubleType: DoubleTypes, classifier: IFileClassifier): void {
+        this.classifiers[doubleType] = classifier;
     }
 
     public setValidator(validator: TValidator) {
@@ -44,7 +41,7 @@ export class Analyzer {
         const result: TFileKeys = [];
 
         for (const keyType of Object.keys(this.classifiers)) {
-            const fileKeys = await this.classifiers[keyType].getter.getKeys(filepath);
+            const fileKeys = await this.classifiers[keyType as DoubleTypes].getKeys(filepath);
             const keysWithTypes: TFileKeys = _.map(fileKeys, (k) => [keyType, k]);
             result.push(...keysWithTypes);
         }

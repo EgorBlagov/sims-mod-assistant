@@ -2,6 +2,7 @@ import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
 import { ipc } from "../common/ipc";
 import { TTicketId } from "../common/types";
+import { getDirectoryInfo } from "./fs-util";
 import { mover } from "./mover";
 import { searcher } from "./searcher/searcher";
 import { simsStudio } from "./sims-studio/sims-studio";
@@ -43,7 +44,7 @@ const launchElectron = () => {
         searcher.ee.on.searchError((data) => ipc.main.emit.searchError(wnd, data));
 
         ipc.main.handleRpc.getDirectoryInfo(async (args) => {
-            return searcher.getDirectoryInfo(args.targetPath);
+            return getDirectoryInfo(args.targetPath);
         });
 
         ipc.main.handleRpc.startSearch(async (args) => {

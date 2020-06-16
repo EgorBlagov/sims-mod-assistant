@@ -11,10 +11,7 @@ export type TIndex = {
 };
 
 export type TClassifiers = {
-    [tKeyType: string]: {
-        getter: IFileClassifier;
-        type: DoubleTypes;
-    };
+    [K in DoubleTypes]?: IFileClassifier;
 };
 
 export type TValidator = (filepath: string) => Promise<void | never>; // should raise if invalid
