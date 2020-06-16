@@ -30,9 +30,8 @@ export enum DoubleTypes {
 
 export interface IFileDescription {
     path: string;
-    date: Date;
-    basename: string;
 }
+
 export interface IFileDuplicate extends IFileDescription {
     duplicateChecks: {
         [K in keyof typeof DoubleTypes]: boolean;

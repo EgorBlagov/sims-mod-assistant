@@ -123,7 +123,7 @@ class Searcher implements ISearcher {
                 throw new LocalizedError("searchInterrupted");
             }
 
-            await analyzer.pushFile(file);
+            await analyzer.pushFile(file.path);
 
             mbPassed += file.stats.size / MB;
 
@@ -133,7 +133,7 @@ class Searcher implements ISearcher {
             }
         }
 
-        return analyzer.summary;
+        throw new Error("Not implemented");
     }
 
     private createAnalyzer(params: ISearchParams): Analyzer {
@@ -165,9 +165,10 @@ class Searcher implements ISearcher {
             );
         }
 
-        analyzer.setValidator(async (f: IFileWithStats) => {
-            await readDbpf(f.path.toString()); // now we read dbpf twice, 1 - to validate, 2 - from DbpfClassifier
+        analyzer.setValidator(async (filepath: string) => {
+            await readDbpf(filepath); // now we read dbpf twice, 1 - to validate, 2 - from DbpfClassifier
         });
+
         return analyzer;
     }
 }
