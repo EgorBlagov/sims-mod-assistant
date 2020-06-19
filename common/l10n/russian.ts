@@ -17,7 +17,7 @@ export const russian: Translation = {
     date: (d: Date) => d.toLocaleString("ru-RU"),
     moveDuplicates: "Переместить все дубликаты в отдельную папку",
     enableForSearch: "Включите хотя бы один параметр чтобы запустить поиск",
-    duplicates: (count: number) => `Дубликаты (${count})`,
+    conflicts: (count: number) => `Конфликты (${count})`,
     skippedFiles: (count: number) => `Пропущенные файлы (${count})`,
     unsupportedSimsVersion: "Неподдерживаемая версия Пакета",
     unsupportedSimsVersionTooltip: "Возможно это не Пакет Sims 4",

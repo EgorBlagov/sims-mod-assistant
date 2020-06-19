@@ -1,4 +1,6 @@
+import { ThemeProvider } from "@material-ui/core";
 import * as React from "react";
+import { appTheme } from "../theme";
 import { useLoadSettings } from "../utils/settings/settings-hooks";
 import "./common.css";
 import { GlobalBackdrop } from "./GlobalBackdrop";
@@ -10,9 +12,11 @@ export const App = () => {
 
     return (
         <>
-            <Main />
-            <NotificationSnackbar />
-            <GlobalBackdrop />
+            <ThemeProvider theme={appTheme}>
+                <Main />
+                <NotificationSnackbar />
+                <GlobalBackdrop />
+            </ThemeProvider>
         </>
     );
 };

@@ -14,7 +14,7 @@ export const GroupToolbar = ({ group }: IProps) => {
     const notImplementedClick = () => alert("Not implemented");
     return (
         <ListItem>
-            <Box display="flex" justifyContent="space-between" width="100%">
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
                 <DoubleTypeChipBar types={group.types} />
                 <Tooltip title={l10n.detailed} placement="top">
                     <IconButton onClick={notImplementedClick} size="small" color="primary">

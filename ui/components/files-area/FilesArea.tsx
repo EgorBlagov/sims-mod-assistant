@@ -44,7 +44,7 @@ export const FilesArea = ({ searchInfo }: IProps) => {
                 <TabContext value={tab}>
                     <AppBar position="static">
                         <TabList onChange={handleChange}>
-                            <Tab label={l10n.duplicates(duplicatesCount)} value={Tabs.Duplicates} />
+                            <Tab label={l10n.conflicts(duplicatesCount)} value={Tabs.Duplicates} />
                             <Tab label={l10n.skippedFiles(skipsCount)} value={Tabs.Skips} />
                         </TabList>
                     </AppBar>

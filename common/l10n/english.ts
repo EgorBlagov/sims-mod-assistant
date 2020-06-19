@@ -15,7 +15,7 @@ export const english = {
     date: (d: Date) => d.toLocaleString("en-US"),
     moveDuplicates: "Move all duplicates to separate directory",
     enableForSearch: "Enable at least one options to start search",
-    duplicates: (count: number) => `Duplicates (${count})`,
+    conflicts: (count: number) => `Conflicts (${count})`,
     skippedFiles: (count: number) => `Skipped files (${count})`,
     unsupportedSimsVersion: "Unsupported Package version",
     unsupportedSimsVersionTooltip: "Might be not Sims 4 package at all",
