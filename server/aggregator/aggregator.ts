@@ -19,16 +19,39 @@ type TFullGraph = {
     };
 };
 
+type TSummaryDoubleType = {
+    [group: number]: Set<DoubleTypes>;
+};
+
+interface IResultGraphNode {
+    id: string;
+    group: number;
+}
+
+interface IResultGraphLink {
+    source: string;
+    target: string;
+    keys: TKeyValue[];
+    types: DoubleTypes[];
+}
+
+interface IResultGraph {
+    nodes: IResultGraphNode[];
+    links: IResultGraphLink[];
+}
+
 export class Aggregator {
     private index: TIndex;
     private reversed: TReversedIndex;
     private fullGraph: TFullGraph;
+    private summaryDoubleType: TSummaryDoubleType;
+    private resultGraph: IResultGraph;
 
     constructor(fileIndex: TIndex) {
         this.index = fileIndex;
         this.buildReverseIndex();
         this.buildFullGraph();
-        this.defineClasters();
+        this.buildGroupsAndSummaries();
         this.buildEndGraph();
     }
 
@@ -79,11 +102,21 @@ export class Aggregator {
         }
     }
 
-    private defineClasters() {
+    private buildGroupsAndSummaries() {
+        this.summaryDoubleType = {};
+
         const dfs = (path: string, group: number) => {
             this.fullGraph[path].group = group;
 
+            if (!(group in this.summaryDoubleType)) {
+                this.summaryDoubleType[group] = new Set();
+            }
+
             for (const neighbor of Object.keys(this.fullGraph[path].neighbors)) {
+                this.fullGraph[path].neighbors[neighbor].types.forEach((t) => {
+                    this.summaryDoubleType[group].add(t);
+                });
+
                 if (this.fullGraph[neighbor].group !== -1) {
                     continue;
                 }
@@ -102,6 +135,30 @@ export class Aggregator {
     }
 
     private buildEndGraph() {
-        throw new Error("Method not implemented.");
+        this.resultGraph = { links: [], nodes: [] };
+        const addedLinks = new Set<[string, string]>();
+        for (const path of Object.keys(this.fullGraph)) {
+            this.resultGraph.nodes.push({
+                id: path,
+                group: this.fullGraph[path].group,
+            });
+
+            for (const neighbor of Object.keys(this.fullGraph[path].neighbors)) {
+                const linkKey = this.getLinkKey(path, neighbor);
+                if (!addedLinks.has(linkKey)) {
+                    addedLinks.add(linkKey);
+                    this.resultGraph.links.push({
+                        source: path,
+                        target: neighbor,
+                        keys: this.fullGraph[path].neighbors[neighbor].keys,
+                        types: Array.from(this.fullGraph[path].neighbors[neighbor].types),
+                    });
+                }
+            }
+        }
+    }
+
+    private getLinkKey(path: string, neighbor: string): [string, string] {
+        return path <= neighbor ? [path, neighbor] : [neighbor, path];
     }
 }
