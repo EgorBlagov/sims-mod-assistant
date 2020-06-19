@@ -3,6 +3,7 @@ import {
     IDirectoryInfo,
     IDrectoryParams,
     IMoveParams,
+    IOpenInStudioParams,
     ISearchError,
     ISearchParams,
     ISearchProgress,
@@ -19,6 +20,7 @@ export const IpcSchema = {
         moveDuplicates: createTypesafeIpcChannel<IMoveParams, void>(),
         isSimsStudioDir: createTypesafeIpcChannel<string, void>(),
         getSearchResult: createTypesafeIpcChannel<TTicketId, ISearchResult>(),
+        openInStudio: createTypesafeIpcChannel<IOpenInStudioParams, void>(),
     },
     mainEvents: {
         searchResult: createTypesafeIpcEvent<TTicketId>(),

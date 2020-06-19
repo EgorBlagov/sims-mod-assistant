@@ -61,4 +61,10 @@ export const russian: Translation = {
     settingsSaveError: (err: string) => `Не удалось сохранить настройки: ${err}`,
     invalidTicketId: "Внутренняя ошибка: неверный идентификатор поиска",
     detailed: "Детально",
+    openDirectory: "Открыть папку",
+    copyPath: "Скопировать путь в буфер обмена",
+
+    openInStudio: "Открыть пакет в Sims4Studio",
+    studioNotConfigured: "Путь к Sims4Studio не настроен (это можно сделать в Настройках)",
+    copyPathSuccess: (path: string) => `Путь ${path} успешно скопирован в буфер обмена`,
 };

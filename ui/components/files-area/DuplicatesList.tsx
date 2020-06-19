@@ -1,12 +1,13 @@
-import { Divider, List, ListItem, ListItemText, makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { Box, Divider, List, ListItem, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
 import _ from "lodash";
 import path from "path";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/l10n-hooks";
+import { DuplicateToolbar } from "./DuplicateToolbar";
 import { GroupToolbar } from "./GroupToolbar";
-import { getShowFileHandler, usePathStyles } from "./tools";
+import { usePathStyles } from "./tools";
 
 interface IProps {
     searchInfo: ISearchResult;
@@ -21,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const DuplicatesList = ({ searchInfo }: IProps) => {
     const [l10n] = useL10n();
-    const classes = useStyles();
     const pathClasses = usePathStyles();
 
     if (!isOk(searchInfo)) {
@@ -34,18 +34,17 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                 <React.Fragment key={i}>
                     <GroupToolbar group={x} />
                     {_.map(x.detailed.nodes, (node) => (
-                        <ListItem key={node.path} button={true} onClick={getShowFileHandler(node.path)}>
-                            <ListItemText
-                                className={pathClasses.base}
-                                primary={path.basename(node.path)}
-                                secondary={l10n.date(searchInfo.fileInfos[node.path].modifiedDate)}
-                            />
-
+                        <ListItem key={node.path}>
                             <Tooltip title={node.path}>
-                                <Typography color="textSecondary" className={pathClasses.path}>
-                                    {node.path}
-                                </Typography>
+                                <ListItemText
+                                    className={pathClasses.base}
+                                    primary={path.basename(node.path)}
+                                    secondary={l10n.date(searchInfo.fileInfos[node.path].modifiedDate)}
+                                />
                             </Tooltip>
+                            <Box flexGrow={1}>
+                                <DuplicateToolbar path={node.path} />
+                            </Box>
                         </ListItem>
                     ))}
 

@@ -59,4 +59,10 @@ export const english = {
 
     invalidTicketId: "Internal Error: Invalid search ticket id",
     detailed: "Detailed",
+    openDirectory: "Open directory",
+    copyPath: "Copy path to clipboard",
+
+    openInStudio: "Open package in Sims4Studio",
+    studioNotConfigured: "Sims4Studio path is not configured (you can do it Settings)",
+    copyPathSuccess: (path: string) => `Path ${path} successfully copied to clipboard`,
 };

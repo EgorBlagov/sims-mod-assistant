@@ -99,3 +99,8 @@ export interface ISearchError {
 export interface IMoveParams {
     targetDir: string;
 }
+
+export interface IOpenInStudioParams {
+    filePath: string;
+    simsStudioPath: string;
+}

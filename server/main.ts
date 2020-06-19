@@ -63,6 +63,10 @@ const launchElectron = () => {
             return simsStudio.validateDir(params);
         });
 
+        ipc.main.handleRpc.openInStudio(async (params) => {
+            return simsStudio.openFile(params.filePath, params.simsStudioPath);
+        });
+
         ipc.main.handleRpc.getSearchResult(async (ticketId: TTicketId) => {
             return searcher.getSearchResult(ticketId);
         });
