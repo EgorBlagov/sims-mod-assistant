@@ -1,5 +1,6 @@
 import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip, Typography } from "@material-ui/core";
 import Error from "@material-ui/icons/Error";
+import path from "path";
 import * as React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
@@ -7,6 +8,7 @@ import { isOk } from "../../../common/tools";
 import { ISearchResult, SkipReasons } from "../../../common/types";
 import { useL10n } from "../../utils/l10n-hooks";
 import { getShowFileHandler } from "./tools";
+
 interface IProps {
     searchInfo: ISearchResult;
 }
@@ -47,7 +49,7 @@ export const SkipsList = ({ searchInfo }: IProps) => {
         },
     };
 
-    const Row = ({ index, style, isScrolling }) => {
+    const Row = ({ index, style, isScrolling }: { index: number; style: object; isScrolling?: boolean }) => {
         const x = searchInfo.skips[index];
 
         const content = isScrolling ? (
@@ -57,7 +59,7 @@ export const SkipsList = ({ searchInfo }: IProps) => {
                     paddingLeft: VIRTUALIZE_CONSTANTS.PLACEHOLDER_PADDING_LEFT,
                 }}
             >
-                {x.basename}
+                {path.basename(x.path)}
             </Typography>
         ) : (
             <ListItem key={x.path} button={true} onClick={getShowFileHandler(x.path)}>
@@ -67,7 +69,10 @@ export const SkipsList = ({ searchInfo }: IProps) => {
                     </Avatar>
                 </ListItemIcon>
                 <Tooltip title={x.path}>
-                    <ListItemText primary={x.basename} secondary={l10n.date(x.date)} />
+                    <ListItemText
+                        primary={path.basename(x.path)}
+                        secondary={l10n.date(searchInfo.fileInfos[x.path].modifiedDate)}
+                    />
                 </Tooltip>
 
                 <Tooltip title={chipMap[x.reason].tooltip}>
@@ -90,7 +95,7 @@ export const SkipsList = ({ searchInfo }: IProps) => {
                     itemSize={VIRTUALIZE_CONSTANTS.ITEM_HEIGHT}
                     useIsScrolling={true}
                 >
-                    {Row as any}
+                    {Row}
                 </FixedSizeList>
             )}
         </AutoSizer>

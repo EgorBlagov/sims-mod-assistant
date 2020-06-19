@@ -1,5 +1,5 @@
+import { TKeyValue } from "../../../common/types";
 import { md5 } from "../../md5";
-import { TKeyValue } from "../types";
 import { IFileClassifier } from "./file-classifier";
 
 export class Md5Classifier implements IFileClassifier {

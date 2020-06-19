@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as _ from "lodash";
 import * as path from "path";
 import { IDirectoryInfo } from "../common/types";
 import { IFileWithStats } from "./types";
@@ -13,7 +14,7 @@ export async function getAllFilesInDirectory(targetPath: string, recursive: bool
     for (const entry of contents) {
         const entryPath = path.join(targetPath, entry.name);
         if (entry.isDirectory() && recursive) {
-            const innerFiles = await this.getAllFilesInDirectory(entryPath);
+            const innerFiles = await getAllFilesInDirectory(entryPath);
             result.push(...innerFiles);
         } else {
             result.push(entryPath);

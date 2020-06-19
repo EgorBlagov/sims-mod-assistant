@@ -1,6 +1,5 @@
-import { DoubleTypes } from "../../common/types";
-import { TIndex, TKeyValue } from "../indexer/types";
-import { IDuplicateGroup } from "./types";
+import { DoubleTypes, IDuplicateGroup, TKeyValue } from "../../common/types";
+import { TIndex } from "../indexer/types";
 
 type TReversedIndex = {
     [keyValue: string]: string[]; // keyValue: TKeyValue
@@ -17,7 +16,7 @@ type TFullGraph = {
     [path: string]: TNeighbors;
 };
 
-export class GraphBuilder {
+export class GraphAggregator {
     private index: TIndex;
     private reversed: TReversedIndex;
     private fullGraph: TFullGraph;
@@ -30,7 +29,7 @@ export class GraphBuilder {
         this.buildGroupsAndSummaries();
     }
 
-    public get result(): IDuplicateGroup[] {
+    public getResult(): IDuplicateGroup[] {
         return this.resultDuplicateGroups;
     }
 
@@ -91,7 +90,7 @@ export class GraphBuilder {
             visited.add(path);
 
             for (const neighbor of Object.keys(this.fullGraph[path])) {
-                const linkKey = this.getLinkKey(name, neighbor);
+                const linkKey = this.getLinkKey(path, neighbor);
                 if (!visitedLinks.has(linkKey)) {
                     visitedLinks.add(linkKey);
                     currentGroup.detailed.links.push({

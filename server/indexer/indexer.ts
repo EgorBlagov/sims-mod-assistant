@@ -12,8 +12,17 @@ export class Indexer {
 
     constructor() {
         this.skips = [];
+        this.index = {};
         this.classifiers = {};
         this.validator = () => null;
+    }
+
+    public getIndex() {
+        return this.index;
+    }
+
+    public getSkips() {
+        return this.skips;
     }
 
     public setClassifier(doubleType: DoubleTypes, classifier: IFileClassifier): void {

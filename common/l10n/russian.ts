@@ -60,4 +60,5 @@ export const russian: Translation = {
     settingsSaved: "Настройки успешно сохранены",
     settingsSaveError: (err: string) => `Не удалось сохранить настройки: ${err}`,
     invalidTicketId: "Внутренняя ошибка: неверный идентификатор поиска",
+    detailed: "Детально",
 };

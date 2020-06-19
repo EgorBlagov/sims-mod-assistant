@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import { TKeyValue } from "../../../common/types";
 import { IDbpfRecord, readDbpf } from "../../dbpf";
 import { DbpfResourceTypes } from "../../dbpf/constants";
 import { IFileClassifier } from "./file-classifier";

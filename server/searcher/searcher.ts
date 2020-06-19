@@ -3,6 +3,7 @@ import { LocalizedError, LocalizedErrors } from "../../common/errors";
 import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../../common/event-emitter";
 import {
     DoubleTypes,
+    IFileAdditionalInfo,
     ISearchError,
     ISearchParams,
     ISearchProgress,
@@ -10,6 +11,7 @@ import {
     IStartResult,
     TTicketId,
 } from "../../common/types";
+import { GraphAggregator } from "../aggregator/graph-aggregator";
 import { readDbpf } from "../dbpf";
 import { DbpfResourceTypes } from "../dbpf/constants";
 import { FileSizes, getFilesAllWithStats } from "../fs-util";
@@ -17,6 +19,7 @@ import { DbpfClassifier } from "../indexer/classifiers/dbpf-classifier";
 import { Md5Classifier } from "../indexer/classifiers/md5-classifier";
 import { Indexer } from "../indexer/indexer";
 import { logger } from "../logging";
+import { IFileWithStats } from "../types";
 import { ISavedSearchResult } from "./search-result";
 
 const PROGRESS_FRACTION = 50;
@@ -88,7 +91,7 @@ class Searcher implements ISearcher {
         params: ISearchParams,
     ): Promise<ISearchResult> {
         const allFiles = await getFilesAllWithStats(targetPath);
-        const analyzer = this.createIndexer(params);
+        const indexer = this.createIndexer(params);
 
         let mbPassed = 0;
         const mbTotal = _.reduce(allFiles, (sum, f) => sum + f.stats.size / FileSizes.MB, 0);
@@ -100,7 +103,7 @@ class Searcher implements ISearcher {
                 throw new LocalizedError("searchInterrupted");
             }
 
-            await analyzer.pushFile(file.path);
+            await indexer.pushFile(file.path);
 
             mbPassed += file.stats.size / FileSizes.MB;
 
@@ -110,7 +113,13 @@ class Searcher implements ISearcher {
             }
         }
 
-        throw new Error("Not implemented");
+        const aggregator = new GraphAggregator(indexer.getIndex());
+        const fileInfos = this.getFileInfos(allFiles);
+        return {
+            duplicates: aggregator.getResult(),
+            skips: indexer.getSkips(),
+            fileInfos,
+        };
     }
 
     private createIndexer(params: ISearchParams): Indexer {
@@ -135,6 +144,17 @@ class Searcher implements ISearcher {
         });
 
         return indexer;
+    }
+
+    private getFileInfos(allFiles: IFileWithStats[]): Record<string, IFileAdditionalInfo> {
+        const result: Record<string, IFileAdditionalInfo> = {};
+
+        for (const file of allFiles) {
+            result[file.path.toString()] = {
+                modifiedDate: file.stats.mtime,
+            };
+        }
+        return result;
     }
 }
 

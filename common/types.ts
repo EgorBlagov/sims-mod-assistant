@@ -1,5 +1,7 @@
 import { LocalizedErrors } from "./errors";
 
+export type TKeyValue = string;
+
 export interface IDirectoryInfo {
     filesCount: number;
     sizeMb: number;
@@ -32,6 +34,10 @@ export interface IFileDescription {
     path: string;
 }
 
+export interface IFileAdditionalInfo {
+    modifiedDate: Date;
+}
+
 export interface IFileDuplicate extends IFileDescription {
     duplicateChecks: {
         [K in keyof typeof DoubleTypes]: boolean;
@@ -53,9 +59,31 @@ export interface ISkippedFile extends IFileDescription {
     reason: SkipReasons;
 }
 
+export interface IDuplicateGraphNode {
+    path: string;
+}
+
+export interface IDuplicateGraphLink {
+    source: string;
+    target: string;
+    keys: TKeyValue[];
+    types: DoubleTypes[];
+}
+
+export interface IDuplicateGraph {
+    nodes: IDuplicateGraphNode[];
+    links: IDuplicateGraphLink[];
+}
+
+export interface IDuplicateGroup {
+    types: DoubleTypes[];
+    detailed: IDuplicateGraph;
+}
+
 export interface ISearchResult {
-    duplicates: ISearchEntry[];
+    duplicates: IDuplicateGroup[];
     skips: ISkippedFile[];
+    fileInfos: Record<string, IFileAdditionalInfo>;
 }
 
 export interface ISearchProgress {

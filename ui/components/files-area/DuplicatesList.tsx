@@ -1,21 +1,11 @@
-import {
-    Avatar,
-    Divider,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    makeStyles,
-    Tooltip,
-    Typography,
-} from "@material-ui/core";
-import * as _ from "lodash";
+import { Divider, List, ListItem, ListItemText, makeStyles, Tooltip, Typography } from "@material-ui/core";
+import _ from "lodash";
+import path from "path";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/l10n-hooks";
-import { SimsIcon } from "../icons/SimsIcon";
-import { DuplicateEntry } from "./DuplicateEntry";
+import { GroupToolbar } from "./GroupToolbar";
 import { getShowFileHandler, usePathStyles } from "./tools";
 
 interface IProps {
@@ -40,31 +30,25 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
 
     return (
         <List>
-            {_.map(searchInfo.duplicates, (x) => (
-                <React.Fragment key={x.original.path}>
-                    <ListItem button={true} onClick={getShowFileHandler(x.original.path)}>
-                        <ListItemIcon>
-                            <Avatar>
-                                <SimsIcon />
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText
-                            className={pathClasses.base}
-                            primary={x.original.basename}
-                            secondary={l10n.date(x.original.date)}
-                        />
+            {_.map(searchInfo.duplicates, (x, i) => (
+                <React.Fragment key={i}>
+                    <GroupToolbar group={x} />
+                    {_.map(x.detailed.nodes, (node) => (
+                        <ListItem key={node.path} button={true} onClick={getShowFileHandler(node.path)}>
+                            <ListItemText
+                                className={pathClasses.base}
+                                primary={path.basename(node.path)}
+                                secondary={l10n.date(searchInfo.fileInfos[node.path].modifiedDate)}
+                            />
 
-                        <Tooltip title={x.original.path}>
-                            <Typography color="textSecondary" className={pathClasses.path}>
-                                {x.original.path}
-                            </Typography>
-                        </Tooltip>
-                    </ListItem>
-                    <List disablePadding={true} className={classes.nested} dense={true}>
-                        {_.map(x.duplicates, (duplicate, j) => (
-                            <DuplicateEntry key={duplicate.path} duplicate={duplicate} />
-                        ))}
-                    </List>
+                            <Tooltip title={node.path}>
+                                <Typography color="textSecondary" className={pathClasses.path}>
+                                    {node.path}
+                                </Typography>
+                            </Tooltip>
+                        </ListItem>
+                    ))}
+
                     <Divider component="li" />
                 </React.Fragment>
             ))}

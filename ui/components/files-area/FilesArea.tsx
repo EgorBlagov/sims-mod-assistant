@@ -34,7 +34,7 @@ export const FilesArea = ({ searchInfo }: IProps) => {
     };
 
     const duplicatesCount = isOk(searchInfo)
-        ? _.reduce(searchInfo.duplicates, (sum, entry) => sum + entry.duplicates.length, 0)
+        ? _.reduce(searchInfo.duplicates, (sum, entry) => sum + entry.detailed.nodes.length, 0)
         : 0;
     const skipsCount = isOk(searchInfo) ? searchInfo.skips.length : 0;
 
