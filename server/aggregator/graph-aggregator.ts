@@ -1,5 +1,6 @@
 import { DoubleTypes } from "../../common/types";
 import { TIndex, TKeyValue } from "../indexer/types";
+import { IDuplicateGroup } from "./types";
 
 type TReversedIndex = {
     [keyValue: string]: string[]; // keyValue: TKeyValue
@@ -13,46 +14,24 @@ type TNeighbors = {
 };
 
 type TFullGraph = {
-    [path: string]: {
-        neighbors: TNeighbors;
-        group: number;
-    };
+    [path: string]: TNeighbors;
 };
 
-type TSummaryDoubleType = {
-    [group: number]: Set<DoubleTypes>;
-};
-
-interface IResultGraphNode {
-    id: string;
-    group: number;
-}
-
-interface IResultGraphLink {
-    source: string;
-    target: string;
-    keys: TKeyValue[];
-    types: DoubleTypes[];
-}
-
-interface IResultGraph {
-    nodes: IResultGraphNode[];
-    links: IResultGraphLink[];
-}
-
-export class Aggregator {
+export class GraphBuilder {
     private index: TIndex;
     private reversed: TReversedIndex;
     private fullGraph: TFullGraph;
-    private summaryDoubleType: TSummaryDoubleType;
-    private resultGraph: IResultGraph;
+    private resultDuplicateGroups: IDuplicateGroup[];
 
     constructor(fileIndex: TIndex) {
         this.index = fileIndex;
         this.buildReverseIndex();
         this.buildFullGraph();
         this.buildGroupsAndSummaries();
-        this.buildEndGraph();
+    }
+
+    public get result(): IDuplicateGroup[] {
+        return this.resultDuplicateGroups;
     }
 
     private buildReverseIndex() {
@@ -94,30 +73,42 @@ export class Aggregator {
 
             if (Object.keys(currentNeighbors).length !== 0) {
                 // We ignore files with no conflicting keys
-                this.fullGraph[path] = {
-                    group: -1,
-                    neighbors: currentNeighbors,
-                };
+                this.fullGraph[path] = currentNeighbors;
             }
         }
     }
 
     private buildGroupsAndSummaries() {
-        this.summaryDoubleType = {};
+        this.resultDuplicateGroups = [];
+        const visited = new Set<string>();
+        const visitedLinks = new Set<[string, string]>();
 
         const dfs = (path: string, group: number) => {
-            this.fullGraph[path].group = group;
+            const currentGroup = this.resultDuplicateGroups[group];
+            currentGroup.detailed.nodes.push({
+                path,
+            });
+            visited.add(path);
 
-            if (!(group in this.summaryDoubleType)) {
-                this.summaryDoubleType[group] = new Set();
-            }
+            for (const neighbor of Object.keys(this.fullGraph[path])) {
+                const linkKey = this.getLinkKey(name, neighbor);
+                if (!visitedLinks.has(linkKey)) {
+                    visitedLinks.add(linkKey);
+                    currentGroup.detailed.links.push({
+                        source: path,
+                        target: neighbor,
+                        keys: this.fullGraph[path][neighbor].keys,
+                        types: Array.from(this.fullGraph[path][neighbor].types),
+                    });
+                }
 
-            for (const neighbor of Object.keys(this.fullGraph[path].neighbors)) {
-                this.fullGraph[path].neighbors[neighbor].types.forEach((t) => {
-                    this.summaryDoubleType[group].add(t);
+                this.fullGraph[path][neighbor].types.forEach((t) => {
+                    if (!currentGroup.types.includes(t)) {
+                        currentGroup.types.push(t);
+                    }
                 });
 
-                if (this.fullGraph[neighbor].group !== -1) {
+                if (visited.has(neighbor)) {
                     continue;
                 }
 
@@ -127,33 +118,17 @@ export class Aggregator {
 
         let groupId = 0;
         for (const path of Object.keys(this.fullGraph)) {
-            if (this.fullGraph[path].group === -1) {
+            if (!visited.has(path)) {
+                this.resultDuplicateGroups.push({
+                    types: [],
+                    detailed: {
+                        links: [],
+                        nodes: [],
+                    },
+                });
+
                 dfs(path, groupId);
                 groupId++;
-            }
-        }
-    }
-
-    private buildEndGraph() {
-        this.resultGraph = { links: [], nodes: [] };
-        const addedLinks = new Set<[string, string]>();
-        for (const path of Object.keys(this.fullGraph)) {
-            this.resultGraph.nodes.push({
-                id: path,
-                group: this.fullGraph[path].group,
-            });
-
-            for (const neighbor of Object.keys(this.fullGraph[path].neighbors)) {
-                const linkKey = this.getLinkKey(path, neighbor);
-                if (!addedLinks.has(linkKey)) {
-                    addedLinks.add(linkKey);
-                    this.resultGraph.links.push({
-                        source: path,
-                        target: neighbor,
-                        keys: this.fullGraph[path].neighbors[neighbor].keys,
-                        types: Array.from(this.fullGraph[path].neighbors[neighbor].types),
-                    });
-                }
             }
         }
     }
