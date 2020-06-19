@@ -1,10 +1,10 @@
 import React, { useReducer } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
-import { isOk } from "../../../common/tools";
-import { ISearchResult } from "../../../common/types";
-import { VIRTUALIZE_CONSTANTS } from "../../utils/constants";
-import { useL10n } from "../../utils/l10n-hooks";
+import { isOk } from "../../../../common/tools";
+import { ISearchResult } from "../../../../common/types";
+import { VIRTUALIZE_CONSTANTS } from "../../../utils/constants";
+import { useL10n } from "../../../utils/l10n-hooks";
 import { IItemData, SkipRow } from "./SkipRow";
 
 interface IProps {

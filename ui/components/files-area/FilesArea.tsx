@@ -5,8 +5,8 @@ import * as React from "react";
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/l10n-hooks";
-import { DuplicatesList } from "./DuplicatesList";
-import { SkipsList } from "./SkipsList";
+import { DuplicatesList } from "./duplicates/DuplicatesList";
+import { SkipsList } from "./skips/SkipsList";
 
 interface IProps {
     searchInfo: ISearchResult;

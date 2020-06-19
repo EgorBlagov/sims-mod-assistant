@@ -2,10 +2,10 @@ import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip, Typog
 import Error from "@material-ui/icons/Error";
 import path from "path";
 import React from "react";
-import { Translation } from "../../../common/l10n";
-import { IFileAdditionalInfo, ISkippedFile, SkipReasons } from "../../../common/types";
-import { VIRTUALIZE_CONSTANTS } from "../../utils/constants";
-import { getShowFileHandler } from "./tools";
+import { Translation } from "../../../../common/l10n";
+import { IFileAdditionalInfo, ISkippedFile, SkipReasons } from "../../../../common/types";
+import { VIRTUALIZE_CONSTANTS } from "../../../utils/constants";
+import { getShowFileHandler } from "../tools";
 
 export interface IItemData {
     skips: ISkippedFile[];

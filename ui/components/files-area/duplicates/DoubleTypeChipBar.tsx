@@ -1,8 +1,8 @@
 import { Box, Chip, Tooltip } from "@material-ui/core";
 import _ from "lodash";
 import React from "react";
-import { DoubleTypes } from "../../../common/types";
-import { useL10n } from "../../utils/l10n-hooks";
+import { DoubleTypes } from "../../../../common/types";
+import { useL10n } from "../../../utils/l10n-hooks";
 
 interface IProps {
     types: DoubleTypes[];

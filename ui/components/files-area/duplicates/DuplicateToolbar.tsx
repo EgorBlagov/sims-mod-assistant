@@ -3,10 +3,10 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import FolderOpenIcon from "@material-ui/icons/FolderOpen";
 import { clipboard } from "electron";
 import React from "react";
-import { useL10n } from "../../utils/l10n-hooks";
-import { useNotification } from "../../utils/notifications";
+import { useL10n } from "../../../utils/l10n-hooks";
+import { useNotification } from "../../../utils/notifications";
+import { getShowFileHandler } from "../tools";
 import { SimsStudioButton } from "./SimsStudioButton";
-import { getShowFileHandler } from "./tools";
 
 const useStyles = makeStyles((theme) => ({
     button: {

@@ -1,11 +1,11 @@
 import { IconButton, Tooltip } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
-import { ipc } from "../../../common/ipc";
-import { isOk } from "../../../common/tools";
-import { TState } from "../../redux/reducers";
-import { useL10n } from "../../utils/l10n-hooks";
-import { SimsIcon } from "../icons/SimsIcon";
+import { ipc } from "../../../../common/ipc";
+import { isOk } from "../../../../common/tools";
+import { TState } from "../../../redux/reducers";
+import { useL10n } from "../../../utils/l10n-hooks";
+import { SimsIcon } from "../../icons/SimsIcon";
 
 interface IProps {
     path: string;
