@@ -1,101 +1,48 @@
-import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip, Typography } from "@material-ui/core";
-import Error from "@material-ui/icons/Error";
-import path from "path";
-import * as React from "react";
+import React, { useReducer } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
 import { isOk } from "../../../common/tools";
-import { ISearchResult, SkipReasons } from "../../../common/types";
+import { ISearchResult } from "../../../common/types";
+import { VIRTUALIZE_CONSTANTS } from "../../utils/constants";
 import { useL10n } from "../../utils/l10n-hooks";
-import { getShowFileHandler } from "./tools";
+import { IItemData, SkipRow } from "./SkipRow";
 
 interface IProps {
     searchInfo: ISearchResult;
 }
 
-type TChipMap = {
-    [K in SkipReasons]: {
-        label: string;
-        tooltip: string;
-    };
-};
-
-const VIRTUALIZE_CONSTANTS = {
-    ITEM_HEIGHT: 72,
-    PLACEHOLDER_PADDING_LEFT: 72,
-    PLACEHOLDER_PADDING_TOP: 14,
-};
-
 export const SkipsList = ({ searchInfo }: IProps) => {
-    const [l10n] = useL10n();
+    const [l10n, language] = useL10n();
 
     if (!isOk(searchInfo)) {
         return null;
     }
 
-    const chipMap: TChipMap = {
-        [SkipReasons.UnsupportedSimsVersion]: {
-            label: l10n.unsupportedSimsVersion,
-            tooltip: l10n.unsupportedSimsVersionTooltip,
-        },
-        [SkipReasons.NotPackage]: {
-            label: l10n.notPackage,
-            tooltip: l10n.notPackageDescription,
-        },
+    // hask to force update on language change, since
+    // react-window doesn't rerender items whenver it's possible
+    const [key, increaseKey] = useReducer((state) => state + 1, 0);
+    React.useEffect(() => {
+        increaseKey();
+    }, [language]);
 
-        [SkipReasons.UnableToParse]: {
-            label: l10n.unableToParse,
-            tooltip: l10n.unableToParseDescription,
-        },
-    };
-
-    const Row = ({ index, style, isScrolling }: { index: number; style: object; isScrolling?: boolean }) => {
-        const x = searchInfo.skips[index];
-
-        const content = isScrolling ? (
-            <Typography
-                style={{
-                    paddingTop: VIRTUALIZE_CONSTANTS.PLACEHOLDER_PADDING_TOP,
-                    paddingLeft: VIRTUALIZE_CONSTANTS.PLACEHOLDER_PADDING_LEFT,
-                }}
-            >
-                {path.basename(x.path)}
-            </Typography>
-        ) : (
-            <ListItem key={x.path} button={true} onClick={getShowFileHandler(x.path)}>
-                <ListItemIcon>
-                    <Avatar>
-                        <Error />
-                    </Avatar>
-                </ListItemIcon>
-                <Tooltip title={x.path}>
-                    <ListItemText
-                        primary={path.basename(x.path)}
-                        secondary={l10n.date(searchInfo.fileInfos[x.path].modifiedDate)}
-                    />
-                </Tooltip>
-
-                <Tooltip title={chipMap[x.reason].tooltip}>
-                    <Box ml={1}>
-                        <Chip label={chipMap[x.reason].label} color="secondary" />
-                    </Box>
-                </Tooltip>
-            </ListItem>
-        );
-        return <div style={style}>{content}</div>;
+    const itemData: IItemData = {
+        skips: searchInfo.skips,
+        fileInfos: searchInfo.fileInfos,
+        l10n,
     };
 
     return (
-        <AutoSizer>
+        <AutoSizer key={key}>
             {({ height, width }) => (
                 <FixedSizeList
                     height={height}
                     width={width}
                     itemCount={searchInfo.skips.length}
-                    itemSize={VIRTUALIZE_CONSTANTS.ITEM_HEIGHT}
+                    itemData={itemData}
+                    itemSize={VIRTUALIZE_CONSTANTS.SKIP_ITEM_HEIGHT}
                     useIsScrolling={true}
                 >
-                    {Row}
+                    {SkipRow}
                 </FixedSizeList>
             )}
         </AutoSizer>
