@@ -115,6 +115,7 @@ class Searcher implements ISearcher {
 
         const aggregator = new GraphAggregator(indexer.getIndex());
         const fileInfos = this.getFileInfos(allFiles);
+
         return {
             duplicates: aggregator.getResult(),
             skips: indexer.getSkips(),

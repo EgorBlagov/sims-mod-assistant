@@ -80,7 +80,7 @@ export class GraphAggregator {
     private buildGroupsAndSummaries() {
         this.resultDuplicateGroups = [];
         const visited = new Set<string>();
-        const visitedLinks = new Set<[string, string]>();
+        const visitedLinks = new Set<string>();
 
         const dfs = (path: string, group: number) => {
             const currentGroup = this.resultDuplicateGroups[group];
@@ -132,7 +132,7 @@ export class GraphAggregator {
         }
     }
 
-    private getLinkKey(path: string, neighbor: string): [string, string] {
-        return path <= neighbor ? [path, neighbor] : [neighbor, path];
+    private getLinkKey(path: string, neighbor: string): string {
+        return path <= neighbor ? `${path}-${neighbor}` : `${neighbor}-${path}`;
     }
 }
