@@ -4,7 +4,8 @@ import * as d3 from "d3";
 import path from "path";
 import React, { createRef } from "react";
 import { Translation } from "../../../../../common/l10n";
-import { IDuplicateGraph } from "../../../../../common/types";
+import { DoubleTypes, IDuplicateGraph } from "../../../../../common/types";
+import { doubleTypeMap } from "../../../../utils/language-mapping";
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -32,7 +33,6 @@ const styles = (theme: Theme) =>
         },
         tooltip: {
             position: "absolute",
-            textAlign: "center",
             padding: theme.spacing(1),
             fontFamily: "monospace",
             background: theme.palette.text.secondary,
@@ -62,10 +62,10 @@ export class D3GraphImpl extends React.Component<IProps> {
     private d3RootRef = createRef<HTMLDivElement>();
 
     componentDidMount() {
-        const { graph: data, classes, l10n } = this.props;
+        const { graph, classes, l10n } = this.props;
 
-        const links = data.links.map((d) => Object.create(d));
-        const nodes = data.nodes.map((d) => Object.create(d));
+        const links = graph.links.map((d) => Object.create(d));
+        const nodes = graph.nodes.map((d) => Object.create(d));
 
         const simulation = this.createSimulation(nodes, links);
         const svg = this.createSvg();
@@ -181,7 +181,7 @@ export class D3GraphImpl extends React.Component<IProps> {
     };
 
     private createLinkLabel = (svg: any, links: any[], tooltip: any) => {
-        const { classes } = this.props;
+        const { classes, l10n } = this.props;
         const linkLabel = svg.append("g").selectAll("g").data(links).join("g");
 
         linkLabel
@@ -189,7 +189,10 @@ export class D3GraphImpl extends React.Component<IProps> {
             .attr("x", 0)
             .attr("y", 0)
             .attr("class", classes.linkLabel)
-            .text((d) => d.types.join(", "))
+            .text((d) => {
+                const types: DoubleTypes[] = d.types;
+                return types.map((t) => doubleTypeMap[t](l10n).title).join(", ");
+            })
             .on("mouseover", (d) => {
                 tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
 
@@ -198,9 +201,9 @@ export class D3GraphImpl extends React.Component<IProps> {
                 const x = labelRect.x + labelRect.width - rootRect.left;
                 const y = labelRect.y + labelRect.height - rootRect.top;
                 tooltip
-                    .html(d.keys.join("<br/>"))
-                    .style("left", x + "px")
-                    .style("top", y + "px");
+                    .html(`${l10n.conflictKeysDescription}<br/><br/>${d.keys.join("<br/>")}`)
+                    .style("left", `${x}px`)
+                    .style("top", `${y}px`);
             })
             .on("mouseout", () => {
                 tooltip.transition().duration(200).delay(200).style("opacity", 0).style("pointer-events", "none");
