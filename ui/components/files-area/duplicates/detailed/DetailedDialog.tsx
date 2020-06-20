@@ -42,7 +42,9 @@ export const DetailedDialog = ({ visible, close, graph }: IProps) => {
                 </Toolbar>
             </AppBar>
             <Box height="100%">
-                <AutoSizer>{({ height, width }) => <D3Graph height={height} width={width} graph={graph} />}</AutoSizer>
+                <AutoSizer>
+                    {({ height, width }) => <D3Graph height={height} width={width} graph={graph} l10n={l10n} />}
+                </AutoSizer>
             </Box>
         </Dialog>
     );

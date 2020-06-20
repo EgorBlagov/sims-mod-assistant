@@ -1,29 +1,59 @@
-import { withStyles } from "@material-ui/core";
+import { createStyles, Theme, withStyles } from "@material-ui/core";
+import { WithStyles } from "@material-ui/core/styles/withStyles";
 import * as d3 from "d3";
-import _ from "lodash";
 import path from "path";
 import React, { createRef } from "react";
+import { Translation } from "../../../../../common/l10n";
 import { IDuplicateGraph } from "../../../../../common/types";
 
-interface IOwnProps {
+const styles = (theme: Theme) =>
+    createStyles({
+        container: {
+            overflow: "hidden",
+            position: "relative",
+            whiteSpace: "nowrap",
+        },
+        nodeCircle: {
+            fill: theme.palette.primary.main,
+            cursor: "pointer",
+            stroke: "white",
+            strokeWidth: 1.5,
+        },
+        linkLabel: {
+            fontSize: "0.75em",
+            fontWeight: 700,
+            fill: theme.palette.text.secondary,
+            textAnchor: "middle",
+        },
+        labelBorder: {
+            fill: "none",
+            stroke: "white",
+            strokeWidth: 3,
+        },
+        tooltip: {
+            position: "absolute",
+            textAlign: "center",
+            padding: theme.spacing(1),
+            fontFamily: "monospace",
+            background: theme.palette.text.secondary,
+            borderRadius: theme.shape.borderRadius,
+            color: "white",
+            pointerEvents: "none",
+            userSelect: "text",
+        },
+        link: {
+            stroke: theme.palette.text.secondary,
+            strokeWidth: 1.5,
+            strokeOpacity: 0.6,
+        },
+    });
+
+interface IProps extends WithStyles<typeof styles> {
     graph: IDuplicateGraph;
     height: number;
     width: number;
+    l10n: Translation;
 }
-
-interface IPropsFromStyles {
-    classes: {
-        [K in keyof ReturnType<typeof styles>]: string;
-    };
-}
-
-interface IProps extends IOwnProps, IPropsFromStyles {}
-
-const styles = (theme) => ({
-    node: {
-        fill: theme.palette.primary.main,
-    },
-});
 
 export class D3GraphImpl extends React.Component<IProps> {
     private d3RootRef = createRef<HTMLDivElement>();
@@ -50,7 +80,7 @@ export class D3GraphImpl extends React.Component<IProps> {
             return d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
         };
 
-        const { graph: data, width, height, classes } = this.props;
+        const { graph: data, width, height, classes, l10n } = this.props;
 
         const chart = (mountpoint) => {
             const links = data.links.map((d) => Object.create(d));
@@ -69,17 +99,33 @@ export class D3GraphImpl extends React.Component<IProps> {
             const svg = mountpoint
                 .append("svg")
                 .attr("viewBox", [-width / 2, -height / 2, width, height])
-                .style("font", "12px sans-serif");
+                .style("font-family", "sans-serif");
 
-            const link = svg
-                .append("g")
-                .attr("stroke", "#999")
-                .attr("stroke-width", 1.5)
-                .attr("stroke-opacity", 0.6)
-                .selectAll("line")
-                .data(links)
-                .join("line")
-                .attr("stroke", "black");
+            const tooltip = mountpoint
+                .append("div")
+                .attr("class", classes.tooltip)
+                .style("opacity", 0)
+                .style("left", 0)
+                .style("top", 0)
+                .on("mouseover", () => {
+                    tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
+                })
+                .on("mouseout", () => {
+                    tooltip.transition().duration(200).style("opacity", 0).style("pointer-events", "none");
+                });
+
+            const link = svg.append("g").attr("class", classes.link).selectAll("line").data(links).join("line");
+
+            const node = svg.append("g").selectAll("g").data(nodes).join("g").call(drag(simulation));
+
+            node.append("circle").attr("class", classes.nodeCircle).attr("r", 10);
+
+            node.append("text")
+                .attr("x", "1em")
+                .text((d) => path.basename(d.path))
+                .clone(true)
+                .lower()
+                .attr("class", classes.labelBorder);
 
             const linkLabel = svg.append("g").selectAll("g").data(links).join("g");
 
@@ -87,35 +133,29 @@ export class D3GraphImpl extends React.Component<IProps> {
                 .append("text")
                 .attr("x", 0)
                 .attr("y", 0)
-                .text((d) => d.types.join(","));
+                .attr("class", classes.linkLabel)
+                .text((d) => d.types.join(", "))
+                .on("mouseover", (d) => {
+                    tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
 
-            const node = svg
-                .append("g")
-                .attr("fill", "currentColor")
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
-                .selectAll("g")
-                .data(nodes)
-                .join("g")
-                .call(drag(simulation));
+                    const rootRect = this.d3RootRef.current.getBoundingClientRect();
+                    const labelRect = d3.event.target.getBoundingClientRect();
+                    const x = labelRect.x + labelRect.width - rootRect.left;
+                    const y = labelRect.y + labelRect.height - rootRect.top;
+                    tooltip
+                        .html(d.keys.join("<br/>"))
+                        .style("left", x + "px")
+                        .style("top", y + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.transition().duration(200).delay(200).style("opacity", 0).style("pointer-events", "none");
+                });
 
-            node.append("circle")
-                .attr("class", classes.node)
-
-                .attr("stroke", "white")
-                .attr("stroke-width", 1.5)
-                .attr("r", 10);
-
-            node.append("text")
-                .attr("font-size", "1.5em")
-                .attr("x", 8)
-                .attr("y", "0.31em")
-                .text((d) => path.basename(d.path))
+            linkLabel
+                .selectAll("text")
                 .clone(true)
                 .lower()
-                .attr("fill", "none")
-                .attr("stroke", "white")
-                .attr("stroke-width", 3);
+                .attr("class", [classes.labelBorder, classes.linkLabel].join(" "));
 
             simulation.on("tick", () => {
                 link.attr("x1", (d) => d.source.x)
@@ -136,14 +176,17 @@ export class D3GraphImpl extends React.Component<IProps> {
         chart(vis);
     }
 
-    shouldComponentUpdate(nextProps: IProps) {
-        return _.isEqual(this.props.graph, nextProps.graph);
+    componentDidUpdate() {
+        const { width, height } = this.props;
+        d3.select(this.d3RootRef.current)
+            .select("svg")
+            .attr("viewBox", [-width / 2, -height / 2, width, height] as any);
     }
 
     render() {
-        const { height, width } = this.props;
+        const { height, width, classes } = this.props;
 
-        return <div style={{ height, width }} ref={this.d3RootRef} />;
+        return <div style={{ height, width }} className={classes.container} ref={this.d3RootRef} />;
     }
 }
 
