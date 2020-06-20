@@ -17,7 +17,7 @@ export const DoubleTypeChipBar = ({ types }: IProps) => {
             {_.map(types, (type: DoubleTypes) => (
                 <Tooltip key={type} title={doubleTypeMap[type](l10n).tooltip}>
                     <Box mr={1}>
-                        <Chip size="small" label={doubleTypeMap[type](l10n).title} color="secondary" />
+                        <Chip size="small" label={doubleTypeMap[type](l10n).title} color="primary" />
                     </Box>
                 </Tooltip>
             ))}
