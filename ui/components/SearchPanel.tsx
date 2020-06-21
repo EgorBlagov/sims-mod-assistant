@@ -1,5 +1,5 @@
 import { Box, Grow } from "@material-ui/core";
-import * as React from "react";
+import React from "react";
 import { getErrorMessage } from "../../common/errors";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";

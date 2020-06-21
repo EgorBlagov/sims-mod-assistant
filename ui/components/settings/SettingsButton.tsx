@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogContent, DialogTitle, List } from "@material-ui/core";
-import * as React from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getErrorMessage } from "../../../common/errors";
 import { Language } from "../../../common/l10n";

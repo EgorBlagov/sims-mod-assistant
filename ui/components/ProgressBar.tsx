@@ -1,5 +1,5 @@
 import { Box, Button, Collapse, LinearProgress, makeStyles } from "@material-ui/core";
-import * as React from "react";
+import React from "react";
 import { isOk } from "../../common/tools";
 import { TTicketId } from "../../common/types";
 import { ipcHooks } from "../utils/hooks";

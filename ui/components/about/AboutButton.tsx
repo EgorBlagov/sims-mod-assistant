@@ -1,5 +1,5 @@
 import { Button } from "@material-ui/core";
-import * as React from "react";
+import React from "react";
 import { useL10n } from "../../utils/l10n-hooks";
 import { AboutDialog } from "./AboutDialog";
 

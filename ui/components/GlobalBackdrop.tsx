@@ -1,5 +1,5 @@
 import { Backdrop, CircularProgress, makeStyles } from "@material-ui/core";
-import * as React from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { TState } from "../redux/reducers";
 

@@ -1,6 +1,6 @@
 import { Box, Button, makeStyles, Typography } from "@material-ui/core";
 import { remote } from "electron";
-import * as React from "react";
+import React from "react";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { useBackdropBound } from "../utils/backdrop-hooks";

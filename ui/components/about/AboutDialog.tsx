@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogTitle, List, Typography } from "@material-
 import Github from "@material-ui/icons/GitHub";
 import Mail from "@material-ui/icons/Mail";
 import _ from "lodash";
-import * as React from "react";
+import React from "react";
 import assistantAvatar from "../../../assets/assistant-avatar.png";
 import authorAvatar from "../../../assets/author-avatar.png";
 import pjson from "../../../package.json";

@@ -1,7 +1,7 @@
 import { Avatar, Box, IconButton, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@material-ui/core";
 import { shell } from "electron";
 import _ from "lodash";
-import * as React from "react";
+import React from "react";
 
 export interface IContactIcon {
     icon: React.ReactElement;

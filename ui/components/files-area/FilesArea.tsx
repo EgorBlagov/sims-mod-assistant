@@ -1,8 +1,8 @@
 import { AppBar, Box, Fade, makeStyles, Tab } from "@material-ui/core";
 import { TabContext, TabList, TabPanel } from "@material-ui/lab";
 import classNames from "classnames";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
 import { useL10n } from "../../utils/l10n-hooks";

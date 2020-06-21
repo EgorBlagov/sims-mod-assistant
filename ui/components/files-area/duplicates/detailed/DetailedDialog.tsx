@@ -1,6 +1,6 @@
 import { AppBar, Box, Dialog, IconButton, makeStyles, Toolbar, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import * as React from "react";
+import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { isOk } from "../../../../../common/tools";
 import { IDuplicateGraph } from "../../../../../common/types";

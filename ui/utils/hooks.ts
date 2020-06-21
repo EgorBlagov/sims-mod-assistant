@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ipc, IpcSchema } from "../../common/ipc";
 import { TIpcEventHandler, TIpcOutput, TIpcSchema } from "../../common/ipc/ipc-creator";
 
