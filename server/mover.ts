@@ -8,14 +8,10 @@ export interface IMover {
 
 class Mover implements IMover {
     async move(params: IMoveParams): Promise<void> {
-        throw Error("Not implemented");
-
-        // for (const duplicateEntry of params.info.duplicates) {
-        //     for (const duplicate of duplicateEntry.duplicates) {
-        //         const targetName = await this.findFreeName(params.targetDir, duplicate.basename);
-        //         await fs.promises.rename(duplicate.path, targetName);
-        //     }
-        // }
+        for (const filePath of params.filePaths) {
+            const targetName = await this.findFreeName(params.targetDir, path.basename(filePath));
+            await fs.promises.rename(filePath, targetName);
+        }
     }
 
     private async fileExists(targetPath: string): Promise<boolean> {

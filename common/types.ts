@@ -97,6 +97,7 @@ export interface ISearchError {
 }
 
 export interface IMoveParams {
+    filePaths: string[];
     targetDir: string;
 }
 

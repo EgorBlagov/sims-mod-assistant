@@ -81,7 +81,7 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            <DuplicateMainToolbar anySelected={_.some(Object.values(checkedItems))} setChecked={setAllChecked} />
+            <DuplicateMainToolbar selectedPaths={Object.entries(checkedItems).filter(([__, checked]) => checked).map(([p]) => p)} setChecked={setAllChecked} />
             <Box flex="auto" className={classes.scrollY}>
                 <List>
                     {_.map(searchInfo.duplicates, (x, i) => {

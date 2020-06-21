@@ -7,7 +7,7 @@ import { useL10n } from "../../../utils/l10n-hooks";
 import { useNotification } from "../../../utils/notifications";
 
 interface IProps {
-    anySelected: boolean;
+    selectedPaths: string[];
     setChecked: (checked: boolean) => void;
 }
 
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DuplicateMainToolbar = ({ anySelected, setChecked }: IProps) => {
+export const DuplicateMainToolbar = ({ selectedPaths, setChecked }: IProps) => {
     const [l10n] = useL10n();
     const classes = useStyles();
 
@@ -30,7 +30,10 @@ export const DuplicateMainToolbar = ({ anySelected, setChecked }: IProps) => {
         try {
             const dialogResult = await remote.dialog.showOpenDialog({ properties: ["openDirectory"] });
             if (!dialogResult.canceled) {
-                await ipc.renderer.rpc.moveDuplicates({ targetDir: dialogResult.filePaths[0] });
+                await ipc.renderer.rpc.moveDuplicates({
+                    targetDir: dialogResult.filePaths[0],
+                    filePaths: selectedPaths,
+                });
                 notification.showSuccess(l10n.moveSuccess);
                 // TODO: view update logic
             }
@@ -68,7 +71,7 @@ export const DuplicateMainToolbar = ({ anySelected, setChecked }: IProps) => {
                     color="primary"
                     size="small"
                     onClick={openDalog}
-                    disabled={moveDisabled || !anySelected}
+                    disabled={moveDisabled || selectedPaths.length === 0}
                 >
                     {l10n.moveDuplicates}
                 </Button>
