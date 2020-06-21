@@ -4,7 +4,7 @@ import { getErrorMessage } from "../../common/errors";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
 import { ISearchParams, ISearchResult, TTicketId } from "../../common/types";
-import { ipcHooks } from "../utils/hooks";
+import { ipcHooks } from "../utils/ipc-hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
 import { FilesArea } from "./files-area/FilesArea";

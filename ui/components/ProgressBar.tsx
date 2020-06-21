@@ -2,7 +2,7 @@ import { Box, Button, Collapse, LinearProgress, makeStyles } from "@material-ui/
 import React from "react";
 import { isOk } from "../../common/tools";
 import { TTicketId } from "../../common/types";
-import { ipcHooks } from "../utils/hooks";
+import { ipcHooks } from "../utils/ipc-hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { EstimatedTime } from "./EstimatedTime";
 
