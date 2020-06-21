@@ -1,14 +1,25 @@
 import { ThemeProvider } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
+import { getErrorMessage } from "../../common/errors";
+import * as ActionCreators from "../redux/action-creators";
 import { appTheme } from "../theme";
-import { useLoadSettings } from "../utils/settings/settings-hooks";
+import { useL10n } from "../utils/l10n-hooks";
+import { useNotification } from "../utils/notifications";
+import { useThunkDispatch } from "../utils/thunk-hooks";
 import "./common.css";
 import { GlobalBackdrop } from "./GlobalBackdrop";
 import { Main } from "./Main";
 import { NotificationSnackbar } from "./NotificationSnackbar";
-
 export const App = () => {
-    useLoadSettings();
+    const [l10n] = useL10n();
+    const notification = useNotification();
+    const dispatch = useThunkDispatch();
+
+    useEffect(() => {
+        dispatch(ActionCreators.settingsLoadRestAndValidate()).catch((err) =>
+            notification.showError(getErrorMessage(err, l10n)),
+        );
+    }, []);
 
     return (
         <>
