@@ -1,7 +1,7 @@
 import { createTypesafeIpc, createTypesafeIpcChannel, createTypesafeIpcEvent } from "./ipc/ipc-creator";
 import {
     IDirectoryInfo,
-    IDrectoryParams,
+    IDirectoryParams,
     IMoveParams,
     IOpenInStudioParams,
     ISearchError,
@@ -14,8 +14,8 @@ import {
 
 export const IpcSchema = {
     rpc: {
-        getDirectoryInfo: createTypesafeIpcChannel<IDrectoryParams, IDirectoryInfo>(),
-        startSearch: createTypesafeIpcChannel<IDrectoryParams & ISearchParams, IStartResult>(),
+        getDirectoryInfo: createTypesafeIpcChannel<IDirectoryParams, IDirectoryInfo>(),
+        startSearch: createTypesafeIpcChannel<IDirectoryParams & ISearchParams, IStartResult>(),
         interruptSearch: createTypesafeIpcChannel<void, void>(),
         moveDuplicates: createTypesafeIpcChannel<IMoveParams, void>(),
         isSimsStudioDir: createTypesafeIpcChannel<string, void>(),

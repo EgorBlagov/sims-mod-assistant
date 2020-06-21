@@ -13,7 +13,7 @@ export interface IStartResult {
     searchTicketId: TTicketId;
 }
 
-export interface IDrectoryParams {
+export interface IDirectoryParams {
     targetPath: string;
 }
 
