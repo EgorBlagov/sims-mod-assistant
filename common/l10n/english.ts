@@ -68,4 +68,6 @@ export const english = {
     conflictKeysDescription: "Conflicting keys (Type-Group-Instance):",
     selectAll: "Select all",
     clearSelection: "Clear selection",
+    searchPlaceholder: "Search...",
+    regexHelp: "You should enter Regular expression here",
 };

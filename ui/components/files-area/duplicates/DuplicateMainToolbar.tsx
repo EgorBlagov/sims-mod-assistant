@@ -1,14 +1,18 @@
-import { AppBar, Box, Button, makeStyles } from "@material-ui/core";
+import { AppBar, Box, Button, InputAdornment, makeStyles, TextField, Tooltip } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
 import { ipc } from "../../../../common/ipc";
 import { useBackdropBound } from "../../../utils/backdrop-hooks";
 import { useL10n } from "../../../utils/l10n-hooks";
 import { useNotification } from "../../../utils/notifications";
+import { isValidRegex } from "../../../utils/regex";
 
 interface IProps {
     selectedPaths: string[];
     setChecked: (checked: boolean) => void;
+    filter: string;
+    setFilter: (newFilter: string) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DuplicateMainToolbar = ({ selectedPaths, setChecked }: IProps) => {
+export const DuplicateMainToolbar = ({ selectedPaths, setChecked, filter, setFilter }: IProps) => {
     const [l10n] = useL10n();
     const classes = useStyles();
 
@@ -49,6 +53,10 @@ export const DuplicateMainToolbar = ({ selectedPaths, setChecked }: IProps) => {
     const selectAll = () => setChecked(true);
     const clearSelection = () => setChecked(false);
 
+    const setFilterHandler = (event) => {
+        setFilter(event.target.value);
+    };
+
     return (
         <AppBar color="transparent" position="static">
             <Box display="flex" p={2}>
@@ -65,7 +73,24 @@ export const DuplicateMainToolbar = ({ selectedPaths, setChecked }: IProps) => {
                 <Button variant="outlined" color="secondary" size="small" onClick={clearSelection}>
                     {l10n.clearSelection}
                 </Button>
-                <Box flexGrow={1} />
+                <Box flexGrow={1} alignItems="center" display="flex" px={1}>
+                    <Tooltip title={l10n.regexHelp}>
+                        <TextField
+                            error={!isValidRegex(filter)}
+                            fullWidth={true}
+                            placeholder={l10n.searchPlaceholder}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon color="primary" />
+                                    </InputAdornment>
+                                ),
+                            }}
+                            value={filter}
+                            onChange={setFilterHandler}
+                        />
+                    </Tooltip>
+                </Box>
                 <Button
                     variant="contained"
                     color="primary"

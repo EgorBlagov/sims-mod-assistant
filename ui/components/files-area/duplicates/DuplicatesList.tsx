@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { isOk } from "../../../../common/tools";
 import { IDuplicateGraph, ISearchResult } from "../../../../common/types";
 import { useL10n } from "../../../utils/l10n-hooks";
+import { isValidRegex } from "../../../utils/regex";
 import { usePathStyles } from "../tools";
 import { DetailedDialog } from "./detailed/DetailedDialog";
 import { DuplicateGroupToolbar, GroupCheckboxState } from "./DuplicateGroupToolbar";
@@ -31,6 +32,18 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
     const [detailedVisible, setDetailedVisible] = useState<boolean>(false);
     const [graph, setGraph] = useState<IDuplicateGraph>(undefined);
     const [checkedItems, setCheckedItems] = useState<ICheckedInfo>({});
+    const [filter, setFilter] = useState<string>("");
+
+    const filterValid = isOk(filter) && filter.length !== 0 && isValidRegex(filter);
+
+    const filterPaths = (paths: string[]): string[] => {
+        if (filterValid) {
+            const regex = new RegExp(filter);
+            return paths.filter((p) => p.search(regex) !== -1);
+        }
+
+        return paths;
+    };
 
     useEffect(() => {
         if (isOk(searchInfo)) {
@@ -54,15 +67,27 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
     const getGroupCheckboxHandler = (groupIndex: number) => (__, checked: boolean) => {
         const newCheckedItems = { ...checkedItems };
 
-        for (const node of searchInfo.duplicates[groupIndex].detailed.nodes) {
-            newCheckedItems[node.path] = checked;
+        const paths = filterPaths(searchInfo.duplicates[groupIndex].detailed.nodes.map((n) => n.path));
+        for (const filePath of paths) {
+            newCheckedItems[filePath] = checked;
         }
 
         setCheckedItems(newCheckedItems);
     };
 
     const setAllChecked = (checked: boolean) => {
-        setCheckedItems(_.mapValues(checkedItems, () => checked));
+        const newCheckedItems = { ...checkedItems };
+        const allPaths = searchInfo.duplicates.reduce(
+            (prev, g) => prev.concat(g.detailed.nodes.map((n) => n.path)),
+            [] as string[],
+        );
+        const paths = filterPaths(allPaths);
+
+        for (const filePath of paths) {
+            newCheckedItems[filePath] = checked;
+        }
+
+        setCheckedItems(newCheckedItems);
     };
 
     const closeDetailedDialog = () => {
@@ -86,6 +111,8 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                     .filter(([__, checked]) => checked)
                     .map(([p]) => p)}
                 setChecked={setAllChecked}
+                filter={filter}
+                setFilter={setFilter}
             />
             <Box flex="auto" className={classes.scrollY}>
                 <List>
@@ -99,6 +126,11 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                                 : GroupCheckboxState.Unchecked;
                         }
 
+                        const currentPaths = filterPaths(x.detailed.nodes.map((n) => n.path));
+                        if (currentPaths.length === 0) {
+                            return null;
+                        }
+
                         return (
                             <React.Fragment key={i}>
                                 <DuplicateGroupToolbar
@@ -107,22 +139,22 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                                     onChange={getGroupCheckboxHandler(i)}
                                     openDetailed={openDetailedDialog}
                                 />
-                                {_.map(x.detailed.nodes, (node) => (
-                                    <ListItem key={node.path}>
+                                {_.map(currentPaths, (filePath) => (
+                                    <ListItem key={filePath}>
                                         <Checkbox
                                             color="primary"
-                                            checked={Object.keys(checkedItems).length > 0 && checkedItems[node.path]}
-                                            onChange={getCheckboxHandler(node.path)}
+                                            checked={Object.keys(checkedItems).length > 0 && checkedItems[filePath]}
+                                            onChange={getCheckboxHandler(filePath)}
                                         />
-                                        <Tooltip title={node.path}>
+                                        <Tooltip title={filePath}>
                                             <ListItemText
                                                 className={pathClasses.base}
-                                                primary={path.basename(node.path)}
-                                                secondary={l10n.date(searchInfo.fileInfos[node.path].modifiedDate)}
+                                                primary={path.basename(filePath)}
+                                                secondary={l10n.date(searchInfo.fileInfos[filePath].modifiedDate)}
                                             />
                                         </Tooltip>
                                         <Box flexGrow={1}>
-                                            <DuplicateToolbar path={node.path} />
+                                            <DuplicateToolbar path={filePath} />
                                         </Box>
                                     </ListItem>
                                 ))}

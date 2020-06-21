@@ -70,4 +70,6 @@ export const russian: Translation = {
     conflictKeysDescription: "Конфликтующие ключи (Тип-Группа-Экземпляр):",
     clearSelection: "Снять выделение",
     selectAll: "Выделить все",
+    searchPlaceholder: "Поиск...",
+    regexHelp: "В этом поле должно быть Регулярное выражение",
 };
