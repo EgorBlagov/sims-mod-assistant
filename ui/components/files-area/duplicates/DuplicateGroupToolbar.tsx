@@ -24,16 +24,16 @@ export const DuplicateGroupToolbar = ({ group, openDetailed, groupChecked, onCha
     return (
         <ListItem>
             <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                <Checkbox
+                    indeterminate={groupChecked === GroupCheckboxState.Indeterminate}
+                    checked={groupChecked !== GroupCheckboxState.Unchecked}
+                    onChange={onChange}
+                />
                 <Box flexGrow={1}>
-                    <Checkbox
-                        indeterminate={groupChecked === GroupCheckboxState.Indeterminate}
-                        checked={groupChecked !== GroupCheckboxState.Unchecked}
-                        onChange={onChange}
-                    />
+                    <DoubleTypeChipBar types={group.types} />
                 </Box>
-                <DoubleTypeChipBar types={group.types} />
                 <Tooltip title={l10n.detailed} placement="top">
-                    <IconButton onClick={onClick} size="small" color="primary">
+                    <IconButton onClick={onClick} size="small" color="secondary">
                         <GraphIcon />
                     </IconButton>
                 </Tooltip>

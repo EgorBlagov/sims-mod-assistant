@@ -8,7 +8,6 @@ import { ipcHooks } from "../utils/hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
 import { FilesArea } from "./files-area/FilesArea";
-import { MoveButton } from "./MoveButton";
 import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
 import { StartButton } from "./StartButton";
@@ -76,7 +75,6 @@ export const SearchPanel = ({ targetPath }: IProps) => {
                 </Box>
             </Grow>
             <FilesArea searchInfo={searchResult} />
-            <MoveButton searchDone={searchDone} resetSearchState={resetSearchState} />
         </>
     );
 };

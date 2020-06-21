@@ -15,7 +15,7 @@ export const russian: Translation = {
     errorOpenPath: (msg: string) => `Не удалось открыть директории через диалог: ${msg}`,
     searchFinished: "Поиск завершен",
     date: (d: Date) => d.toLocaleString("ru-RU"),
-    moveDuplicates: "Переместить все дубликаты в отдельную папку",
+    moveDuplicates: "Переместить выбранные",
     enableForSearch: "Включите хотя бы один параметр чтобы запустить поиск",
     conflicts: (count: number) => `Конфликты (${count})`,
     skippedFiles: (count: number) => `Пропущенные файлы (${count})`,
@@ -42,7 +42,7 @@ export const russian: Translation = {
     catalog: "Каталог",
     catalogDescription: "Предметы для строительства: столы, фонтаны, кровати...",
 
-    skintone: "Skintone",
+    skintone: "Скинтон",
     skintoneDescription: "Макияж, особенности кожи, маски...",
 
     cas: "CAS",
@@ -68,4 +68,6 @@ export const russian: Translation = {
     studioNotConfigured: "Путь к Sims4Studio не настроен (это можно сделать в Настройках)",
     copyPathSuccess: (path: string) => `Путь ${path} успешно скопирован в буфер обмена`,
     conflictKeysDescription: "Конфликтующие ключи (Тип-Группа-Экземпляр):",
+    clearSelection: "Снять выделение",
+    selectAll: "Выделить все",
 };

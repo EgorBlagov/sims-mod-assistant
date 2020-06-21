@@ -1,4 +1,4 @@
-import { Box, Checkbox, Divider, List, ListItem, ListItemText, Tooltip } from "@material-ui/core";
+import { Box, Checkbox, Divider, List, ListItem, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
 import _ from "lodash";
 import path from "path";
 import React, { useEffect, useState } from "react";
@@ -8,52 +8,56 @@ import { useL10n } from "../../../utils/l10n-hooks";
 import { usePathStyles } from "../tools";
 import { DetailedDialog } from "./detailed/DetailedDialog";
 import { DuplicateGroupToolbar, GroupCheckboxState } from "./DuplicateGroupToolbar";
+import { DuplicateMainToolbar } from "./DuplicateMainToolbar";
 import { DuplicateToolbar } from "./DuplicateToolbar";
 
 interface IProps {
     searchInfo: ISearchResult;
 }
 
-interface IGroupCheckedInfo {
+interface ICheckedInfo {
     [path: string]: boolean;
 }
+const useStyles = makeStyles({
+    scrollY: {
+        overflowY: "auto",
+    },
+});
 
 export const DuplicatesList = ({ searchInfo }: IProps) => {
     const [l10n] = useL10n();
     const pathClasses = usePathStyles();
+    const classes = useStyles();
     const [detailedVisible, setDetailedVisible] = useState<boolean>(false);
     const [graph, setGraph] = useState<IDuplicateGraph>(undefined);
-    const [checkedItems, setCheckedItems] = useState<IGroupCheckedInfo[]>([]);
+    const [checkedItems, setCheckedItems] = useState<ICheckedInfo>({});
 
     useEffect(() => {
         if (isOk(searchInfo)) {
-            const newCheckedInfo: IGroupCheckedInfo[] = [];
+            const newCheckedItems = {};
             for (const group of searchInfo.duplicates) {
-                const groupInfo: IGroupCheckedInfo = {};
                 for (const node of group.detailed.nodes) {
-                    groupInfo[node.path] = false;
+                    newCheckedItems[node.path] = node.path in checkedItems ? checkedItems[node.path] : false;
                 }
-                newCheckedInfo.push(groupInfo);
             }
 
-            setCheckedItems(newCheckedInfo);
+            setCheckedItems(newCheckedItems);
+        } else {
+            setCheckedItems({});
         }
     }, [searchInfo]);
 
-    const setCheckedItem = (groupIndex: number, filePath: string, checked: boolean) => {
-        const newCheckedItems = [...checkedItems];
-        newCheckedItems[groupIndex] = { ...checkedItems[groupIndex], [filePath]: checked };
-
-        setCheckedItems(newCheckedItems);
-    };
-
-    const getCheckboxHandler = (groupIndex: number, filePath: string) => (__, checked: boolean) => {
-        setCheckedItem(groupIndex, filePath, checked);
+    const getCheckboxHandler = (filePath: string) => (__, checked: boolean) => {
+        setCheckedItems({ ...checkedItems, [filePath]: checked });
     };
 
     const getGroupCheckboxHandler = (groupIndex: number) => (__, checked: boolean) => {
-        const newCheckedItems = [...checkedItems];
-        newCheckedItems[groupIndex] = _.mapValues(checkedItems[groupIndex], () => checked);
+        const newCheckedItems = { ...checkedItems };
+
+        for (const node of searchInfo.duplicates[groupIndex].detailed.nodes) {
+            newCheckedItems[node.path] = checked;
+        }
+
         setCheckedItems(newCheckedItems);
     };
 
@@ -72,51 +76,55 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
     }
 
     return (
-        <>
-            <List>
-                {_.map(searchInfo.duplicates, (x, i) => {
-                    let groupState: GroupCheckboxState = GroupCheckboxState.Unchecked;
-                    if (checkedItems.length > 0) {
-                        groupState = _.every(checkedItems[i], (v) => v)
-                            ? GroupCheckboxState.Checked
-                            : _.some(checkedItems[i], (v) => v)
-                            ? GroupCheckboxState.Indeterminate
-                            : GroupCheckboxState.Unchecked;
-                    }
+        <Box display="flex" flexDirection="column" height="100%">
+            <DuplicateMainToolbar anySelected={_.some(Object.values(checkedItems))} />
+            <Box flex="auto" className={classes.scrollY}>
+                <List>
+                    {_.map(searchInfo.duplicates, (x, i) => {
+                        let groupState: GroupCheckboxState = GroupCheckboxState.Unchecked;
+                        if (Object.keys(checkedItems).length > 0) {
+                            groupState = _.every(searchInfo.duplicates[i].detailed.nodes, (n) => checkedItems[n.path])
+                                ? GroupCheckboxState.Checked
+                                : _.some(searchInfo.duplicates[i].detailed.nodes, (n) => checkedItems[n.path])
+                                ? GroupCheckboxState.Indeterminate
+                                : GroupCheckboxState.Unchecked;
+                        }
 
-                    return (
-                        <React.Fragment key={i}>
-                            <DuplicateGroupToolbar
-                                group={x}
-                                groupChecked={groupState}
-                                onChange={getGroupCheckboxHandler(i)}
-                                openDetailed={openDetailedDialog}
-                            />
-                            {_.map(x.detailed.nodes, (node) => (
-                                <ListItem key={node.path}>
-                                    <Checkbox
-                                        checked={checkedItems.length !== 0 && checkedItems[i][node.path]}
-                                        onChange={getCheckboxHandler(i, node.path)}
-                                    />
-                                    <Tooltip title={node.path}>
-                                        <ListItemText
-                                            className={pathClasses.base}
-                                            primary={path.basename(node.path)}
-                                            secondary={l10n.date(searchInfo.fileInfos[node.path].modifiedDate)}
+                        return (
+                            <React.Fragment key={i}>
+                                <DuplicateGroupToolbar
+                                    group={x}
+                                    groupChecked={groupState}
+                                    onChange={getGroupCheckboxHandler(i)}
+                                    openDetailed={openDetailedDialog}
+                                />
+                                {_.map(x.detailed.nodes, (node) => (
+                                    <ListItem key={node.path}>
+                                        <Checkbox
+                                            color="primary"
+                                            checked={Object.keys(checkedItems).length > 0 && checkedItems[node.path]}
+                                            onChange={getCheckboxHandler(node.path)}
                                         />
-                                    </Tooltip>
-                                    <Box flexGrow={1}>
-                                        <DuplicateToolbar path={node.path} />
-                                    </Box>
-                                </ListItem>
-                            ))}
+                                        <Tooltip title={node.path}>
+                                            <ListItemText
+                                                className={pathClasses.base}
+                                                primary={path.basename(node.path)}
+                                                secondary={l10n.date(searchInfo.fileInfos[node.path].modifiedDate)}
+                                            />
+                                        </Tooltip>
+                                        <Box flexGrow={1}>
+                                            <DuplicateToolbar path={node.path} />
+                                        </Box>
+                                    </ListItem>
+                                ))}
 
-                            <Divider component="li" />
-                        </React.Fragment>
-                    );
-                })}
-            </List>
+                                <Divider component="li" />
+                            </React.Fragment>
+                        );
+                    })}
+                </List>
+            </Box>
             <DetailedDialog visible={detailedVisible} close={closeDetailedDialog} graph={graph} />
-        </>
+        </Box>
     );
 };

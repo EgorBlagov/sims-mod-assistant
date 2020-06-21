@@ -13,7 +13,7 @@ export const english = {
     errorOpenPath: (msg: string) => `Unable to open path with dialog: ${msg}`,
     searchFinished: "Search finished",
     date: (d: Date) => d.toLocaleString("en-US"),
-    moveDuplicates: "Move all duplicates to separate directory",
+    moveDuplicates: "Move selected",
     enableForSearch: "Enable at least one options to start search",
     conflicts: (count: number) => `Conflicts (${count})`,
     skippedFiles: (count: number) => `Skipped files (${count})`,
@@ -66,4 +66,6 @@ export const english = {
     studioNotConfigured: "Sims4Studio path is not configured (you can do it Settings)",
     copyPathSuccess: (path: string) => `Path ${path} successfully copied to clipboard`,
     conflictKeysDescription: "Conflicting keys (Type-Group-Instance):",
+    selectAll: "Select all",
+    clearSelection: "Clear selection",
 };

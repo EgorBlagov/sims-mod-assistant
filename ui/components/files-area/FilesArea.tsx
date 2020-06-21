@@ -1,5 +1,6 @@
 import { AppBar, Box, Fade, makeStyles, Tab } from "@material-ui/core";
 import { TabContext, TabList, TabPanel } from "@material-ui/lab";
+import classNames from "classnames";
 import * as _ from "lodash";
 import * as React from "react";
 import { isOk } from "../../../common/tools";
@@ -21,6 +22,12 @@ const useStyles = makeStyles({
     tabScrollable: {
         overflow: "auto",
         height: "100%",
+    },
+    tabNonScrollable: {
+        overflow: "hidden",
+    },
+    tabNoSpacing: {
+        padding: 0,
     },
 });
 
@@ -48,10 +55,13 @@ export const FilesArea = ({ searchInfo }: IProps) => {
                             <Tab label={l10n.skippedFiles(skipsCount)} value={Tabs.Skips} />
                         </TabList>
                     </AppBar>
-                    <TabPanel value={Tabs.Duplicates} className={classes.tabScrollable}>
+                    <TabPanel
+                        value={Tabs.Duplicates}
+                        className={classNames(classes.tabNoSpacing, classes.tabNonScrollable)}
+                    >
                         <DuplicatesList searchInfo={searchInfo} />
                     </TabPanel>
-                    <TabPanel value={Tabs.Skips} className={classes.tabScrollable}>
+                    <TabPanel value={Tabs.Skips} className={classNames(classes.tabScrollable, classes.tabNoSpacing)}>
                         <SkipsList searchInfo={searchInfo} />
                     </TabPanel>
                 </TabContext>
