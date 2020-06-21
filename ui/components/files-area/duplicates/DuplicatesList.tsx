@@ -61,6 +61,10 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
         setCheckedItems(newCheckedItems);
     };
 
+    const setAllChecked = (checked: boolean) => {
+        setCheckedItems(_.mapValues(checkedItems, () => checked));
+    };
+
     const closeDetailedDialog = () => {
         setDetailedVisible(false);
         setGraph(undefined);
@@ -77,7 +81,7 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            <DuplicateMainToolbar anySelected={_.some(Object.values(checkedItems))} />
+            <DuplicateMainToolbar anySelected={_.some(Object.values(checkedItems))} setChecked={setAllChecked} />
             <Box flex="auto" className={classes.scrollY}>
                 <List>
                     {_.map(searchInfo.duplicates, (x, i) => {

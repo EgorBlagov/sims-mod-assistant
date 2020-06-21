@@ -8,6 +8,7 @@ import { useNotification } from "../../../utils/notifications";
 
 interface IProps {
     anySelected: boolean;
+    setChecked: (checked: boolean) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DuplicateMainToolbar = ({ anySelected }: IProps) => {
+export const DuplicateMainToolbar = ({ anySelected, setChecked }: IProps) => {
     const [l10n] = useL10n();
     const classes = useStyles();
 
@@ -42,14 +43,23 @@ export const DuplicateMainToolbar = ({ anySelected }: IProps) => {
         moveItems().catch((err) => notification.showError(l10n.errorMove(err.message)));
     };
 
+    const selectAll = () => setChecked(true);
+    const clearSelection = () => setChecked(false);
+
     return (
         <AppBar color="transparent" position="static">
             <Box display="flex" p={2}>
-                <Button variant="outlined" color="secondary" className={classes.spacingRight} size="small">
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    className={classes.spacingRight}
+                    size="small"
+                    onClick={selectAll}
+                >
                     {l10n.selectAll}
                 </Button>
 
-                <Button variant="outlined" color="secondary" size="small">
+                <Button variant="outlined" color="secondary" size="small" onClick={clearSelection}>
                     {l10n.clearSelection}
                 </Button>
                 <Box flexGrow={1} />
