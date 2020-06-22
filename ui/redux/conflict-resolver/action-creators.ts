@@ -3,6 +3,7 @@ import { Actions } from "../actions";
 import {
     ConflictResolverSearchSetInProgresstAction,
     ConflictResolverSearchSetResultAction,
+    ConflictResolverSelectFiles,
     ConflictResolverSetProgressRelativeAction,
 } from "./actions";
 
@@ -26,9 +27,16 @@ const cleanupSearch = (): ConflictResolverSearchSetResultAction => ({
     result: undefined,
 });
 
+const selectFiles = (files: string[], selected: boolean): ConflictResolverSelectFiles => ({
+    type: Actions.CONFLICT_RESOLVER_SELECT_FILES,
+    files,
+    selected,
+});
+
 export const ConflictResolverActions = {
     setInProgress,
     setResult,
     setProgress,
     cleanupSearch,
+    selectFiles,
 };

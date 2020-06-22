@@ -4,7 +4,8 @@ import { Actions, ReduxAction } from "../actions";
 export type ConflictResolverActions =
     | ConflictResolverSearchSetInProgresstAction
     | ConflictResolverSearchSetResultAction
-    | ConflictResolverSetProgressRelativeAction;
+    | ConflictResolverSetProgressRelativeAction
+    | ConflictResolverSelectFiles;
 
 export interface ConflictResolverSearchSetInProgresstAction extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_SEARCH_IN_PROGRESS;
@@ -19,4 +20,10 @@ export interface ConflictResolverSearchSetResultAction extends ReduxAction {
 export interface ConflictResolverSetProgressRelativeAction extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_PROGRESS_RELATIVE;
     progressRelative: number;
+}
+
+export interface ConflictResolverSelectFiles extends ReduxAction {
+    type: Actions.CONFLICT_RESOLVER_SELECT_FILES;
+    files: string[];
+    selected: boolean;
 }

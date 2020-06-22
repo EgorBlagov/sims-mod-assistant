@@ -1,9 +1,12 @@
 import { Box, Checkbox, Divider, List, ListItem, ListItemText, makeStyles, Tooltip } from "@material-ui/core";
 import _ from "lodash";
 import path from "path";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { isOk } from "../../../../common/tools";
 import { IDuplicateGraph, ISearchResult } from "../../../../common/types";
+import { ConflictResolverActions } from "../../../redux/conflict-resolver/action-creators";
+import { TState } from "../../../redux/reducers";
 import { useL10n } from "../../../utils/l10n-hooks";
 import { isValidRegex } from "../../../utils/regex";
 import { usePathStyles } from "../tools";
@@ -16,9 +19,6 @@ interface IProps {
     searchInfo: ISearchResult;
 }
 
-interface ICheckedInfo {
-    [path: string]: boolean;
-}
 const useStyles = makeStyles({
     scrollY: {
         overflowY: "auto",
@@ -27,11 +27,11 @@ const useStyles = makeStyles({
 
 export const DuplicatesList = ({ searchInfo }: IProps) => {
     const [l10n] = useL10n();
+    const dispatch = useDispatch();
     const pathClasses = usePathStyles();
     const classes = useStyles();
     const [detailedVisible, setDetailedVisible] = useState<boolean>(false);
     const [graph, setGraph] = useState<IDuplicateGraph>(undefined);
-    const [checkedItems, setCheckedItems] = useState<ICheckedInfo>({});
     const [filter, setFilter] = useState<string>("");
 
     const filterValid = isOk(filter) && filter.length !== 0 && isValidRegex(filter);
@@ -39,56 +39,32 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
     const filterPaths = (paths: string[]): string[] => {
         if (filterValid) {
             const regex = new RegExp(filter);
-            return paths.filter((p) => p.search(regex) !== -1);
+            return paths.filter((p) => path.basename(p).search(regex) !== -1);
         }
 
         return paths;
     };
 
-    useEffect(() => {
-        if (isOk(searchInfo)) {
-            const newCheckedItems = {};
-            for (const group of searchInfo.duplicates) {
-                for (const node of group.detailed.nodes) {
-                    newCheckedItems[node.path] = node.path in checkedItems ? checkedItems[node.path] : false;
-                }
-            }
-
-            setCheckedItems(newCheckedItems);
-        } else {
-            setCheckedItems({});
-        }
-    }, [searchInfo]);
-
     const getCheckboxHandler = (filePath: string) => (__, checked: boolean) => {
-        setCheckedItems({ ...checkedItems, [filePath]: checked });
+        dispatch(ConflictResolverActions.selectFiles([filePath], checked));
     };
 
     const getGroupCheckboxHandler = (groupIndex: number) => (__, checked: boolean) => {
-        const newCheckedItems = { ...checkedItems };
-
         const paths = filterPaths(searchInfo.duplicates[groupIndex].detailed.nodes.map((n) => n.path));
-        for (const filePath of paths) {
-            newCheckedItems[filePath] = checked;
-        }
-
-        setCheckedItems(newCheckedItems);
+        dispatch(ConflictResolverActions.selectFiles(paths, checked));
     };
 
     const setAllChecked = (checked: boolean) => {
-        const newCheckedItems = { ...checkedItems };
         const allPaths = searchInfo.duplicates.reduce(
             (prev, g) => prev.concat(g.detailed.nodes.map((n) => n.path)),
             [] as string[],
         );
+
         const paths = filterPaths(allPaths);
-
-        for (const filePath of paths) {
-            newCheckedItems[filePath] = checked;
-        }
-
-        setCheckedItems(newCheckedItems);
+        dispatch(ConflictResolverActions.selectFiles(paths, checked));
     };
+
+    const checkedItems = useSelector((state: TState) => state.conflictResolver.selectedConflictFiles);
 
     const closeDetailedDialog = () => {
         setDetailedVisible(false);
