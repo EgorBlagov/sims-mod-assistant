@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import * as ActionCreators from "../redux/action-creators";
+import { BackdropActions } from "../redux/backdrop/action-creators";
 
 export const useBackdrop = () => {
     const dispatch = useDispatch();
 
     return (visible: boolean) => {
-        dispatch(ActionCreators.backdropSetVisible(visible));
+        dispatch(BackdropActions.setVisible(visible));
     };
 };
 

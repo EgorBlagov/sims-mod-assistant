@@ -4,8 +4,9 @@ import { useSelector } from "react-redux";
 import { getErrorMessage } from "../../common/errors";
 import { ipc } from "../../common/ipc";
 import { ISearchParams } from "../../common/types";
-import * as ActionCreators from "../redux/action-creators";
+import { ConflictResolverActions } from "../redux/conflict-resolver/action-creators";
 import { TState } from "../redux/reducers";
+import { ConflictResolverThunk } from "../redux/thunk/conflict-resolver";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
 import { useThunkDispatch } from "../utils/thunk-hooks";
@@ -34,13 +35,13 @@ export const SearchPanel = ({ targetPath }: IProps) => {
     };
 
     useEffect(() => {
-        dispatch(ActionCreators.conflictResolverCleanupSearch());
+        dispatch(ConflictResolverActions.cleanupSearch());
         return interruptSearch;
     }, []);
 
     const startSearch = () => {
         if (!inProgress) {
-            dispatch(ActionCreators.conflictResolverSearchStartAndUpdate({ targetPath, ...params }))
+            dispatch(ConflictResolverThunk.searchStartAndUpdate({ targetPath, ...params }))
                 .then(() => notification.showSuccess(l10n.searchFinished))
                 .catch((err) => notification.showError(getErrorMessage(err, l10n)));
         }

@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { getErrorMessage } from "../../common/errors";
-import * as ActionCreators from "../redux/action-creators";
+import { SettingsThunk } from "../redux/thunk/settings";
 import { appTheme } from "../theme";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
@@ -16,7 +16,7 @@ export const App = () => {
     const dispatch = useThunkDispatch();
 
     useEffect(() => {
-        dispatch(ActionCreators.settingsLoadRestAndValidate()).catch((err) =>
+        dispatch(SettingsThunk.loadRestAndValidate()).catch((err) =>
             notification.showError(getErrorMessage(err, l10n)),
         );
     }, []);

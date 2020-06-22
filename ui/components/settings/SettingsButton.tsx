@@ -3,30 +3,13 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getErrorMessage } from "../../../common/errors";
 import { Language } from "../../../common/l10n";
-import * as ActionCreators from "../../redux/action-creators";
 import { TState } from "../../redux/reducers";
+import { SettingsActions } from "../../redux/settings/action-creators";
 import { useL10n } from "../../utils/l10n-hooks";
 import { useNotification } from "../../utils/notifications";
 import { saveSettings } from "../../utils/settings/settings";
 import { LanguageField } from "./LanguageField";
 import { SimsStudioPathField } from "./SimsStudioPathField";
-
-// class AppImpl extends React.Component<IProps> {
-//     componentDidMount() {}
-
-//     componentDidUpdate(prevProps: IProps) {
-//         if (prevProps.language !== this.props.language) {
-//             ipc.renderer.rpc.setLanguage(this.props.language).catch((err) => {
-//                 this.getNotificationApi().showError(err);
-//             });
-
-//             saveSettings({ language: this.props.language }).catch((err) => {
-//                 this.getNotificationApi().showError(err);
-//             });
-//         }
-//     }
-
-// }
 
 export const SettingsButton = () => {
     const [l10n] = useL10n();
@@ -46,11 +29,11 @@ export const SettingsButton = () => {
     const dispatch = useDispatch();
 
     const setLanguage = (l: Language) => {
-        dispatch(ActionCreators.settingsSetLanguage(l));
+        dispatch(SettingsActions.setLanguage(l));
     };
 
     const setStudioPath = (studioPath: string) => {
-        dispatch(ActionCreators.settingsSetSimsStudioPath(studioPath));
+        dispatch(SettingsActions.setSimsStudioPath(studioPath));
     };
 
     return (

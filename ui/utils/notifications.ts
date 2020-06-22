@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import * as ActionCreators from "../redux/action-creators";
+import { NotificationActions } from "../redux/notification/action-creators";
 import { NotificationTypes } from "../redux/types";
 
 interface INotificationApi {
@@ -10,9 +10,9 @@ interface INotificationApi {
 
 export function createNotificationApiFromDispatch(dispatch): INotificationApi {
     const show = (type: NotificationTypes) => (msg) => {
-        dispatch(ActionCreators.notificationSetType(type));
-        dispatch(ActionCreators.notificationSetMessage(msg));
-        dispatch(ActionCreators.notificationSetVisible(true));
+        dispatch(NotificationActions.setType(type));
+        dispatch(NotificationActions.setMessage(msg));
+        dispatch(NotificationActions.setVisible(true));
     };
 
     return {
