@@ -2,13 +2,15 @@ import { Box, Checkbox, Divider, List, ListItem, ListItemText, makeStyles, Toolt
 import _ from "lodash";
 import path from "path";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { isOk } from "../../../../common/tools";
 import { IDuplicateGraph, ISearchResult } from "../../../../common/types";
 import { ConflictResolverActions } from "../../../redux/conflict-resolver/action-creators";
 import { TState } from "../../../redux/reducers";
+import { ConflictResolverThunk } from "../../../redux/thunk/conflict-resolver";
 import { useL10n } from "../../../utils/l10n-hooks";
-import { isValidRegex } from "../../../utils/regex";
+import { pathFilter } from "../../../utils/regex";
+import { useThunkDispatch } from "../../../utils/thunk-hooks";
 import { usePathStyles } from "../tools";
 import { DetailedDialog } from "./detailed/DetailedDialog";
 import { DuplicateGroupToolbar, GroupCheckboxState } from "./DuplicateGroupToolbar";
@@ -26,45 +28,21 @@ const useStyles = makeStyles({
 });
 
 export const DuplicatesList = ({ searchInfo }: IProps) => {
+    const dispatch = useThunkDispatch();
     const [l10n] = useL10n();
-    const dispatch = useDispatch();
-    const pathClasses = usePathStyles();
-    const classes = useStyles();
     const [detailedVisible, setDetailedVisible] = useState<boolean>(false);
     const [graph, setGraph] = useState<IDuplicateGraph>(undefined);
-    const [filter, setFilter] = useState<string>("");
-
-    const filterValid = isOk(filter) && filter.length !== 0 && isValidRegex(filter);
-
-    const filterPaths = (paths: string[]): string[] => {
-        if (filterValid) {
-            const regex = new RegExp(filter);
-            return paths.filter((p) => path.basename(p).search(regex) !== -1);
-        }
-
-        return paths;
-    };
+    const { filesFilter, selectedConflictFiles: checkedItems } = useSelector((state: TState) => state.conflictResolver);
+    const pathClasses = usePathStyles();
+    const classes = useStyles();
 
     const getCheckboxHandler = (filePath: string) => (__, checked: boolean) => {
-        dispatch(ConflictResolverActions.selectFiles([filePath], checked));
+        dispatch(ConflictResolverActions.selectFiles([path.basename(filePath)], checked));
     };
 
     const getGroupCheckboxHandler = (groupIndex: number) => (__, checked: boolean) => {
-        const paths = filterPaths(searchInfo.duplicates[groupIndex].detailed.nodes.map((n) => n.path));
-        dispatch(ConflictResolverActions.selectFiles(paths, checked));
+        dispatch(ConflictResolverThunk.selectGroup(groupIndex, checked));
     };
-
-    const setAllChecked = (checked: boolean) => {
-        const allPaths = searchInfo.duplicates.reduce(
-            (prev, g) => prev.concat(g.detailed.nodes.map((n) => n.path)),
-            [] as string[],
-        );
-
-        const paths = filterPaths(allPaths);
-        dispatch(ConflictResolverActions.selectFiles(paths, checked));
-    };
-
-    const checkedItems = useSelector((state: TState) => state.conflictResolver.selectedConflictFiles);
 
     const closeDetailedDialog = () => {
         setDetailedVisible(false);
@@ -82,17 +60,11 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            <DuplicateMainToolbar
-                selectedPaths={Object.entries(checkedItems)
-                    .filter(([__, checked]) => checked)
-                    .map(([p]) => p)}
-                setChecked={setAllChecked}
-                filter={filter}
-                setFilter={setFilter}
-            />
+            <DuplicateMainToolbar />
             <Box flex="auto" className={classes.scrollY}>
                 <List>
                     {_.map(searchInfo.duplicates, (x, i) => {
+                        // TODO: remove this ugly block
                         let groupState: GroupCheckboxState = GroupCheckboxState.Unchecked;
                         if (Object.keys(checkedItems).length > 0) {
                             groupState = _.every(searchInfo.duplicates[i].detailed.nodes, (n) => checkedItems[n.path])
@@ -102,7 +74,8 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                                 : GroupCheckboxState.Unchecked;
                         }
 
-                        const currentPaths = filterPaths(x.detailed.nodes.map((n) => n.path));
+                        const currentPaths = x.detailed.nodes.map((n) => n.path).filter(pathFilter(filesFilter));
+
                         if (currentPaths.length === 0) {
                             return null;
                         }

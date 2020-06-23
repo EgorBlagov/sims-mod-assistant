@@ -1,4 +1,5 @@
 import { ipc } from "../../../common/ipc";
+import { isOk } from "../../../common/tools";
 import { IDirectoryParams, ISearchParams, ISearchProgress, ISearchResult, TTicketId } from "../../../common/types";
 import { ReduxThunkAction } from "../actions";
 import { ConflictResolverActions } from "../conflict-resolver/action-creators";
@@ -45,6 +46,35 @@ const searchStartAndUpdate = (
     }
 };
 
+const selectGroup = (groupIndex: number, selected: boolean): ReduxThunkAction => (dispatch, getState) => {
+    const searchResult = getState().conflictResolver.searchResult;
+    if (isOk(searchResult)) {
+        dispatch(
+            ConflictResolverActions.selectFiles(
+                searchResult.duplicates[groupIndex].detailed.nodes.map((n) => n.path),
+                selected,
+            ),
+        );
+    }
+};
+
+const selectAll = (selected: boolean): ReduxThunkAction => (dispatch, getState) => {
+    const searchResult = getState().conflictResolver.searchResult;
+    if (isOk(searchResult)) {
+        dispatch(
+            ConflictResolverActions.selectFiles(
+                searchResult.duplicates.reduce(
+                    (prev, g) => prev.concat(g.detailed.nodes.map((n) => n.path)),
+                    [] as string[],
+                ),
+                selected,
+            ),
+        );
+    }
+};
+
 export const ConflictResolverThunk = {
     searchStartAndUpdate,
+    selectGroup,
+    selectAll,
 };

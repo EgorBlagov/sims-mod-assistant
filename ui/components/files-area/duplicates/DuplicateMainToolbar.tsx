@@ -2,18 +2,16 @@ import { AppBar, Box, Button, InputAdornment, makeStyles, TextField, Tooltip } f
 import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
+import { useSelector } from "react-redux";
 import { ipc } from "../../../../common/ipc";
+import { ConflictResolverActions } from "../../../redux/conflict-resolver/action-creators";
+import { TState } from "../../../redux/reducers";
+import { ConflictResolverThunk } from "../../../redux/thunk/conflict-resolver";
 import { useBackdropBound } from "../../../utils/backdrop-hooks";
 import { useL10n } from "../../../utils/l10n-hooks";
 import { useNotification } from "../../../utils/notifications";
-import { isValidRegex } from "../../../utils/regex";
-
-interface IProps {
-    selectedPaths: string[];
-    setChecked: (checked: boolean) => void;
-    filter: string;
-    setFilter: (newFilter: string) => void;
-}
+import { isFilterUsed, isFilterValid } from "../../../utils/regex";
+import { useThunkDispatch } from "../../../utils/thunk-hooks";
 
 const useStyles = makeStyles((theme) => ({
     spacingRight: {
@@ -21,13 +19,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DuplicateMainToolbar = ({ selectedPaths, setChecked, filter, setFilter }: IProps) => {
+export const DuplicateMainToolbar = () => {
+    const dispatch = useThunkDispatch();
+    const { filesFilter, selectedConflictFiles: checkedItems } = useSelector((state: TState) => state.conflictResolver);
+    const notification = useNotification();
     const [l10n] = useL10n();
+    const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
     const classes = useStyles();
 
-    const notification = useNotification();
-    const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
     useBackdropBound(moveDisabled);
+
+    const setAllChecked = (checked: boolean) => {
+        dispatch(ConflictResolverThunk.selectAll(checked));
+    };
+
+    const selectedPaths = Object.entries(checkedItems)
+        .filter(([__, checked]) => checked)
+        .map(([p]) => p);
 
     const moveItems = async () => {
         setMoveDisabled(true);
@@ -50,11 +58,16 @@ export const DuplicateMainToolbar = ({ selectedPaths, setChecked, filter, setFil
         moveItems().catch((err) => notification.showError(l10n.errorMove(err.message)));
     };
 
-    const selectAll = () => setChecked(true);
-    const clearSelection = () => setChecked(false);
+    const selectAll = () => setAllChecked(true);
+    const clearSelection = () => setAllChecked(false);
 
     const setFilterHandler = (event) => {
-        setFilter(event.target.value);
+        dispatch(
+            ConflictResolverActions.setFilter({
+                filter: event.target.value,
+                isRegex: true, // TODO: add input
+            }),
+        );
     };
 
     return (
@@ -76,7 +89,7 @@ export const DuplicateMainToolbar = ({ selectedPaths, setChecked, filter, setFil
                 <Box flexGrow={1} alignItems="center" display="flex" px={1}>
                     <Tooltip title={l10n.regexHelp}>
                         <TextField
-                            error={!isValidRegex(filter)}
+                            error={isFilterUsed(filesFilter) && !isFilterValid(filesFilter)}
                             fullWidth={true}
                             placeholder={l10n.searchPlaceholder}
                             InputProps={{
@@ -86,7 +99,7 @@ export const DuplicateMainToolbar = ({ selectedPaths, setChecked, filter, setFil
                                     </InputAdornment>
                                 ),
                             }}
-                            value={filter}
+                            value={filesFilter.filter}
                             onChange={setFilterHandler}
                         />
                     </Tooltip>

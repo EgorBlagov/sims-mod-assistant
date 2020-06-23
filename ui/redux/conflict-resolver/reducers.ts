@@ -1,10 +1,16 @@
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
+import { pathFilter } from "../../utils/regex";
 import { Actions } from "../actions";
 import { ConflictResolverActions } from "./actions";
 
 export interface ISelectedFilesInfo {
     [path: string]: boolean;
+}
+
+export interface IFilterParams {
+    filter: string;
+    isRegex: boolean;
 }
 
 export interface ConflictResolverState {
@@ -14,6 +20,7 @@ export interface ConflictResolverState {
     };
     searchResult: ISearchResult;
     selectedConflictFiles: ISelectedFilesInfo;
+    filesFilter: IFilterParams;
 }
 
 export const defaultConflictResolverState: ConflictResolverState = {
@@ -23,6 +30,10 @@ export const defaultConflictResolverState: ConflictResolverState = {
     },
     searchResult: undefined,
     selectedConflictFiles: {},
+    filesFilter: {
+        filter: "",
+        isRegex: false,
+    },
 };
 
 const conflictFilesUpdate = (state: ISelectedFilesInfo, newSearchResult: ISearchResult): ISelectedFilesInfo => {
@@ -41,9 +52,10 @@ const conflictFilesUpdate = (state: ISelectedFilesInfo, newSearchResult: ISearch
     return {};
 };
 
-const conflictFilesSelect = (state: ISelectedFilesInfo, files: string[], selected: boolean): ISelectedFilesInfo => {
-    const newState: ISelectedFilesInfo = { ...state };
-    for (const file of files) {
+const conflictFilesSelect = (state: ConflictResolverState, files: string[], selected: boolean): ISelectedFilesInfo => {
+    const newState: ISelectedFilesInfo = { ...state.selectedConflictFiles };
+    const filter = state.filesFilter;
+    for (const file of files.filter(pathFilter(filter))) {
         if (file in newState) {
             newState[file] = selected;
         }
@@ -90,7 +102,13 @@ export const conflictResolver = (
         case Actions.CONFLICT_RESOLVER_SELECT_FILES:
             return {
                 ...state,
-                selectedConflictFiles: conflictFilesSelect(state.selectedConflictFiles, action.files, action.selected),
+                selectedConflictFiles: conflictFilesSelect(state, action.files, action.selected),
+            };
+
+        case Actions.CONFLICT_RESOLVER_SET_FILES_FILTER:
+            return {
+                ...state,
+                filesFilter: action.filesFilter,
             };
 
         default:
