@@ -69,5 +69,5 @@ export const english = {
     selectAll: "Select all",
     clearSelection: "Clear selection",
     searchPlaceholder: "Search...",
-    regexHelp: "You should enter Regular expression here",
+    regexHelp: "Regular expressions support",
 };

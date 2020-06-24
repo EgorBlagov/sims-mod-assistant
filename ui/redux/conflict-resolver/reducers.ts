@@ -1,6 +1,6 @@
 import { isOk } from "../../../common/tools";
 import { ISearchResult } from "../../../common/types";
-import { pathFilter } from "../../utils/regex";
+import { pathFilter } from "../../utils/filter";
 import { Actions } from "../actions";
 import { ConflictResolverActions } from "./actions";
 

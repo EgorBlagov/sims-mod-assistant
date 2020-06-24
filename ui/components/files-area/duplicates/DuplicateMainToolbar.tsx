@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, InputAdornment, makeStyles, TextField, Tooltip } from "@material-ui/core";
+import { AppBar, Box, Button, ButtonGroup, Checkbox, InputAdornment, TextField, Tooltip } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
@@ -8,16 +8,11 @@ import { ConflictResolverActions } from "../../../redux/conflict-resolver/action
 import { TState } from "../../../redux/reducers";
 import { ConflictResolverThunk } from "../../../redux/thunk/conflict-resolver";
 import { useBackdropBound } from "../../../utils/backdrop-hooks";
+import { isFilterUsed, isFilterValid } from "../../../utils/filter";
 import { useL10n } from "../../../utils/l10n-hooks";
 import { useNotification } from "../../../utils/notifications";
-import { isFilterUsed, isFilterValid } from "../../../utils/regex";
 import { useThunkDispatch } from "../../../utils/thunk-hooks";
-
-const useStyles = makeStyles((theme) => ({
-    spacingRight: {
-        marginRight: theme.spacing(1),
-    },
-}));
+import { RegexIcon } from "../../icons/RegexIcon";
 
 export const DuplicateMainToolbar = () => {
     const dispatch = useThunkDispatch();
@@ -25,7 +20,6 @@ export const DuplicateMainToolbar = () => {
     const notification = useNotification();
     const [l10n] = useL10n();
     const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
-    const classes = useStyles();
 
     useBackdropBound(moveDisabled);
 
@@ -64,8 +58,17 @@ export const DuplicateMainToolbar = () => {
     const setFilterHandler = (event) => {
         dispatch(
             ConflictResolverActions.setFilter({
+                ...filesFilter,
                 filter: event.target.value,
-                isRegex: true, // TODO: add input
+            }),
+        );
+    };
+
+    const setRegexHandler = (_, checked: boolean) => {
+        dispatch(
+            ConflictResolverActions.setFilter({
+                ...filesFilter,
+                isRegex: checked,
             }),
         );
     };
@@ -73,34 +76,33 @@ export const DuplicateMainToolbar = () => {
     return (
         <AppBar color="transparent" position="static">
             <Box display="flex" p={2}>
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    className={classes.spacingRight}
-                    size="small"
-                    onClick={selectAll}
-                >
-                    {l10n.selectAll}
-                </Button>
-
-                <Button variant="outlined" color="secondary" size="small" onClick={clearSelection}>
-                    {l10n.clearSelection}
-                </Button>
+                <ButtonGroup color="secondary" variant="outlined" size="small">
+                    <Button onClick={selectAll}>{l10n.selectAll}</Button>
+                    <Button onClick={clearSelection}>{l10n.clearSelection}</Button>
+                </ButtonGroup>
                 <Box flexGrow={1} alignItems="center" display="flex" px={1}>
+                    <TextField
+                        error={isFilterUsed(filesFilter) && !isFilterValid(filesFilter)}
+                        fullWidth={true}
+                        placeholder={l10n.searchPlaceholder}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon color="primary" />
+                                </InputAdornment>
+                            ),
+                        }}
+                        value={filesFilter.filter}
+                        onChange={setFilterHandler}
+                    />
                     <Tooltip title={l10n.regexHelp}>
-                        <TextField
-                            error={isFilterUsed(filesFilter) && !isFilterValid(filesFilter)}
-                            fullWidth={true}
-                            placeholder={l10n.searchPlaceholder}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon color="primary" />
-                                    </InputAdornment>
-                                ),
-                            }}
-                            value={filesFilter.filter}
-                            onChange={setFilterHandler}
+                        <Checkbox
+                            color="primary"
+                            size="small"
+                            icon={<RegexIcon />}
+                            checkedIcon={<RegexIcon />}
+                            checked={filesFilter.isRegex}
+                            onChange={setRegexHandler}
                         />
                     </Tooltip>
                 </Box>

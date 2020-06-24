@@ -71,5 +71,5 @@ export const russian: Translation = {
     clearSelection: "Снять выделение",
     selectAll: "Выделить все",
     searchPlaceholder: "Поиск...",
-    regexHelp: "В этом поле должно быть Регулярное выражение",
+    regexHelp: "Поддержка регулярных выражений",
 };

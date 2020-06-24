@@ -19,8 +19,9 @@ export const isFilterValid = (filterParams: IFilterParams) =>
 
 export const pathFilter = (filesFilter: IFilterParams) => (p: string): boolean => {
     if (isFilterValid(filesFilter)) {
-        const toSearch = filesFilter.isRegex ? new RegExp(filesFilter.filter) : filesFilter.filter;
-        return path.basename(p).search(toSearch) !== -1;
+        const basename = path.basename(p);
+        const index = filesFilter.isRegex ? basename.search(filesFilter.filter) : basename.indexOf(filesFilter.filter);
+        return index !== -1;
     }
 
     return true;

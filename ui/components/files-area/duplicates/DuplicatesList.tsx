@@ -8,12 +8,13 @@ import { IDuplicateGraph, ISearchResult } from "../../../../common/types";
 import { ConflictResolverActions } from "../../../redux/conflict-resolver/action-creators";
 import { TState } from "../../../redux/reducers";
 import { ConflictResolverThunk } from "../../../redux/thunk/conflict-resolver";
+import { getCheckboxState } from "../../../utils/checkbox";
+import { pathFilter } from "../../../utils/filter";
 import { useL10n } from "../../../utils/l10n-hooks";
-import { pathFilter } from "../../../utils/regex";
 import { useThunkDispatch } from "../../../utils/thunk-hooks";
 import { usePathStyles } from "../tools";
 import { DetailedDialog } from "./detailed/DetailedDialog";
-import { DuplicateGroupToolbar, GroupCheckboxState } from "./DuplicateGroupToolbar";
+import { DuplicateGroupToolbar } from "./DuplicateGroupToolbar";
 import { DuplicateMainToolbar } from "./DuplicateMainToolbar";
 import { DuplicateToolbar } from "./DuplicateToolbar";
 
@@ -64,18 +65,12 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
             <Box flex="auto" className={classes.scrollY}>
                 <List>
                     {_.map(searchInfo.duplicates, (x, i) => {
-                        // TODO: remove this ugly block
-                        let groupState: GroupCheckboxState = GroupCheckboxState.Unchecked;
-                        if (Object.keys(checkedItems).length > 0) {
-                            groupState = _.every(searchInfo.duplicates[i].detailed.nodes, (n) => checkedItems[n.path])
-                                ? GroupCheckboxState.Checked
-                                : _.some(searchInfo.duplicates[i].detailed.nodes, (n) => checkedItems[n.path])
-                                ? GroupCheckboxState.Indeterminate
-                                : GroupCheckboxState.Unchecked;
-                        }
+                        const groupCheckbox = getCheckboxState(
+                            x.detailed.nodes.length,
+                            x.detailed.nodes.filter((n) => checkedItems[n.path]).length,
+                        );
 
                         const currentPaths = x.detailed.nodes.map((n) => n.path).filter(pathFilter(filesFilter));
-
                         if (currentPaths.length === 0) {
                             return null;
                         }
@@ -84,7 +79,7 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
                             <React.Fragment key={i}>
                                 <DuplicateGroupToolbar
                                     group={x}
-                                    groupChecked={groupState}
+                                    groupChecked={groupCheckbox}
                                     onChange={getGroupCheckboxHandler(i)}
                                     openDetailed={openDetailedDialog}
                                 />
