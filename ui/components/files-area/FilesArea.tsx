@@ -25,6 +25,7 @@ const useStyles = makeStyles({
     },
     tabNonScrollable: {
         overflow: "hidden",
+        height: "100%",
     },
     tabNoSpacing: {
         padding: 0,

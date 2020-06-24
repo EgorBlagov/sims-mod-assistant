@@ -46,18 +46,6 @@ const searchStartAndUpdate = (
     }
 };
 
-const selectGroup = (groupIndex: number, selected: boolean): ReduxThunkAction => (dispatch, getState) => {
-    const searchResult = getState().conflictResolver.searchResult;
-    if (isOk(searchResult)) {
-        dispatch(
-            ConflictResolverActions.selectFiles(
-                searchResult.duplicates[groupIndex].detailed.nodes.map((n) => n.path),
-                selected,
-            ),
-        );
-    }
-};
-
 const selectAll = (selected: boolean): ReduxThunkAction => (dispatch, getState) => {
     const searchResult = getState().conflictResolver.searchResult;
     if (isOk(searchResult)) {
@@ -75,6 +63,5 @@ const selectAll = (selected: boolean): ReduxThunkAction => (dispatch, getState) 
 
 export const ConflictResolverThunk = {
     searchStartAndUpdate,
-    selectGroup,
     selectAll,
 };

@@ -35,14 +35,16 @@ export const ProgressBar = ({ interruptSearch }: IProps) => {
 
     return (
         <Collapse in={inProgress}>
-            <Box my={1} display="flex" alignItems="center">
-                <Box flex="auto" mr={1}>
-                    <LinearProgress value={progressRelative * 100} variant="determinate" classes={classes} />
-                </Box>
-                <Box mr={1}>
+            <Box my={1}>
+                <Box display="flex" justifyContent="center">
                     <EstimatedTime progressRelative={progressRelative} startTime={searchStartTime} />
                 </Box>
-                <Button onClick={interruptSearch}>{l10n.cancel}</Button>
+                <Box display="flex" alignItems="center">
+                    <Box flex="auto" mr={1}>
+                        <LinearProgress value={progressRelative * 100} variant="determinate" classes={classes} />
+                    </Box>
+                    <Button onClick={interruptSearch}>{l10n.cancel}</Button>
+                </Box>
             </Box>
         </Collapse>
     );

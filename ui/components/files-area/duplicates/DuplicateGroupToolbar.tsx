@@ -6,23 +6,24 @@ import { useL10n } from "../../../utils/l10n-hooks";
 import { GraphIcon } from "../../icons/GraphIcon";
 import { DoubleTypeChipBar } from "./DoubleTypeChipBar";
 
-interface IProps {
+export interface IDuplicateGroupToolbarProps {
     group: IDuplicateGroup;
     openDetailed: (group: IDuplicateGraph) => void;
     groupChecked: CheckboxState;
-    onChange: (ev: any, checked: boolean) => void;
+    onChange: (checked: boolean) => void;
 }
 
-export const DuplicateGroupToolbar = ({ group, openDetailed, groupChecked, onChange }: IProps) => {
+export const DuplicateGroupToolbar = ({ group, openDetailed, groupChecked, onChange }: IDuplicateGroupToolbarProps) => {
     const [l10n] = useL10n();
     const onClick = () => openDetailed(group.detailed);
+    const onChangeHandler = (event: any, checked: boolean) => onChange(checked);
     return (
         <ListItem>
             <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
                 <Checkbox
                     indeterminate={groupChecked === CheckboxState.Indeterminate}
                     checked={groupChecked !== CheckboxState.Unchecked}
-                    onChange={onChange}
+                    onChange={onChangeHandler}
                 />
                 <Box flexGrow={1}>
                     <DoubleTypeChipBar types={group.types} />

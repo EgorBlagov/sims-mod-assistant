@@ -18,7 +18,7 @@ export const SkipsList = ({ searchInfo }: IProps) => {
         return null;
     }
 
-    // hask to force update on language change, since
+    // hack to force update on language change, since
     // react-window doesn't rerender items whenver it's possible
     const [key, increaseKey] = useReducer((state) => state + 1, 0);
     React.useEffect(() => {

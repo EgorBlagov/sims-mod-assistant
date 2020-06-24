@@ -2,8 +2,10 @@
     "compilerOptions": {
         "jsx": "react",
         "noEmit": true,
+        "target": "ES6",
         "esModuleInterop": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "moduleResolution": "node"
     },
     "include": ["../globals.d.ts", "./**/*", "./common/**/*"]
 }
