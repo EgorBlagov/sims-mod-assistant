@@ -10,7 +10,9 @@ import { TState } from "../../../redux/reducers";
 import { getCheckboxState } from "../../../utils/checkbox";
 import { VIRTUALIZE_CONSTANTS } from "../../../utils/constants";
 import { pathFilter } from "../../../utils/filter";
+import { useL10n } from "../../../utils/l10n-hooks";
 import { useThunkDispatch } from "../../../utils/thunk-hooks";
+import { useForceUpdate } from "../../../utils/util-hooks";
 import { DetailedDialog } from "./detailed/DetailedDialog";
 import { DuplicateMainToolbar } from "./DuplicateMainToolbar";
 import { DuplicateRow, DuplicateRowType, TItemData } from "./DuplicateRow";
@@ -27,9 +29,12 @@ const useStyles = makeStyles({
 
 export const DuplicatesList = ({ searchInfo }: IProps) => {
     const dispatch = useThunkDispatch();
+    const [_, language] = useL10n();
     const [detailedVisible, setDetailedVisible] = useState<boolean>(false);
     const [graph, setGraph] = useState<IDuplicateGraph>(undefined);
     const { filesFilter, selectedConflictFiles: checkedItems } = useSelector((state: TState) => state.conflictResolver);
+    const forceUpdateKey = useForceUpdate([language]);
+
     const classes = useStyles();
 
     const getCheckboxHandler = (files: string[]) => (checked: boolean) => {
@@ -50,7 +55,6 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
         return null;
     }
 
-    const key = 1; // hack to update on language change
     const data: TItemData = [];
 
     for (const group of searchInfo.duplicates) {
@@ -82,7 +86,7 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
         <Box display="flex" flexDirection="column" height="100%">
             <DuplicateMainToolbar />
             <Box flex="auto" className={classes.scrollY}>
-                <AutoSizer key={key}>
+                <AutoSizer key={forceUpdateKey}>
                     {({ height, width }) => (
                         <FixedSizeList
                             height={height}
