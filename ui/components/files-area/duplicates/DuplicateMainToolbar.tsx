@@ -1,4 +1,14 @@
-import { AppBar, Box, Button, ButtonGroup, Checkbox, InputAdornment, TextField, Tooltip } from "@material-ui/core";
+import {
+    AppBar,
+    Box,
+    Button,
+    ButtonGroup,
+    Checkbox,
+    InputAdornment,
+    makeStyles,
+    TextField,
+    Tooltip,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
@@ -14,12 +24,33 @@ import { useNotification } from "../../../utils/notifications";
 import { useThunkDispatch } from "../../../utils/thunk-hooks";
 import { RegexIcon } from "../../icons/RegexIcon";
 
+const useStyles = makeStyles((theme) => ({
+    checkboxIcon: {
+        fontSize: "0.75em",
+    },
+    checkbox: {
+        padding: theme.spacing(0.5),
+    },
+    checkboxChecked: {
+        backgroundColor: theme.palette.primary.main,
+    },
+    checkboxColorPrimary: {
+        "&$checkboxChecked": {
+            color: "white",
+        },
+        "&$checkboxChecked:hover": {
+            backgroundColor: theme.palette.primary.light,
+        },
+    },
+}));
+
 export const DuplicateMainToolbar = () => {
     const dispatch = useThunkDispatch();
     const { filesFilter, selectedConflictFiles: checkedItems } = useSelector((state: TState) => state.conflictResolver);
     const notification = useNotification();
     const [l10n] = useL10n();
     const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
+    const classes = useStyles();
 
     useBackdropBound(moveDisabled);
 
@@ -98,11 +129,15 @@ export const DuplicateMainToolbar = () => {
                     <Tooltip title={l10n.regexHelp}>
                         <Checkbox
                             color="primary"
-                            size="small"
-                            icon={<RegexIcon />}
-                            checkedIcon={<RegexIcon />}
+                            icon={<RegexIcon className={classes.checkboxIcon} />}
+                            checkedIcon={<RegexIcon className={classes.checkboxIcon} />}
                             checked={filesFilter.isRegex}
                             onChange={setRegexHandler}
+                            classes={{
+                                root: classes.checkbox,
+                                checked: classes.checkboxChecked,
+                                colorPrimary: classes.checkboxColorPrimary,
+                            }}
                         />
                     </Tooltip>
                 </Box>
