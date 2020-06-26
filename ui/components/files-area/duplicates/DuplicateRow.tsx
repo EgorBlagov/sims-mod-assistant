@@ -1,5 +1,5 @@
 import { Divider } from "@material-ui/core";
-import React from "react";
+import React, { ReactNode } from "react";
 import { DuplicateGroupEntry, IDuplicateGroupEntryProps } from "./DuplicateGroupEntry";
 import { DuplicateGroupToolbar, IDuplicateGroupToolbarProps } from "./DuplicateGroupToolbar";
 
@@ -29,18 +29,17 @@ interface IProps {
 export const DuplicateRow = ({ index, style, isScrolling, data }: IProps) => {
     const rowInfo = data[index];
 
+    let content: ReactNode;
     if (rowInfo.type === DuplicateRowType.Toolbar) {
-        return (
-            <div style={style}>
+        content = (
+            <>
                 <Divider />
                 <DuplicateGroupToolbar {...rowInfo} />
-            </div>
+            </>
         );
     } else {
-        return (
-            <div style={style}>
-                <DuplicateGroupEntry {...rowInfo} />
-            </div>
-        );
+        content = <DuplicateGroupEntry {...rowInfo} />;
     }
+
+    return <div style={style}>{content}</div>;
 };

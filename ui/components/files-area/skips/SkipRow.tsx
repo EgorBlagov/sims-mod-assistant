@@ -1,10 +1,9 @@
-import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip, Typography } from "@material-ui/core";
+import { Avatar, Box, Chip, ListItem, ListItemIcon, ListItemText, Tooltip } from "@material-ui/core";
 import Error from "@material-ui/icons/Error";
 import path from "path";
 import React from "react";
 import { Translation } from "../../../../common/l10n";
 import { IFileAdditionalInfo, ISkippedFile, SkipReasons } from "../../../../common/types";
-import { VIRTUALIZE_CONSTANTS } from "../../../utils/constants";
 import { getShowFileHandler } from "../tools";
 
 export interface IItemData {
@@ -47,44 +46,27 @@ export const SkipRow = ({ index, style, isScrolling, data }: IProps) => {
         },
     };
 
-    const [content, setContent] = React.useState(
-        <Typography
-            style={{
-                paddingTop: VIRTUALIZE_CONSTANTS.PLACEHOLDER_PADDING_TOP,
-                paddingLeft: VIRTUALIZE_CONSTANTS.PLACEHOLDER_PADDING_LEFT,
-            }}
-        >
-            {path.basename(x.path)}
-        </Typography>,
+    return (
+        <div style={style}>
+            <ListItem key={x.path} button={true} onClick={getShowFileHandler(x.path)}>
+                <ListItemIcon>
+                    <Avatar>
+                        <Error />
+                    </Avatar>
+                </ListItemIcon>
+                <Tooltip title={x.path}>
+                    <ListItemText
+                        primary={path.basename(x.path)}
+                        secondary={l10n.date(data.fileInfos[x.path].modifiedDate)}
+                    />
+                </Tooltip>
+
+                <Tooltip title={chipMap[x.reason].tooltip}>
+                    <Box ml={1}>
+                        <Chip label={chipMap[x.reason].label} color="secondary" />
+                    </Box>
+                </Tooltip>
+            </ListItem>
+        </div>
     );
-
-    React.useEffect(() => {
-        const timer = setTimeout(() => {
-            setContent(
-                <ListItem key={x.path} button={true} onClick={getShowFileHandler(x.path)}>
-                    <ListItemIcon>
-                        <Avatar>
-                            <Error />
-                        </Avatar>
-                    </ListItemIcon>
-                    <Tooltip title={x.path}>
-                        <ListItemText
-                            primary={path.basename(x.path)}
-                            secondary={l10n.date(data.fileInfos[x.path].modifiedDate)}
-                        />
-                    </Tooltip>
-
-                    <Tooltip title={chipMap[x.reason].tooltip}>
-                        <Box ml={1}>
-                            <Chip label={chipMap[x.reason].label} color="secondary" />
-                        </Box>
-                    </Tooltip>
-                </ListItem>,
-            );
-        });
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    return <div style={style}>{content}</div>;
 };
