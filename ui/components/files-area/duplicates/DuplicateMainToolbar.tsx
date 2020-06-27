@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, ButtonGroup, InputAdornment, TextField, Tooltip } from "@material-ui/core";
+import { AppBar, Box, Button, Checkbox, InputAdornment, TextField, Tooltip } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
@@ -8,7 +8,8 @@ import { ConflictResolverActions } from "../../../redux/conflict-resolver/action
 import { TState } from "../../../redux/reducers";
 import { ConflictResolverThunk } from "../../../redux/thunk/conflict-resolver";
 import { useBackdropBound } from "../../../utils/backdrop-hooks";
-import { isFilterUsed, isFilterValid } from "../../../utils/filter";
+import { CheckboxState, getCheckboxState } from "../../../utils/checkbox";
+import { isFilterUsed, isFilterValid, pathFilter } from "../../../utils/filter";
 import { useL10n } from "../../../utils/l10n-hooks";
 import { useNotification } from "../../../utils/notifications";
 import { useThunkDispatch } from "../../../utils/thunk-hooks";
@@ -18,20 +19,17 @@ import { RegexIcon } from "../../icons/RegexIcon";
 
 export const DuplicateMainToolbar = () => {
     const dispatch = useThunkDispatch();
-    const { filesFilter, selectedConflictFiles: checkedItems } = useSelector((state: TState) => state.conflictResolver);
+    const { filesFilter, selectedConflictFiles } = useSelector((state: TState) => state.conflictResolver);
     const notification = useNotification();
     const [l10n] = useL10n();
     const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
-
     useBackdropBound(moveDisabled);
 
     const setAllChecked = (checked: boolean) => {
         dispatch(ConflictResolverThunk.selectAll(checked));
     };
-
-    const selectedPaths = Object.entries(checkedItems)
-        .filter(([__, checked]) => checked)
-        .map(([p]) => p);
+    const filteredPath = Object.keys(selectedConflictFiles).filter(pathFilter(filesFilter));
+    const selectedPaths = filteredPath.filter((p) => selectedConflictFiles[p]);
 
     const moveItems = async () => {
         setMoveDisabled(true);
@@ -54,8 +52,8 @@ export const DuplicateMainToolbar = () => {
         moveItems().catch((err) => notification.showError(l10n.errorMove(err.message)));
     };
 
-    const selectAll = () => setAllChecked(true);
-    const clearSelection = () => setAllChecked(false);
+    const globalSelectHandler = (event: React.ChangeEvent<HTMLInputElement>) => setAllChecked(event.target.checked);
+    const allChecked = getCheckboxState(filteredPath.length, selectedPaths.length);
 
     const setFilterHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
@@ -87,10 +85,11 @@ export const DuplicateMainToolbar = () => {
     return (
         <AppBar color="transparent" position="static">
             <Box display="flex" p={2}>
-                <ButtonGroup color="secondary" variant="outlined" size="small">
-                    <Button onClick={selectAll}>{l10n.selectAll}</Button>
-                    <Button onClick={clearSelection}>{l10n.clearSelection}</Button>
-                </ButtonGroup>
+                <Checkbox
+                    indeterminate={allChecked === CheckboxState.Indeterminate}
+                    checked={allChecked !== CheckboxState.Unchecked}
+                    onChange={globalSelectHandler}
+                />
                 <Box flexGrow={1} alignItems="center" display="flex" px={1}>
                     <TextField
                         error={isFilterUsed(filesFilter) && !isFilterValid(filesFilter)}
