@@ -11,6 +11,7 @@ export interface ISelectedFilesInfo {
 export interface IFilterParams {
     filter: string;
     isRegex: boolean;
+    isCaseSensitive: boolean;
 }
 
 export interface ConflictResolverState {
@@ -33,6 +34,7 @@ export const defaultConflictResolverState: ConflictResolverState = {
     filesFilter: {
         filter: "",
         isRegex: false,
+        isCaseSensitive: false,
     },
 };
 

@@ -72,4 +72,5 @@ export const russian: Translation = {
     selectAll: "Выделить все",
     searchPlaceholder: "Поиск...",
     regexHelp: "Поддержка регулярных выражений",
+    caseHelp: "Чувствительность к регистру",
 };

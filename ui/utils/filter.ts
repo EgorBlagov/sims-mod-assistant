@@ -19,8 +19,15 @@ export const isFilterValid = (filterParams: IFilterParams) =>
 
 export const pathFilter = (filesFilter: IFilterParams) => (p: string): boolean => {
     if (isFilterValid(filesFilter)) {
-        const basename = path.basename(p);
-        const index = filesFilter.isRegex ? basename.search(filesFilter.filter) : basename.indexOf(filesFilter.filter);
+        let basename = path.basename(p);
+        let filter = filesFilter.filter;
+
+        if (!filesFilter.isCaseSensitive) {
+            basename = basename.toLowerCase();
+            filter = filter.toLowerCase();
+        }
+
+        const index = filesFilter.isRegex ? basename.search(filter) : basename.indexOf(filter);
         return index !== -1;
     }
 

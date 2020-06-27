@@ -1,14 +1,4 @@
-import {
-    AppBar,
-    Box,
-    Button,
-    ButtonGroup,
-    Checkbox,
-    InputAdornment,
-    makeStyles,
-    TextField,
-    Tooltip,
-} from "@material-ui/core";
+import { AppBar, Box, Button, ButtonGroup, InputAdornment, TextField, Tooltip } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
@@ -22,27 +12,9 @@ import { isFilterUsed, isFilterValid } from "../../../utils/filter";
 import { useL10n } from "../../../utils/l10n-hooks";
 import { useNotification } from "../../../utils/notifications";
 import { useThunkDispatch } from "../../../utils/thunk-hooks";
+import { CaseIcon } from "../../icons/CaseIcon";
+import { CheckboxIcon } from "../../icons/CheckboxIcon";
 import { RegexIcon } from "../../icons/RegexIcon";
-
-const useStyles = makeStyles((theme) => ({
-    checkboxIcon: {
-        fontSize: "0.75em",
-    },
-    checkbox: {
-        padding: theme.spacing(0.5),
-    },
-    checkboxChecked: {
-        backgroundColor: theme.palette.primary.main,
-    },
-    checkboxColorPrimary: {
-        "&$checkboxChecked": {
-            color: "white",
-        },
-        "&$checkboxChecked:hover": {
-            backgroundColor: theme.palette.primary.light,
-        },
-    },
-}));
 
 export const DuplicateMainToolbar = () => {
     const dispatch = useThunkDispatch();
@@ -50,7 +22,6 @@ export const DuplicateMainToolbar = () => {
     const notification = useNotification();
     const [l10n] = useL10n();
     const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
-    const classes = useStyles();
 
     useBackdropBound(moveDisabled);
 
@@ -86,7 +57,7 @@ export const DuplicateMainToolbar = () => {
     const selectAll = () => setAllChecked(true);
     const clearSelection = () => setAllChecked(false);
 
-    const setFilterHandler = (event) => {
+    const setFilterHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
             ConflictResolverActions.setFilter({
                 ...filesFilter,
@@ -95,11 +66,20 @@ export const DuplicateMainToolbar = () => {
         );
     };
 
-    const setRegexHandler = (_, checked: boolean) => {
+    const setRegexHandler = (checked: boolean) => {
         dispatch(
             ConflictResolverActions.setFilter({
                 ...filesFilter,
                 isRegex: checked,
+            }),
+        );
+    };
+
+    const setCaseSensitiveHandler = (checked: boolean) => {
+        dispatch(
+            ConflictResolverActions.setFilter({
+                ...filesFilter,
+                isCaseSensitive: checked,
             }),
         );
     };
@@ -126,19 +106,23 @@ export const DuplicateMainToolbar = () => {
                         value={filesFilter.filter}
                         onChange={setFilterHandler}
                     />
+                    <Tooltip title={l10n.caseHelp}>
+                        <span>
+                            <CheckboxIcon
+                                IconComponent={CaseIcon}
+                                onChange={setCaseSensitiveHandler}
+                                value={filesFilter.isCaseSensitive}
+                            />
+                        </span>
+                    </Tooltip>
                     <Tooltip title={l10n.regexHelp}>
-                        <Checkbox
-                            color="primary"
-                            icon={<RegexIcon className={classes.checkboxIcon} />}
-                            checkedIcon={<RegexIcon className={classes.checkboxIcon} />}
-                            checked={filesFilter.isRegex}
-                            onChange={setRegexHandler}
-                            classes={{
-                                root: classes.checkbox,
-                                checked: classes.checkboxChecked,
-                                colorPrimary: classes.checkboxColorPrimary,
-                            }}
-                        />
+                        <span>
+                            <CheckboxIcon
+                                IconComponent={RegexIcon}
+                                onChange={setRegexHandler}
+                                value={filesFilter.isRegex}
+                            />
+                        </span>
                     </Tooltip>
                 </Box>
                 <Button

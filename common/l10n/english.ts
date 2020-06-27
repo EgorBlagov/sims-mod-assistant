@@ -70,4 +70,5 @@ export const english = {
     clearSelection: "Clear selection",
     searchPlaceholder: "Search...",
     regexHelp: "Regular expressions support",
+    caseHelp: "Case sensitivity",
 };
