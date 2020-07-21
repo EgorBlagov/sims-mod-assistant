@@ -1,4 +1,5 @@
 import { LocalizedErrors } from "./errors";
+import { TIndex } from "./indexer/types";
 
 export type TKeyValue = string;
 
@@ -80,10 +81,14 @@ export interface IDuplicateGroup {
     detailed: IDuplicateGraph;
 }
 
-export interface ISearchResult {
-    duplicates: IDuplicateGroup[];
+export interface IIndexResult {
+    index: TIndex;
     skips: ISkippedFile[];
     fileInfos: Record<string, IFileAdditionalInfo>;
+}
+
+export interface ISearchResult extends IIndexResult {
+    duplicates: IDuplicateGroup[];
 }
 
 export interface ISearchProgress {

@@ -4,14 +4,13 @@ import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter }
 import {
     DoubleTypes,
     IFileAdditionalInfo,
+    IIndexResult,
     ISearchError,
     ISearchParams,
     ISearchProgress,
-    ISearchResult,
     IStartResult,
     TTicketId,
 } from "../../common/types";
-import { GraphAggregator } from "../aggregator/graph-aggregator";
 import { readDbpf } from "../dbpf";
 import { DbpfResourceTypes } from "../dbpf/constants";
 import { FileSizes, getFilesAllWithStats } from "../fs-util";
@@ -33,7 +32,7 @@ const SearcherEventSchema = {
 export interface ISearcher {
     startSearch(targetPath: string, params: ISearchParams): IStartResult;
     interruptSearch(): void;
-    getSearchResult(ticketId: TTicketId): ISearchResult;
+    getSearchResult(ticketId: TTicketId): IIndexResult;
     readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
 }
 
@@ -70,7 +69,7 @@ class Searcher implements ISearcher {
         this.currentSearchTicket++;
     }
 
-    getSearchResult(ticketId: TTicketId): ISearchResult {
+    getSearchResult(ticketId: TTicketId): IIndexResult {
         if (ticketId !== this.searchResult.ticketId) {
             throw new LocalizedError("invalidTicketId");
         }
@@ -78,7 +77,7 @@ class Searcher implements ISearcher {
         return this.searchResult.result;
     }
 
-    private saveSearchResult(ticketId: number, result: ISearchResult) {
+    private saveSearchResult(ticketId: number, result: IIndexResult) {
         this.searchResult = {
             ticketId,
             result,
@@ -89,7 +88,7 @@ class Searcher implements ISearcher {
         ticketId: number,
         targetPath: string,
         params: ISearchParams,
-    ): Promise<ISearchResult> {
+    ): Promise<IIndexResult> {
         const allFiles = await getFilesAllWithStats(targetPath);
         const indexer = this.createIndexer(params);
 
@@ -113,11 +112,10 @@ class Searcher implements ISearcher {
             }
         }
 
-        const aggregator = new GraphAggregator(indexer.getIndex());
         const fileInfos = this.getFileInfos(allFiles);
 
         return {
-            duplicates: aggregator.getResult(),
+            index: indexer.getIndex(),
             skips: indexer.getSkips(),
             fileInfos,
         };

@@ -1,6 +1,7 @@
 import { ipc } from "../../../common/ipc";
 import { isOk } from "../../../common/tools";
-import { IDirectoryParams, ISearchParams, ISearchProgress, ISearchResult, TTicketId } from "../../../common/types";
+import { IDirectoryParams, IIndexResult, ISearchParams, ISearchProgress, TTicketId } from "../../../common/types";
+import { GraphAggregator } from "../../utils/graph-aggregator";
 import { ReduxThunkAction } from "../actions";
 import { ConflictResolverActions } from "../conflict-resolver/action-creators";
 
@@ -22,7 +23,7 @@ const searchStartAndUpdate = (
         dispatch(ConflictResolverActions.setResult(undefined));
         dispatch(ConflictResolverActions.setInProgress(true));
 
-        const searchResult = await new Promise<ISearchResult>((resolve, reject) => {
+        const indexResult = await new Promise<IIndexResult>((resolve, reject) => {
             ipc.renderer.on.searchResult((_, readyTicketId) => {
                 if (readyTicketId === searchTicketId) {
                     ipc.renderer.rpc.getSearchResult(searchTicketId).then(resolve);
@@ -36,7 +37,14 @@ const searchStartAndUpdate = (
             });
         });
 
-        dispatch(ConflictResolverActions.setResult(searchResult));
+        const graphAggregator = new GraphAggregator(indexResult.index);
+
+        dispatch(
+            ConflictResolverActions.setResult({
+                duplicates: graphAggregator.getResult(),
+                ...indexResult,
+            }),
+        );
     } catch (error) {
         dispatch(ConflictResolverActions.setResult(undefined));
         throw error;

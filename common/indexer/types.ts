@@ -1,5 +1,5 @@
-import { DoubleTypes, TKeyValue } from "../../common/types";
-import { IFileClassifier } from "./classifiers/file-classifier";
+import { IFileClassifier } from "../../server/indexer/classifiers/file-classifier";
+import { DoubleTypes, TKeyValue } from "../types";
 
 export type TFileKeyInfo = [DoubleTypes, TKeyValue];
 export type TFileKeys = TFileKeyInfo[];

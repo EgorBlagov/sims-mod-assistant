@@ -1,8 +1,8 @@
 import * as _ from "lodash";
+import { TClassifiers, TFileKeys, TIndex, TValidator } from "../../common/indexer/types";
 import { DoubleTypes, ISkippedFile, SkipReasons } from "../../common/types";
 import { DbpfErrors, DbpfToSkipReason, isDbpfError } from "../dbpf/errors";
 import { IFileClassifier } from "./classifiers/file-classifier";
-import { TClassifiers, TFileKeys, TIndex, TValidator } from "./types";
 
 export class Indexer {
     private skips: ISkippedFile[];

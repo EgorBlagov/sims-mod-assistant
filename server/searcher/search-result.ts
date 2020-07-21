@@ -1,6 +1,6 @@
-import { ISearchResult, TTicketId } from "../../common/types";
+import { IIndexResult, TTicketId } from "../../common/types";
 
 export interface ISavedSearchResult {
     ticketId: TTicketId;
-    result: ISearchResult;
+    result: IIndexResult;
 }

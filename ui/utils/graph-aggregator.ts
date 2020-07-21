@@ -1,5 +1,5 @@
+import { TIndex } from "../../common/indexer/types";
 import { DoubleTypes, IDuplicateGroup, TKeyValue } from "../../common/types";
-import { TIndex } from "../indexer/types";
 
 type TReversedIndex = {
     [keyValue: string]: string[]; // keyValue: TKeyValue
