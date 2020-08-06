@@ -1,10 +1,9 @@
 import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
 import { ipc } from "../common/ipc";
-import { TTicketId } from "../common/types";
 import { getDirectoryInfo } from "./fs-util";
 import { mover } from "./mover";
-import { searcher } from "./searcher/searcher";
+import { simsModIndexer } from "./searcher/searcher";
 import { simsStudio } from "./sims-studio/sims-studio";
 
 const clientPath = path.join(__dirname, "..", "client");
@@ -39,20 +38,20 @@ const launchElectron = () => {
     app.whenReady().then(() => {
         const wnd = createWindow();
 
-        searcher.ee.on.searchProgress((data) => ipc.main.emit.searchProgress(wnd, data));
-        searcher.ee.on.searchResult((data) => ipc.main.emit.searchResult(wnd, data));
-        searcher.ee.on.searchError((data) => ipc.main.emit.searchError(wnd, data));
+        simsModIndexer.ee.on.searchProgress((data) => ipc.main.emit.searchProgress(wnd, data));
+        simsModIndexer.ee.on.searchResult((data) => ipc.main.emit.searchResult(wnd, data));
+        simsModIndexer.ee.on.searchError((data) => ipc.main.emit.searchError(wnd, data));
 
         ipc.main.handleRpc.getDirectoryInfo(async (args) => {
             return getDirectoryInfo(args.targetPath);
         });
 
         ipc.main.handleRpc.startSearch(async (args) => {
-            return searcher.startSearch(args.targetPath, args);
+            return simsModIndexer.startSearch(args.targetPath, args);
         });
 
         ipc.main.handleRpc.interruptSearch(async () => {
-            searcher.interruptSearch();
+            simsModIndexer.interruptSearch();
         });
 
         ipc.main.handleRpc.moveDuplicates(async (params) => {
@@ -65,10 +64,6 @@ const launchElectron = () => {
 
         ipc.main.handleRpc.openInStudio(async (params) => {
             return simsStudio.openFile(params.filePath, params.simsStudioPath);
-        });
-
-        ipc.main.handleRpc.getSearchResult(async (ticketId: TTicketId) => {
-            return searcher.getSearchResult(ticketId);
         });
     });
 

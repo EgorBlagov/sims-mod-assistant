@@ -82,6 +82,7 @@ export interface IDuplicateGroup {
 }
 
 export interface IIndexResult {
+    ticketId: TTicketId;
     index: TIndex;
     skips: ISkippedFile[];
     fileInfos: Record<string, IFileAdditionalInfo>;

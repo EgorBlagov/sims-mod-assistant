@@ -24,9 +24,9 @@ const searchStartAndUpdate = (
         dispatch(ConflictResolverActions.setInProgress(true));
 
         const indexResult = await new Promise<IIndexResult>((resolve, reject) => {
-            ipc.renderer.on.searchResult((_, readyTicketId) => {
-                if (readyTicketId === searchTicketId) {
-                    ipc.renderer.rpc.getSearchResult(searchTicketId).then(resolve);
+            ipc.renderer.on.searchResult((_, searchIndexResult) => {
+                if (searchIndexResult.ticketId === searchTicketId) {
+                    resolve(searchIndexResult);
                 }
             });
 

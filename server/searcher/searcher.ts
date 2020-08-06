@@ -9,7 +9,6 @@ import {
     ISearchParams,
     ISearchProgress,
     IStartResult,
-    TTicketId,
 } from "../../common/types";
 import { readDbpf } from "../dbpf";
 import { DbpfResourceTypes } from "../dbpf/constants";
@@ -19,42 +18,29 @@ import { Md5Classifier } from "../indexer/classifiers/md5-classifier";
 import { Indexer } from "../indexer/indexer";
 import { logger } from "../logging";
 import { IFileWithStats } from "../types";
-import { ISavedSearchResult } from "./search-result";
 
 const PROGRESS_FRACTION = 50;
 
-const SearcherEventSchema = {
-    searchResult: createTypesafeEvent<TTicketId>(),
+const SimsModIndexerEventSchema = {
+    searchResult: createTypesafeEvent<IIndexResult>(),
     searchProgress: createTypesafeEvent<ISearchProgress>(),
     searchError: createTypesafeEvent<ISearchError>(),
 };
 
-export interface ISearcher {
-    startSearch(targetPath: string, params: ISearchParams): IStartResult;
-    interruptSearch(): void;
-    getSearchResult(ticketId: TTicketId): IIndexResult;
-    readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
-}
-
-class Searcher implements ISearcher {
+class SimsModIndexer {
     private currentSearchTicket: number;
-    public readonly ee: TypesafeEventEmitter<typeof SearcherEventSchema>;
-    private searchResult: ISavedSearchResult;
+    public readonly ee: TypesafeEventEmitter<typeof SimsModIndexerEventSchema>;
 
     constructor() {
         this.currentSearchTicket = 0;
-        this.searchResult = { ticketId: 0, result: undefined };
-        this.ee = createTypesafeEventEmitter(SearcherEventSchema);
+        this.ee = createTypesafeEventEmitter(SimsModIndexerEventSchema);
     }
 
     startSearch(targetPath: string, params: ISearchParams): IStartResult {
         this.currentSearchTicket++;
         const launchSearchId = this.currentSearchTicket;
         this.startSearchProgress(launchSearchId, targetPath, params)
-            .then((result) => {
-                this.saveSearchResult(launchSearchId, result);
-                this.ee.emit.searchResult(launchSearchId);
-            })
+            .then((result) => this.ee.emit.searchResult(result))
             .catch((error: LocalizedErrors | Error) => {
                 logger.error(error);
                 this.ee.emit.searchError({ error, ticketId: launchSearchId });
@@ -67,21 +53,6 @@ class Searcher implements ISearcher {
 
     interruptSearch(): void {
         this.currentSearchTicket++;
-    }
-
-    getSearchResult(ticketId: TTicketId): IIndexResult {
-        if (ticketId !== this.searchResult.ticketId) {
-            throw new LocalizedError("invalidTicketId");
-        }
-
-        return this.searchResult.result;
-    }
-
-    private saveSearchResult(ticketId: number, result: IIndexResult) {
-        this.searchResult = {
-            ticketId,
-            result,
-        };
     }
 
     private async startSearchProgress(
@@ -115,6 +86,7 @@ class Searcher implements ISearcher {
         const fileInfos = this.getFileInfos(allFiles);
 
         return {
+            ticketId,
             index: indexer.getIndex(),
             skips: indexer.getSkips(),
             fileInfos,
@@ -157,4 +129,4 @@ class Searcher implements ISearcher {
     }
 }
 
-export const searcher: ISearcher = new Searcher();
+export const simsModIndexer = new SimsModIndexer();
