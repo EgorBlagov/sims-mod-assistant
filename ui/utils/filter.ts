@@ -4,7 +4,7 @@ import { IFilterParams } from "../redux/conflict-resolver/reducers";
 
 const isValidRegex = (reg: string) => {
     try {
-        // tslint:disable-next-line: no-unused-expression
+        // tslint:disable-next-line: no-unused-expression-chai
         new RegExp(reg);
         return true;
     } catch {

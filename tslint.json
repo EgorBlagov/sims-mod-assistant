@@ -1,15 +1,12 @@
 {
     "defaultSeverity": "error",
-    "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+    "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier", "tslint-no-unused-expression-chai"],
     "jsRules": {},
     "rules": {
         "object-literal-sort-keys": false,
         "no-namespace": false,
         "no-bitwise": false,
-        "file-name-casing": [
-            true,
-            { ".tsx": "pascal-case", ".ts": "kebab-case" }
-        ],
+        "file-name-casing": [true, { ".tsx": "pascal-case", ".ts": "kebab-case" }],
         "no-return-await": true
     },
     "rulesDirectory": []

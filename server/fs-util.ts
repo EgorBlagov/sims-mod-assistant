@@ -41,3 +41,7 @@ export async function getFilesAllWithStats(targetPath: string): Promise<IFileWit
         })),
     );
 }
+
+export function isSubdir(parentPath: string, childPath: string): boolean {
+    return false;
+}
