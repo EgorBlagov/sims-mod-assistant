@@ -42,6 +42,7 @@ export async function getFilesAllWithStats(targetPath: string): Promise<IFileWit
     );
 }
 
-export function isSubdir(parentPath: string, childPath: string): boolean {
-    return false;
+export function isWithinSameDir(parentPath: string, childPath: string): boolean {
+    const relative = path.relative(parentPath, childPath);
+    return !relative || (!relative.startsWith("..") && !path.isAbsolute(relative));
 }
