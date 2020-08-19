@@ -19,6 +19,7 @@ export interface ConflictResolverState {
         inProgress: boolean;
         progressRelative: number;
     };
+    searchDirectory: string;
     searchResult: ISearchResult;
     selectedConflictFiles: ISelectedFilesInfo;
     filesFilter: IFilterParams;
@@ -29,6 +30,7 @@ export const defaultConflictResolverState: ConflictResolverState = {
         inProgress: false,
         progressRelative: 0,
     },
+    searchDirectory: undefined,
     searchResult: undefined,
     selectedConflictFiles: {},
     filesFilter: {
@@ -111,6 +113,12 @@ export const conflictResolver = (
             return {
                 ...state,
                 filesFilter: action.filesFilter,
+            };
+
+        case Actions.CONFLICT_RESOLVER_SET_SEARCH_DIRECTORY:
+            return {
+                ...state,
+                searchDirectory: action.searchDirectory,
             };
 
         default:

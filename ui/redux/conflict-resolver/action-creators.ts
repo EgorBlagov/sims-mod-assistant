@@ -6,6 +6,7 @@ import {
     ConflictResolverSelectFiles,
     ConflictResolverSetFilesFilter,
     ConflictResolverSetProgressRelativeAction,
+    ConflictResolverSetSearchDirectory,
 } from "./actions";
 import { IFilterParams } from "./reducers";
 
@@ -22,6 +23,11 @@ const setResult = (result: ISearchResult): ConflictResolverSearchSetResultAction
 const setProgress = (progressRelative: number): ConflictResolverSetProgressRelativeAction => ({
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_PROGRESS_RELATIVE,
     progressRelative,
+});
+
+const setSearchDirectory = (searchDirectory: string): ConflictResolverSetSearchDirectory => ({
+    type: Actions.CONFLICT_RESOLVER_SET_SEARCH_DIRECTORY,
+    searchDirectory,
 });
 
 const cleanupSearch = (): ConflictResolverSearchSetResultAction => ({
@@ -47,4 +53,5 @@ export const ConflictResolverActions = {
     cleanupSearch,
     selectFiles,
     setFilter,
+    setSearchDirectory,
 };

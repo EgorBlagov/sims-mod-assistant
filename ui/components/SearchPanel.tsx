@@ -15,11 +15,7 @@ import { ProgressBar } from "./ProgressBar";
 import { SearchParametersForm } from "./SearchParametersForm";
 import { StartButton } from "./StartButton";
 
-interface IProps {
-    targetPath: string;
-}
-
-export const SearchPanel = ({ targetPath }: IProps) => {
+export const SearchPanel = () => {
     const [l10n] = useL10n();
     const [params, setParams] = React.useState<ISearchParams>({ searchMd5: true, searchTgi: false });
     const {
@@ -29,6 +25,7 @@ export const SearchPanel = ({ targetPath }: IProps) => {
 
     const notification = useNotification();
     const dispatch = useThunkDispatch();
+    const targetPath = useSelector((state: TState) => state.conflictResolver.searchDirectory);
 
     const interruptSearch = () => {
         ipc.renderer.rpc.interruptSearch().catch((err) => notification.showError(getErrorMessage(err, l10n)));

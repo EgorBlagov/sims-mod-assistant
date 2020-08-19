@@ -5,12 +5,11 @@ import { useL10n } from "../utils/l10n-hooks";
 import { SearchPanel } from "./SearchPanel";
 
 interface IProps {
-    targetPath: string;
     filesCount: number;
     sizeMb: number;
 }
 
-export const DirectorySummary = ({ targetPath, filesCount, sizeMb }: IProps) => {
+export const DirectorySummary = ({ filesCount, sizeMb }: IProps) => {
     const [l10n] = useL10n();
 
     if (!isOk(filesCount) || !isOk(sizeMb)) {
@@ -24,7 +23,7 @@ export const DirectorySummary = ({ targetPath, filesCount, sizeMb }: IProps) => 
     return (
         <>
             <Typography align="center">{l10n.dirInfo(filesCount, sizeMb.toFixed(2))}</Typography>
-            <SearchPanel targetPath={targetPath} />
+            <SearchPanel />
         </>
     );
 };

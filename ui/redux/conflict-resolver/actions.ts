@@ -7,7 +7,8 @@ export type ConflictResolverActions =
     | ConflictResolverSearchSetResultAction
     | ConflictResolverSetProgressRelativeAction
     | ConflictResolverSelectFiles
-    | ConflictResolverSetFilesFilter;
+    | ConflictResolverSetFilesFilter
+    | ConflictResolverSetSearchDirectory;
 
 export interface ConflictResolverSearchSetInProgresstAction extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_SEARCH_IN_PROGRESS;
@@ -33,4 +34,9 @@ export interface ConflictResolverSelectFiles extends ReduxAction {
 export interface ConflictResolverSetFilesFilter extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SET_FILES_FILTER;
     filesFilter: IFilterParams;
+}
+
+export interface ConflictResolverSetSearchDirectory extends ReduxAction {
+    type: Actions.CONFLICT_RESOLVER_SET_SEARCH_DIRECTORY;
+    searchDirectory: string;
 }

@@ -71,4 +71,6 @@ export const english = {
     searchPlaceholder: "Search...",
     regexHelp: "Regular expressions support",
     caseHelp: "Case sensitivity",
+
+    moveSubdirForbidden: "Move to same directory or subdirectory is forbidden, please, choose separate directory",
 };

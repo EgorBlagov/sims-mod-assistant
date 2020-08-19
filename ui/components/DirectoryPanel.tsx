@@ -1,8 +1,11 @@
 import { Box, Button, makeStyles, Typography } from "@material-ui/core";
 import { remote } from "electron";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ipc } from "../../common/ipc";
 import { isOk } from "../../common/tools";
+import { ConflictResolverActions } from "../redux/conflict-resolver/action-creators";
+import { TState } from "../redux/reducers";
 import { useBackdropBound } from "../utils/backdrop-hooks";
 import { useL10n } from "../utils/l10n-hooks";
 import { useNotification } from "../utils/notifications";
@@ -18,7 +21,10 @@ export const DirectoryPanel = () => {
     const [l10n] = useL10n();
     const notification = useNotification();
 
-    const [path, setPath] = React.useState<string>();
+    const path = useSelector((state: TState) => state.conflictResolver.searchDirectory);
+    const dispatch = useDispatch();
+    const setPath = (newPath: string) => dispatch(ConflictResolverActions.setSearchDirectory(newPath));
+
     const [filesCount, setFilesCount] = React.useState<number>();
     const [sizeMb, setSizeMb] = React.useState<number>();
     const [openDisabled, setOpenDisabled] = React.useState<boolean>(false);
@@ -77,7 +83,7 @@ export const DirectoryPanel = () => {
                     </Button>
                 </Box>
             </Box>
-            {isOk(path) && <DirectorySummary targetPath={path} filesCount={filesCount} sizeMb={sizeMb} />}
+            {isOk(path) && <DirectorySummary filesCount={filesCount} sizeMb={sizeMb} />}
         </>
     );
 };

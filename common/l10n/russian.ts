@@ -73,4 +73,6 @@ export const russian: Translation = {
     searchPlaceholder: "Поиск...",
     regexHelp: "Поддержка регулярных выражений",
     caseHelp: "Чувствительность к регистру",
+
+    moveSubdirForbidden: "Перемещать в ту же папку или подпапку нельзя, пожалуйста, выберите другую папку",
 };

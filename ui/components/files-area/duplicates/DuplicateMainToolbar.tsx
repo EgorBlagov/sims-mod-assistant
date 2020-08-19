@@ -3,6 +3,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
 import React from "react";
 import { useSelector } from "react-redux";
+import { getErrorMessage } from "../../../../common/errors";
 import { ipc } from "../../../../common/ipc";
 import { ConflictResolverActions } from "../../../redux/conflict-resolver/action-creators";
 import { TState } from "../../../redux/reducers";
@@ -16,10 +17,10 @@ import { useThunkDispatch } from "../../../utils/thunk-hooks";
 import { CaseIcon } from "../../icons/CaseIcon";
 import { CheckboxIcon } from "../../icons/CheckboxIcon";
 import { RegexIcon } from "../../icons/RegexIcon";
-
 export const DuplicateMainToolbar = () => {
     const dispatch = useThunkDispatch();
     const { filesFilter, selectedConflictFiles } = useSelector((state: TState) => state.conflictResolver);
+    const searchDirectory = useSelector((state: TState) => state.conflictResolver.searchDirectory);
     const notification = useNotification();
     const [l10n] = useL10n();
     const [moveDisabled, setMoveDisabled] = React.useState<boolean>(false);
@@ -38,6 +39,7 @@ export const DuplicateMainToolbar = () => {
             if (!dialogResult.canceled) {
                 await ipc.renderer.rpc.moveDuplicates({
                     targetDir: dialogResult.filePaths[0],
+                    searchDir: searchDirectory,
                     filePaths: selectedPaths,
                 });
                 notification.showSuccess(l10n.moveSuccess);
@@ -49,7 +51,7 @@ export const DuplicateMainToolbar = () => {
     };
 
     const openDalog = () => {
-        moveItems().catch((err) => notification.showError(l10n.errorMove(err.message)));
+        moveItems().catch((err) => notification.showError(l10n.errorMove(getErrorMessage(err, l10n))));
     };
 
     const globalSelectHandler = (event: React.ChangeEvent<HTMLInputElement>) => setAllChecked(event.target.checked);

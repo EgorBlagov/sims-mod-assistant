@@ -1,6 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
+import { LocalizedError } from "../common/errors";
 import { IMoveParams } from "../common/types";
+import { isWithinSameDir } from "./fs-util";
 
 export interface IMover {
     move(params: IMoveParams): Promise<void>;
@@ -8,9 +10,17 @@ export interface IMover {
 
 class Mover implements IMover {
     async move(params: IMoveParams): Promise<void> {
+        this.validateNotSubdir(params.searchDir, params.targetDir);
+
         for (const filePath of params.filePaths) {
             const targetName = await this.findFreeName(params.targetDir, path.basename(filePath));
             await fs.promises.rename(filePath, targetName);
+        }
+    }
+
+    private validateNotSubdir(origDir: string, targetDir: string) {
+        if (isWithinSameDir(origDir, targetDir)) {
+            throw new LocalizedError("moveSubdirForbidden");
         }
     }
 
@@ -28,6 +38,7 @@ class Mover implements IMover {
         const basename = path.basename(filePath);
         const extension = path.extname(basename);
         const name = path.basename(basename, extension);
+
         return path.join(dirname, `${name}${suffix}${extension}`);
     }
 

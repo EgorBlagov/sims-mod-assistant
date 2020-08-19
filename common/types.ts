@@ -104,6 +104,7 @@ export interface ISearchError {
 
 export interface IMoveParams {
     filePaths: string[];
+    searchDir: string;
     targetDir: string;
 }
 
