@@ -112,3 +112,15 @@ export interface IOpenInStudioParams {
     filePath: string;
     simsStudioPath: string;
 }
+
+export enum IndexChanges {
+    Remove = "Remove",
+}
+
+export interface IIndexUpdate {
+    [path: string]: IIndexChange;
+}
+
+export interface IIndexChange {
+    change: IndexChanges;
+}

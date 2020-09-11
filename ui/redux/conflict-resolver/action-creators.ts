@@ -1,4 +1,4 @@
-import { ISearchResult } from "../../../common/types";
+import { IIndexResult, IIndexUpdate } from "../../../common/types";
 import { Actions } from "../actions";
 import {
     ConflictResolverSearchSetInProgresstAction,
@@ -7,6 +7,7 @@ import {
     ConflictResolverSetFilesFilter,
     ConflictResolverSetProgressRelativeAction,
     ConflictResolverSetSearchDirectory,
+    ConflictResolverUpdateIndex,
 } from "./actions";
 import { IFilterParams } from "./reducers";
 
@@ -15,7 +16,7 @@ const setInProgress = (inProgress: boolean): ConflictResolverSearchSetInProgress
     inProgress,
 });
 
-const setResult = (result: ISearchResult): ConflictResolverSearchSetResultAction => ({
+const setIndexResult = (result: IIndexResult): ConflictResolverSearchSetResultAction => ({
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_RESULT,
     result,
 });
@@ -46,12 +47,18 @@ const setFilter = (filesFilter: IFilterParams): ConflictResolverSetFilesFilter =
     filesFilter,
 });
 
+const updateIndex = (indexUpdate: IIndexUpdate): ConflictResolverUpdateIndex => ({
+    type: Actions.CONFLICT_RESOLVER_UPDATE_INDEX,
+    indexUpdate,
+});
+
 export const ConflictResolverActions = {
     setInProgress,
-    setResult,
+    setIndexResult,
     setProgress,
     cleanupSearch,
     selectFiles,
     setFilter,
     setSearchDirectory,
+    updateIndex,
 };

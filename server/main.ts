@@ -41,6 +41,7 @@ const launchElectron = () => {
         simsModIndexer.ee.on.searchProgress((data) => ipc.main.emit.searchProgress(wnd, data));
         simsModIndexer.ee.on.searchResult((data) => ipc.main.emit.searchResult(wnd, data));
         simsModIndexer.ee.on.searchError((data) => ipc.main.emit.searchError(wnd, data));
+        mover.ee.on.updateIndex((data) => ipc.main.emit.indexUpdate(wnd, data));
 
         ipc.main.handleRpc.getDirectoryInfo(async (args) => {
             return getDirectoryInfo(args.targetPath);

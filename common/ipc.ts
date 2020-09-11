@@ -3,6 +3,7 @@ import {
     IDirectoryInfo,
     IDirectoryParams,
     IIndexResult,
+    IIndexUpdate,
     IMoveParams,
     IOpenInStudioParams,
     ISearchError,
@@ -24,6 +25,7 @@ export const IpcSchema = {
         searchResult: createTypesafeIpcEvent<IIndexResult>(),
         searchError: createTypesafeIpcEvent<ISearchError>(),
         searchProgress: createTypesafeIpcEvent<ISearchProgress>(),
+        indexUpdate: createTypesafeIpcEvent<IIndexUpdate>(),
     },
 };
 

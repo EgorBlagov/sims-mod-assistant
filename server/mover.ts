@@ -1,20 +1,35 @@
 import * as fs from "fs";
 import * as path from "path";
 import { LocalizedError } from "../common/errors";
-import { IMoveParams } from "../common/types";
+import { createTypesafeEvent, createTypesafeEventEmitter, TypesafeEventEmitter } from "../common/event-emitter";
+import { IIndexUpdate, IMoveParams, IndexChanges } from "../common/types";
 import { isWithinSameDir } from "./fs-util";
 
-export interface IMover {
-    move(params: IMoveParams): Promise<void>;
-}
+const MoverEventSchema = {
+    updateIndex: createTypesafeEvent<IIndexUpdate>(),
+};
 
-class Mover implements IMover {
+class Mover {
+    public readonly ee: TypesafeEventEmitter<typeof MoverEventSchema>;
+
+    constructor() {
+        this.ee = createTypesafeEventEmitter(MoverEventSchema);
+    }
+
     async move(params: IMoveParams): Promise<void> {
         this.validateNotSubdir(params.searchDir, params.targetDir);
+        const indexUpdate: IIndexUpdate = {}; // Mover is too aware of index and allowed operation structure
 
-        for (const filePath of params.filePaths) {
-            const targetName = await this.findFreeName(params.targetDir, path.basename(filePath));
-            await fs.promises.rename(filePath, targetName);
+        try {
+            for (const filePath of params.filePaths) {
+                const targetName = await this.findFreeName(params.targetDir, path.basename(filePath));
+                await fs.promises.rename(filePath, targetName);
+                indexUpdate[filePath] = { change: IndexChanges.Remove };
+            }
+        } finally {
+            if (Object.keys(indexUpdate).length !== 0) {
+                this.ee.emit.updateIndex(indexUpdate);
+            }
         }
     }
 
@@ -55,4 +70,4 @@ class Mover implements IMover {
     }
 }
 
-export const mover: IMover = new Mover();
+export const mover: Mover = new Mover();

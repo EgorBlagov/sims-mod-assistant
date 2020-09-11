@@ -1,10 +1,11 @@
 import { AppBar, Box, Button, Checkbox, InputAdornment, TextField, Tooltip } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { remote } from "electron";
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getErrorMessage } from "../../../../common/errors";
 import { ipc } from "../../../../common/ipc";
+import { IIndexUpdate } from "../../../../common/types";
 import { ConflictResolverActions } from "../../../redux/conflict-resolver/action-creators";
 import { TState } from "../../../redux/reducers";
 import { ConflictResolverThunk } from "../../../redux/thunk/conflict-resolver";
@@ -31,9 +32,19 @@ export const DuplicateMainToolbar = () => {
     };
     const filteredPath = Object.keys(selectedConflictFiles).filter(pathFilter(filesFilter));
     const selectedPaths = filteredPath.filter((p) => selectedConflictFiles[p]);
+    useEffect(() => {
+        const onIndexUpdate = (__, event: IIndexUpdate) => {
+            dispatch(ConflictResolverActions.updateIndex(event));
+        };
+        ipc.renderer.on.indexUpdate(onIndexUpdate);
+        return () => {
+            ipc.renderer.off.indexUpdate(onIndexUpdate);
+        };
+    }, []);
 
     const moveItems = async () => {
         setMoveDisabled(true);
+
         try {
             const dialogResult = await remote.dialog.showOpenDialog({ properties: ["openDirectory"] });
             if (!dialogResult.canceled) {
@@ -43,8 +54,9 @@ export const DuplicateMainToolbar = () => {
                     filePaths: selectedPaths,
                 });
                 notification.showSuccess(l10n.moveSuccess);
-                // TODO: view update logic
             }
+        } catch (err) {
+            notification.showError(getErrorMessage(err, l10n));
         } finally {
             setMoveDisabled(false);
         }

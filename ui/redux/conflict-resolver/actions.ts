@@ -1,4 +1,4 @@
-import { ISearchResult } from "../../../common/types";
+import { IIndexResult, IIndexUpdate } from "../../../common/types";
 import { Actions, ReduxAction } from "../actions";
 import { IFilterParams } from "./reducers";
 
@@ -8,7 +8,8 @@ export type ConflictResolverActions =
     | ConflictResolverSetProgressRelativeAction
     | ConflictResolverSelectFiles
     | ConflictResolverSetFilesFilter
-    | ConflictResolverSetSearchDirectory;
+    | ConflictResolverSetSearchDirectory
+    | ConflictResolverUpdateIndex;
 
 export interface ConflictResolverSearchSetInProgresstAction extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_SEARCH_IN_PROGRESS;
@@ -17,7 +18,7 @@ export interface ConflictResolverSearchSetInProgresstAction extends ReduxAction 
 
 export interface ConflictResolverSearchSetResultAction extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SEARCH_SET_RESULT;
-    result: ISearchResult;
+    result: IIndexResult;
 }
 
 export interface ConflictResolverSetProgressRelativeAction extends ReduxAction {
@@ -39,4 +40,9 @@ export interface ConflictResolverSetFilesFilter extends ReduxAction {
 export interface ConflictResolverSetSearchDirectory extends ReduxAction {
     type: Actions.CONFLICT_RESOLVER_SET_SEARCH_DIRECTORY;
     searchDirectory: string;
+}
+
+export interface ConflictResolverUpdateIndex extends ReduxAction {
+    type: Actions.CONFLICT_RESOLVER_UPDATE_INDEX;
+    indexUpdate: IIndexUpdate;
 }
