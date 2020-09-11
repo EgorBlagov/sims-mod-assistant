@@ -67,7 +67,7 @@ export const russian: Translation = {
     openInStudio: "Открыть пакет в Sims4Studio",
     studioNotConfigured: "Путь к Sims4Studio не настроен (это можно сделать в Настройках)",
     copyPathSuccess: (path: string) => `Путь ${path} успешно скопирован в буфер обмена`,
-    conflictKeysDescription: "Конфликтующие ключи (Тип-Группа-Экземпляр):",
+    conflictKeysDescription: "Конфликтующие ключи:",
     clearSelection: "Снять выделение",
     selectAll: "Выделить все",
     searchPlaceholder: "Поиск...",

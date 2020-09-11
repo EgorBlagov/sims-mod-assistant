@@ -65,7 +65,7 @@ export const english = {
     openInStudio: "Open package in Sims4Studio",
     studioNotConfigured: "Sims4Studio path is not configured (you can do it Settings)",
     copyPathSuccess: (path: string) => `Path ${path} successfully copied to clipboard`,
-    conflictKeysDescription: "Conflicting keys (Type-Group-Instance):",
+    conflictKeysDescription: "Conflicting keys:",
     selectAll: "Select all",
     clearSelection: "Clear selection",
     searchPlaceholder: "Search...",
