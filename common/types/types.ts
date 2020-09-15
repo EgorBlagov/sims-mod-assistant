@@ -1,14 +1,12 @@
-import { LocalizedErrors } from "./errors";
-import { TIndex } from "./indexer/types";
-
-export type TKeyValue = string;
+import { LocalizedErrors } from "../errors";
+import { TIndex } from "../indexer/types";
+import { DoubleTypes, TTicketId } from "./basic-types";
+import { IDuplicateGroup } from "./graph-types";
 
 export interface IDirectoryInfo {
     filesCount: number;
     sizeMb: number;
 }
-
-export type TTicketId = number;
 
 export interface IStartResult {
     searchTicketId: TTicketId;
@@ -21,14 +19,6 @@ export interface IDirectoryParams {
 export interface ISearchParams {
     searchMd5: boolean;
     searchTgi: boolean;
-}
-
-export enum DoubleTypes {
-    Exact = "Exact",
-    Catalog = "Catalog",
-    Skintone = "Skintone",
-    Cas = "Cas",
-    Slider = "Slider",
 }
 
 export interface IFileDescription {
@@ -58,27 +48,6 @@ export enum SkipReasons {
 
 export interface ISkippedFile extends IFileDescription {
     reason: SkipReasons;
-}
-
-export interface IDuplicateGraphNode {
-    path: string;
-}
-
-export interface IDuplicateGraphLink {
-    source: string;
-    target: string;
-    keys: TKeyValue[];
-    types: DoubleTypes[];
-}
-
-export interface IDuplicateGraph {
-    nodes: IDuplicateGraphNode[];
-    links: IDuplicateGraphLink[];
-}
-
-export interface IDuplicateGroup {
-    types: DoubleTypes[];
-    detailed: IDuplicateGraph;
 }
 
 export interface IIndexResult {

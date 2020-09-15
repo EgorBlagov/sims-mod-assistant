@@ -26,7 +26,7 @@ export const DuplicateGroupToolbar = ({ group, openDetailed, groupChecked, onCha
                     onChange={onChangeHandler}
                 />
                 <Box flexGrow={1}>
-                    <DoubleTypeChipBar types={group.types} />
+                    <DoubleTypeChipBar types={group.summary.types} />
                 </Box>
                 <Tooltip title={l10n.detailed} placement="top">
                     <IconButton onClick={onClick} size="small" color="secondary">

@@ -68,6 +68,8 @@ export const russian: Translation = {
     studioNotConfigured: "Путь к Sims4Studio не настроен (это можно сделать в Настройках)",
     copyPathSuccess: (path: string) => `Путь ${path} успешно скопирован в буфер обмена`,
     conflictKeysDescription: "Конфликтующие ключи:",
+    keyGroup: (count: number, types: string[]) => `Ключи: ${count} (${types.join(", ")})`,
+    fileGroup: (count: number) => `Файлы: ${count}`,
     clearSelection: "Снять выделение",
     selectAll: "Выделить все",
     searchPlaceholder: "Поиск...",

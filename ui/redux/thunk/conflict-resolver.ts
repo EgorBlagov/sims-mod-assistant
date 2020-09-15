@@ -51,10 +51,7 @@ const selectAll = (selected: boolean): ReduxThunkAction => (dispatch, getState) 
     if (isOk(searchResult)) {
         dispatch(
             ConflictResolverActions.selectFiles(
-                searchResult.duplicates.reduce(
-                    (prev, g) => prev.concat(g.detailed.nodes.map((n) => n.path)),
-                    [] as string[],
-                ),
+                searchResult.duplicates.reduce((prev, g) => prev.concat(g.summary.files), [] as string[]),
                 selected,
             ),
         );

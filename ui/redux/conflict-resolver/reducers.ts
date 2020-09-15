@@ -46,8 +46,8 @@ const conflictFilesUpdate = (state: ISelectedFilesInfo, newSearchResult: ISearch
         const newSelectedFiles: ISelectedFilesInfo = {};
 
         for (const group of newSearchResult.duplicates) {
-            for (const node of group.detailed.nodes) {
-                newSelectedFiles[node.path] = node.path in state ? state[node.path] : false;
+            for (const path of group.summary.files) {
+                newSelectedFiles[path] = path in state ? state[path] : false;
             }
         }
 

@@ -58,7 +58,7 @@ export const DuplicatesList = ({ searchInfo }: IProps) => {
     const data: TItemData = [];
 
     for (const group of searchInfo.duplicates) {
-        const currentPaths = group.detailed.nodes.map((n) => n.path).filter(pathFilter(filesFilter));
+        const currentPaths = group.summary.files.filter(pathFilter(filesFilter));
         if (currentPaths.length === 0) {
             continue;
         }

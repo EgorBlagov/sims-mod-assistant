@@ -6,7 +6,10 @@ import React, { createRef } from "react";
 import { Translation } from "../../../../../common/l10n";
 import { DoubleTypes, IDuplicateGraph } from "../../../../../common/types";
 import { doubleTypeMap } from "../../../../utils/language-mapping";
-
+enum NodeType {
+    Files = "Files",
+    Keys = "Keys",
+}
 const styles = (theme: Theme) =>
     createStyles({
         container: {
@@ -16,6 +19,12 @@ const styles = (theme: Theme) =>
         },
         nodeCircle: {
             fill: theme.palette.primary.main,
+            cursor: "pointer",
+            stroke: "white",
+            strokeWidth: 1.5,
+        },
+        nodeKeyCircle: {
+            fill: theme.palette.secondary.main,
             cursor: "pointer",
             stroke: "white",
             strokeWidth: 1.5,
@@ -30,6 +39,18 @@ const styles = (theme: Theme) =>
             fill: "none",
             stroke: "white",
             strokeWidth: 3,
+        },
+        labelBorderGroupFiles: {
+            fill: "none",
+            stroke: theme.palette.primary.main,
+            strokeWidth: 2,
+            opacity: 0.5,
+        },
+        labelBorderGroupKeys: {
+            fill: "none",
+            stroke: theme.palette.secondary.main,
+            strokeWidth: 2,
+            opacity: 0.5,
         },
         tooltip: {
             position: "absolute",
@@ -62,18 +83,16 @@ export class D3GraphImpl extends React.Component<IProps> {
     private d3RootRef = createRef<HTMLDivElement>();
 
     componentDidMount() {
-        const { graph, classes, l10n } = this.props;
-
-        const links = graph.links.map((d) => Object.create(d));
-        const nodes = graph.nodes.map((d) => Object.create(d));
+        const { graph, classes } = this.props;
+        const d3Graph = this.createD3Graph(graph);
+        const links = d3Graph.links.map((d) => Object.create(d));
+        const nodes = d3Graph.nodes.map((d) => Object.create(d));
 
         const simulation = this.createSimulation(nodes, links);
         const svg = this.createSvg();
         const tooltip = this.createTooltip();
         const link = svg.append("g").attr("class", classes.link).selectAll("line").data(links).join("line");
-        const node = this.createNode(svg, nodes, simulation);
-        const linkLabel = this.createLinkLabel(svg, links, tooltip);
-
+        const node = this.createNode(svg, nodes, simulation, tooltip);
         simulation.on("tick", () => {
             link.attr("x1", (d) => d.source.x)
                 .attr("y1", (d) => d.source.y)
@@ -81,11 +100,6 @@ export class D3GraphImpl extends React.Component<IProps> {
                 .attr("y2", (d) => d.target.y);
 
             node.attr("transform", (d) => `translate(${d.x},${d.y})`);
-
-            linkLabel.attr(
-                "transform",
-                (d) => `translate(${(d.source.x + d.target.x) / 2},${(d.source.y + d.target.y) / 2})`,
-            );
         });
     }
 
@@ -99,7 +113,7 @@ export class D3GraphImpl extends React.Component<IProps> {
 
     private getViewBox = (): any => {
         const { width, height } = this.props;
-        return [-width / 2, -height / 2, width, height];
+        return [-width, -height, width * 2, height * 2];
     };
 
     private getDrag = (simulation: any) => {
@@ -136,8 +150,28 @@ export class D3GraphImpl extends React.Component<IProps> {
     };
 
     private createSvg = () => {
-        const { classes } = this.props;
-        return this.selectRoot().append("svg").attr("viewBox", this.getViewBox()).attr("class", classes.svg);
+        const { classes, width, height } = this.props;
+        const svg = this.selectRoot().append("svg").attr("viewBox", this.getViewBox()).attr("class", classes.svg);
+        const zoom = d3
+            .zoom()
+            .scaleExtent([1, 2])
+            .translateExtent([
+                [0, 0],
+                [1, 1],
+            ])
+            .on("zoom", () => {
+                svg.attr("transform", d3.event.transform);
+            });
+
+        svg.call(zoom)
+            .on("mousedown.zoom", null)
+            .on("touchstart.zoom", null)
+            .on("touchmove.zoom", null)
+            .on("touchend.zoom", null)
+            .on("dblclick.zoom", null);
+
+        zoom.scaleTo(svg, 2);
+        return svg;
     };
 
     private createTooltip = () => {
@@ -158,8 +192,8 @@ export class D3GraphImpl extends React.Component<IProps> {
         return tooltip;
     };
 
-    private createNode = (svg: any, nodes: any[], simulation: any) => {
-        const { classes } = this.props;
+    private createNode = (svg: any, nodes: any[], simulation: any, tooltip: any) => {
+        const { classes, l10n } = this.props;
 
         const node = svg
             .append("g")
@@ -168,55 +202,119 @@ export class D3GraphImpl extends React.Component<IProps> {
             .join("g")
             .call(this.getDrag(simulation) as any);
 
-        node.append("circle").attr("class", classes.nodeCircle).attr("r", 10);
+        node.append("circle")
+            .attr("class", (d) => (d.type === NodeType.Files ? classes.nodeCircle : classes.nodeKeyCircle))
+            .attr("r", (d) => (d.type === NodeType.Files ? 10 : 7))
+            .select(function (d) {
+                if (d.type === NodeType.Files) {
+                    return d.files.length > 1 ? this : null;
+                } else {
+                    return d.keys.length > 1 ? this : null;
+                }
+            })
+            .clone(true)
+            .attr("r", (d) => (d.type === NodeType.Files ? 12 : 9))
+            .attr("class", (d) =>
+                d.type === NodeType.Files ? classes.labelBorderGroupFiles : classes.labelBorderGroupKeys,
+            );
 
         node.append("text")
             .attr("x", "1em")
-            .text((d) => path.basename(d.path))
+            .text((d) => {
+                if (d.type === NodeType.Files) {
+                    return d.files.length === 1 ? path.basename(d.files[0]) : l10n.fileGroup(d.files.length);
+                } else {
+                    const types: DoubleTypes[] = Array.from(new Set(d.keys.map((k) => d.typeByKey[k])));
+                    return l10n.keyGroup(
+                        d.keys.length,
+                        types.map((t) => doubleTypeMap[t](l10n).title),
+                    );
+                }
+            })
             .clone(true)
             .lower()
             .attr("class", classes.labelBorder);
 
+        node.on("mouseover", (d) => {
+            if (d.type === NodeType.Files && d.files.length === 1) {
+                return;
+            }
+
+            tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
+
+            const rootRect = this.d3RootRef.current.getBoundingClientRect();
+            const labelRect = d3.event.target.getBoundingClientRect();
+            const x = labelRect.x + labelRect.width - rootRect.left;
+            const y = labelRect.y + labelRect.height - rootRect.top;
+
+            const textLines = [];
+            if (d.type === NodeType.Files) {
+                textLines.push(...d.files.map((f) => path.basename(f)));
+            } else {
+                textLines.push(l10n.conflictKeysDescription);
+                textLines.push(...d.keys.map((k) => `${k} ${doubleTypeMap[d.typeByKey[k]](l10n).title}`));
+            }
+            tooltip.html(textLines.join("<br/>")).style("left", `${x}px`).style("top", `${y}px`);
+        }).on("mouseout", () => {
+            tooltip.transition().duration(200).delay(200).style("opacity", 0).style("pointer-events", "none");
+        });
+
         return node;
     };
 
-    private createLinkLabel = (svg: any, links: any[], tooltip: any) => {
-        const { classes, l10n } = this.props;
-        const linkLabel = svg.append("g").selectAll("g").data(links).join("g");
+    private createD3Graph(graph: IDuplicateGraph) {
+        const added = new Set();
+        const result = {
+            nodes: [],
+            links: [],
+        };
 
-        linkLabel
-            .append("text")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("class", classes.linkLabel)
-            .text((d) => {
-                const types: DoubleTypes[] = d.types;
-                return types.map((t) => doubleTypeMap[t](l10n).title).join(", ");
-            })
-            .on("mouseover", (d) => {
-                tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
+        const encoded = {};
+        let lastId = 0;
+        const encode = (data: string): string => {
+            if (!(data in encoded)) {
+                encoded[data] = lastId++;
+            }
+            return encoded[data];
+        };
+        const toKey = (data: string[]): string => data.sort().join(",");
 
-                const rootRect = this.d3RootRef.current.getBoundingClientRect();
-                const labelRect = d3.event.target.getBoundingClientRect();
-                const x = labelRect.x + labelRect.width - rootRect.left;
-                const y = labelRect.y + labelRect.height - rootRect.top;
-                tooltip
-                    .html(`${l10n.conflictKeysDescription}<br/><br/>${d.keys.join("<br/>")}`)
-                    .style("left", `${x}px`)
-                    .style("top", `${y}px`);
-            })
-            .on("mouseout", () => {
-                tooltip.transition().duration(200).delay(200).style("opacity", 0).style("pointer-events", "none");
+        for (const { fileGroups, keys } of graph.edgeGroups) {
+            const keyGroupName = toKey(keys.map((k) => encode(k)));
+            const typeByKey = {};
+
+            for (const key of keys) {
+                typeByKey[key] = graph.typeByKey[key];
+            }
+
+            result.nodes.push({
+                path: keyGroupName,
+                type: NodeType.Keys,
+                keys,
+                typeByKey,
             });
 
-        linkLabel
-            .selectAll("text")
-            .clone(true)
-            .lower()
-            .attr("class", [classes.labelBorder, classes.linkLabel].join(" "));
+            for (const fileGroup of fileGroups) {
+                const groupName = toKey(fileGroup.map((f) => encode(f)));
+                if (!added.has(groupName)) {
+                    result.nodes.push({
+                        type: NodeType.Files,
+                        path: groupName,
+                        files: fileGroup,
+                    });
 
-        return linkLabel;
-    };
+                    added.add(groupName);
+                }
+
+                result.links.push({
+                    source: groupName,
+                    target: keyGroupName,
+                });
+            }
+        }
+
+        return result;
+    }
 
     render() {
         const { height, width, classes } = this.props;

@@ -66,6 +66,8 @@ export const english = {
     studioNotConfigured: "Sims4Studio path is not configured (you can do it Settings)",
     copyPathSuccess: (path: string) => `Path ${path} successfully copied to clipboard`,
     conflictKeysDescription: "Conflicting keys:",
+    keyGroup: (count: number, types: string[]) => `Keys: ${count} (${types.join(", ")})`,
+    fileGroup: (count: number) => `Files: ${count}`,
     selectAll: "Select all",
     clearSelection: "Clear selection",
     searchPlaceholder: "Search...",
