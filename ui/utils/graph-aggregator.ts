@@ -22,6 +22,11 @@ type TGraphInfo = Record<TNodeName, TBySimilarFileGroupsEntry>;
 type TGraph = Record<TNodeName, TNodeName[]>;
 
 export class GraphAggregator {
+    /*
+        the class created to analyze index, split files to independent groups,
+        group files with similar keys, and create summary of each group to simplify usage outside
+
+    */
     private result: IDuplicateGroup[];
 
     constructor(fileIndex: TIndex) {
@@ -41,14 +46,114 @@ export class GraphAggregator {
     }
 
     private build(index) {
+        /*
+            Let's say your index looks this way:
+            file1: [key1, key2, key3]
+            file2: [key1, key2, key3]
+            file3: [key3]
+            file4: [key4]
+            file5: [key4]
+
+            file1+-------+key1+-------+file2       file4
+                 |                    |              +
+                 +-------+key2+-------+              |
+                 |                    |              +
+                 +-------+key3+-------+            key4
+                            +                        +
+                            |                        |
+                            +                        +
+                          file3                    file5
+        */
+
+        /*
+            Here we replace filenames and keys with simple names
+            (js doesn't support tuple usage as key, so we collapse complex names, to use names.join(', ')
+            as key)
+            id1: [id6, id7, id8]
+            id2: [id6, id7, id8]
+            id3: [id8]
+            id4: [id9]
+            id5: [id9]
+
+            id1+-------+id6+--------+id2          id4
+               |                    |              +
+               +-------+id7+--------+              |
+               |                    |              +
+               +-------+id8+--------+             id9
+                          +                        +
+                          |                        |
+                          +                        +
+                         id3                      id5
+        */
         const [encoded, decoded, keyTypes] = this.encodeFilesAndKeys(index);
 
+        /*
+            Here we group files with similar keys
+            [id1, id2] - [id6, id7, id8]
+            id3 - [id8]
+            [id4, id5] - [id9]
+
+            [id1, id2]+-------+id6    [id4, id5]
+                      |                   +
+                      +-------+id7        |
+                      |                   +
+                      +-------+id8       id9
+                                +
+                                |
+                                +
+                               id3
+        */
         const bySimilarFiles = this.aggregateBySimilarFiles(index, encoded);
+
+        /*
+            Creating reversed data, key <-> files and fileGroups
+            id6: [id1, id2]
+            id7: [id1, id2]
+            id8: [id1, id2], id3
+            id9: [id4, id5]
+
+            also remove keys that have only single file (those files do not conflict with anything)
+        */
         const byKeys = this.removeUnconflicted(this.aggregateByKeys(bySimilarFiles));
+
+        /*
+            group by keys that share similar file groups
+            [id6, id7]: [id1, id2]
+            id8: [id1, id2], id3
+            id9: [id4, id5]
+
+            [id1, id2]+-------+[id6, id7]  [id4, id5]
+                      |                        +
+                      |                        |
+                      +-------+id8             +
+                                +             id9
+                                |
+                                +
+                               id3
+        */
         const byFileGroupsAndKeys = this.aggregateBySimilarFileGroups(byKeys);
+
+        /*
+            build the graph itself, and save infos ([id1, id2] was list, now it's key 'id1,id2',
+            but the data must be saved)
+            graph:
+            'id6,id7: 'id1,id2',
+            'id8': 'id1,id2', 'id3',
+            'id9': 'id4,id5',
+            'id3': 'id8',
+            'id1,id2': 'id6,id7', 'id8',
+            'id4,id5': 'id9',
+        */
         const [graph, infos] = this.buildGraph(byFileGroupsAndKeys);
+
+        /* 
+            dfs through graphs, and distinguish each component
+            one component is a group of files that conflict with each other
+        */
         const graphGroups = this.splitIntoGroups(graph);
         const result: IDuplicateGroup[] = [];
+
+        // decode all the filenames, key values, types and write as list of groups
         for (const group of graphGroups) {
             result.push(this.buildResultGroup(group, infos, decoded, keyTypes));
         }
@@ -61,8 +166,6 @@ export class GraphAggregator {
     }
 
     private aggregateBySimilarFiles(index: TIndex, encoded: TEncoded) {
-        // aggregating files that share same sets of keys, to groups (each group will become single node)
-
         const result: Record<string, TSimilarFilesEntry> = {};
         for (const path of Object.keys(index)) {
             const keys = index[path].map((x) => encoded[x[1]]);
@@ -108,8 +211,6 @@ export class GraphAggregator {
     }
 
     private aggregateByKeys(bySimilarFiles: TSimilarFilesEntry[]): TByKeys {
-        // each Keys<-->FileGroup now split into individual
-        // key1 - fileGroup1, key2 - fileGroup1 (for case [key1, key2] - fileGroup1)
         const result: TByKeys = {};
         for (const { keys, files } of bySimilarFiles) {
             for (const key of keys) {
@@ -125,8 +226,6 @@ export class GraphAggregator {
     }
 
     private removeUnconflicted(byKeys: TByKeys): TByKeys {
-        // remove keys where only one file shares it
-        // filter non conflict
         const result = { ...byKeys };
         for (const key of Object.keys(result)) {
             if (this.isSingleFile(result[key])) {
@@ -138,8 +237,6 @@ export class GraphAggregator {
     }
 
     private aggregateBySimilarFileGroups(byKeys: TByKeys): TBySimilarFileGroupsEntry[] {
-        // now we group keys
-        // taking keys that share similar sets of files into single node (each keygroup that shares similar files will become single node)
         const result: Record<string, TBySimilarFileGroupsEntry> = {};
         for (const key of Object.keys(byKeys)) {
             const fileKey = this.toKey(byKeys[key].map((x) => `[${this.toKey(x)}]`));
@@ -188,8 +285,6 @@ export class GraphAggregator {
     }
 
     private splitIntoGroups(graph: TGraph): TNodeName[][] {
-        // walk through all the data and build graph
-        // dfs through graph, to split it into separate unconnected graphs
         const visited: Set<TNodeName> = new Set();
         const graphGroups: TNodeName[][] = [];
 
