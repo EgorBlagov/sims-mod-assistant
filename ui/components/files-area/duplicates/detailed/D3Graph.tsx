@@ -6,10 +6,22 @@ import React, { createRef } from "react";
 import { Translation } from "../../../../../common/l10n";
 import { DoubleTypes, IDuplicateGraph } from "../../../../../common/types";
 import { doubleTypeMap } from "../../../../utils/language-mapping";
-enum NodeType {
-    Files = "Files",
-    Keys = "Keys",
+
+interface ID3Node {
+    path: string;
+    isGroup: boolean;
+    radius: number;
+    nodeClass: string;
+    nodeGroupBorderClass: string;
+    label: string;
+    tooltipLines: string[];
 }
+
+interface ID3Link {
+    source: string;
+    target: string;
+}
+
 const styles = (theme: Theme) =>
     createStyles({
         container: {
@@ -40,13 +52,13 @@ const styles = (theme: Theme) =>
             stroke: "white",
             strokeWidth: 3,
         },
-        labelBorderGroupFiles: {
+        nodeGroupBorder: {
             fill: "none",
             stroke: theme.palette.primary.main,
             strokeWidth: 2,
             opacity: 0.5,
         },
-        labelBorderGroupKeys: {
+        nodeGroupKeyBorder: {
             fill: "none",
             stroke: theme.palette.secondary.main,
             strokeWidth: 2,
@@ -150,7 +162,7 @@ export class D3GraphImpl extends React.Component<IProps> {
     };
 
     private createSvg = () => {
-        const { classes, width, height } = this.props;
+        const { classes } = this.props;
         const svg = this.selectRoot().append("svg").attr("viewBox", this.getViewBox()).attr("class", classes.svg);
         const zoom = d3
             .zoom()
@@ -193,7 +205,7 @@ export class D3GraphImpl extends React.Component<IProps> {
     };
 
     private createNode = (svg: any, nodes: any[], simulation: any, tooltip: any) => {
-        const { classes, l10n } = this.props;
+        const { classes } = this.props;
 
         const node = svg
             .append("g")
@@ -202,69 +214,52 @@ export class D3GraphImpl extends React.Component<IProps> {
             .join("g")
             .call(this.getDrag(simulation) as any);
 
-        node.append("circle")
-            .attr("class", (d) => (d.type === NodeType.Files ? classes.nodeCircle : classes.nodeKeyCircle))
-            .attr("r", (d) => (d.type === NodeType.Files ? 10 : 7))
-            .select(function (d) {
-                if (d.type === NodeType.Files) {
-                    return d.files.length > 1 ? this : null;
-                } else {
-                    return d.keys.length > 1 ? this : null;
-                }
-            })
+        const nodeCircle = node
+            .append("circle")
+            .attr("class", (d) => d.nodeClass)
+            .attr("r", (d) => d.radius);
+
+        nodeCircle
+            .filter((d) => d.isGroup)
             .clone(true)
-            .attr("r", (d) => (d.type === NodeType.Files ? 12 : 9))
-            .attr("class", (d) =>
-                d.type === NodeType.Files ? classes.labelBorderGroupFiles : classes.labelBorderGroupKeys,
-            );
+            .attr("r", (d) => d.radius + 2)
+            .attr("class", (d) => d.nodeGroupBorderClass);
+
+        nodeCircle
+            .on("mouseover", (d) => {
+                if (d.tooltipLines.length === 0) {
+                    return;
+                }
+
+                tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
+
+                const rootRect = this.d3RootRef.current.getBoundingClientRect();
+                const labelRect = d3.event.target.getBoundingClientRect();
+                const x = labelRect.x + labelRect.width - rootRect.left;
+                const y = labelRect.y + labelRect.height - rootRect.top;
+
+                tooltip.html(d.tooltipLines.join("<br/>")).style("left", `${x}px`).style("top", `${y}px`);
+            })
+            .on("mouseout", () => {
+                tooltip.transition().duration(200).delay(200).style("opacity", 0).style("pointer-events", "none");
+            });
 
         node.append("text")
             .attr("x", "1em")
-            .text((d) => {
-                if (d.type === NodeType.Files) {
-                    return d.files.length === 1 ? path.basename(d.files[0]) : l10n.fileGroup(d.files.length);
-                } else {
-                    const types: DoubleTypes[] = Array.from(new Set(d.keys.map((k) => d.typeByKey[k])));
-                    return l10n.keyGroup(
-                        d.keys.length,
-                        types.map((t) => doubleTypeMap[t](l10n).title),
-                    );
-                }
-            })
+            .text((d) => d.label)
             .clone(true)
             .lower()
             .attr("class", classes.labelBorder);
-
-        node.on("mouseover", (d) => {
-            if (d.type === NodeType.Files && d.files.length === 1) {
-                return;
-            }
-
-            tooltip.transition().duration(200).style("opacity", 1).style("pointer-events", "all");
-
-            const rootRect = this.d3RootRef.current.getBoundingClientRect();
-            const labelRect = d3.event.target.getBoundingClientRect();
-            const x = labelRect.x + labelRect.width - rootRect.left;
-            const y = labelRect.y + labelRect.height - rootRect.top;
-
-            const textLines = [];
-            if (d.type === NodeType.Files) {
-                textLines.push(...d.files.map((f) => path.basename(f)));
-            } else {
-                textLines.push(l10n.conflictKeysDescription);
-                textLines.push(...d.keys.map((k) => `${k} ${doubleTypeMap[d.typeByKey[k]](l10n).title}`));
-            }
-            tooltip.html(textLines.join("<br/>")).style("left", `${x}px`).style("top", `${y}px`);
-        }).on("mouseout", () => {
-            tooltip.transition().duration(200).delay(200).style("opacity", 0).style("pointer-events", "none");
-        });
 
         return node;
     };
 
     private createD3Graph(graph: IDuplicateGraph) {
         const added = new Set();
-        const result = {
+        const result: {
+            nodes: ID3Node[];
+            links: ID3Link[];
+        } = {
             nodes: [],
             links: [],
         };
@@ -277,43 +272,66 @@ export class D3GraphImpl extends React.Component<IProps> {
             }
             return encoded[data];
         };
-        const toKey = (data: string[]): string => data.sort().join(",");
 
         for (const { fileGroups, keys } of graph.edgeGroups) {
-            const keyGroupName = toKey(keys.map((k) => encode(k)));
-            const typeByKey = {};
-
-            for (const key of keys) {
-                typeByKey[key] = graph.typeByKey[key];
-            }
-
-            result.nodes.push({
-                path: keyGroupName,
-                type: NodeType.Keys,
-                keys,
-                typeByKey,
-            });
+            const keyNode = this.createD3KeyNode(keys, graph.typeByKey, encode);
+            result.nodes.push(keyNode);
 
             for (const fileGroup of fileGroups) {
-                const groupName = toKey(fileGroup.map((f) => encode(f)));
-                if (!added.has(groupName)) {
-                    result.nodes.push({
-                        type: NodeType.Files,
-                        path: groupName,
-                        files: fileGroup,
-                    });
-
-                    added.add(groupName);
+                const fileNode = this.createD3FileNode(fileGroup, encode);
+                if (!added.has(fileNode.path)) {
+                    result.nodes.push(fileNode);
+                    added.add(fileNode.path);
                 }
 
                 result.links.push({
-                    source: groupName,
-                    target: keyGroupName,
+                    source: fileNode.path,
+                    target: keyNode.path,
                 });
             }
         }
 
         return result;
+    }
+
+    private toKey(data: string[]): string {
+        return data.sort().join(",");
+    }
+
+    private createD3KeyNode(keys, typeByKey, encode): ID3Node {
+        const { l10n, classes } = this.props;
+        const keyGroupName = this.toKey(keys.map((k) => encode(k)));
+        const uniqueTypes: DoubleTypes[] = Array.from(new Set(keys.map((k) => typeByKey[k])));
+        return {
+            path: keyGroupName,
+            isGroup: keys.length > 1,
+            radius: 7,
+            nodeClass: classes.nodeKeyCircle,
+            nodeGroupBorderClass: classes.nodeGroupKeyBorder,
+            label: l10n.keyGroup(
+                keys.length,
+                uniqueTypes.map((t) => doubleTypeMap[t](l10n).title),
+            ),
+            tooltipLines: [
+                l10n.conflictKeysDescription,
+                ...keys.map((k) => `${k} ${doubleTypeMap[typeByKey[k]](l10n).title}`),
+            ],
+        };
+    }
+
+    private createD3FileNode(fileGroup, encode): ID3Node {
+        const { classes, l10n } = this.props;
+        const groupName = this.toKey(fileGroup.map((f) => encode(f)));
+
+        return {
+            path: groupName,
+            isGroup: fileGroup.length > 1,
+            radius: 10,
+            nodeClass: classes.nodeCircle,
+            nodeGroupBorderClass: classes.nodeGroupBorder,
+            label: fileGroup.length === 1 ? path.basename(fileGroup[0]) : l10n.fileGroup(fileGroup.length),
+            tooltipLines: fileGroup.length > 1 ? fileGroup.map((f) => path.basename(f)) : [],
+        };
     }
 
     render() {
