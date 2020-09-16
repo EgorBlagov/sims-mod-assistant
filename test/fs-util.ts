@@ -14,7 +14,7 @@ describe("fs util", () => {
         ];
 
         for (const [parent, child] of truthySet) {
-            expect(isWithinSameDir(parent, child)).to.be.true;
+            expect(isWithinSameDir(parent, child), `invalid ${parent} ${child}`).to.be.true;
         }
     });
 
@@ -29,7 +29,7 @@ describe("fs util", () => {
         ];
 
         for (const [parent, child] of truthySet) {
-            expect(isWithinSameDir(parent, child)).to.be.true;
+            expect(isWithinSameDir(parent, child), `invalid ${parent} ${child}`).to.be.true;
         }
     });
 
@@ -45,7 +45,7 @@ describe("fs util", () => {
         ];
 
         for (const [parent, child] of falsySet) {
-            expect(isWithinSameDir(parent, child)).to.be.false;
+            expect(isWithinSameDir(parent, child), `invalid ${parent} ${child}`).to.be.false;
         }
     });
 });
