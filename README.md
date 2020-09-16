@@ -4,12 +4,16 @@ Small electron app intended to help Sims players and content makers to find and 
 
 # Features
 
--   Find exact duplicates (copy-paste files with different names)
--   Parses mod contents and find probable catalog conflicts
-
-# Known issues
-
--   If you find thousands of duplicates or invalid files, app will stuck on few seconds (due to big list rendering). I'm considering several solutions for it.
+-   Finds exact duplicates (copy-paste files with different names)
+-   Parses mod contents and looks for probable conflicts for:
+    -   Catalog/Definition
+    -   Skintone
+    -   CAS
+    -   Sliders
+-   Groups conflicting files into lists
+-   Shows visual relationship between conflicting files
+-   Supports quick open of specific mod in Sims4Studio
+-   Supports filtering, batch selection and moving selected mods to other directory
 
 # Usage
 
@@ -26,6 +30,12 @@ npm run start
 
 # dev
 npm run dev
+
+# unit tests
+npm run test
+
+# lint
+npm run lint
 ```
 
 ## Note on Dev
