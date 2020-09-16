@@ -15,6 +15,9 @@ Small electron app intended to help Sims players and content makers to find and 
 -   Supports quick open of specific mod in Sims4Studio
 -   Supports filtering, batch selection and moving selected mods to other directory
 
+![Main view](/assets/screenshot-1.png?raw=true)
+![Graph viewer](/assets/screenshot-2.png?raw=true)
+
 # Usage
 
 Download application from Releases page and start.
