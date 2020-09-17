@@ -1,4 +1,4 @@
-# Sims 4 Mod Assistant
+# Sims 4 Mod Assistant [![Build Status](https://travis-ci.org/EgorBlagov/sims-mod-assistant.svg?branch=master)](https://travis-ci.org/EgorBlagov/sims-mod-assistant) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Small electron app intended to help Sims players and content makers to find and move duplicates and possible conflicts among mods.
 
