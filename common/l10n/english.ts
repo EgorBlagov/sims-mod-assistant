@@ -75,4 +75,5 @@ export const english = {
     caseHelp: "Case sensitivity",
 
     moveSubdirForbidden: "Move to same directory or subdirectory is forbidden, please, choose separate directory",
+    homepage: "Homepage",
 };

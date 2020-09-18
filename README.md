@@ -45,6 +45,21 @@ npm run lint
 
 I was not able to make **Electron** and **Parcel** best friends, so on `npm run dev` there are several reloads of electron app
 
+# Localization
+
+If you want to contribute, you should do:
+
+-   check available localizations at `/common/l10n/`
+-   make a new one using an existing one as sample
+-   add enum entry to `/common/l10n/index.ts`
+
+Or you can just translate and submit an issue, I'll add new one.
+
+# Support
+
+-   [PayPal](https://www.paypal.com/paypalme/emblagov)
+-   [Qiwi](https://qiwi.com/n/STRAL577)
+
 # License
 
 ISC © [Egor Blagov](https://github.com/EgorBlagov)
