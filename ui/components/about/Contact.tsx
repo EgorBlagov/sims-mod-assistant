@@ -2,6 +2,7 @@ import { Avatar, Box, IconButton, ListItem, ListItemAvatar, ListItemText, Toolti
 import { shell } from "electron";
 import _ from "lodash";
 import React from "react";
+import { preprocessUrl } from "../../utils/url";
 
 export interface IContactIcon {
     icon: React.ReactElement;
@@ -17,14 +18,7 @@ export interface IContact {
 
 export const Contact = ({ name, role, avatar, icons }: IContact) => {
     const handleClick = (link: string) => () => {
-        let linkToOpen = link;
-        if (link.includes("@")) {
-            linkToOpen = `mailto: ${link}`;
-        } else if (!link.startsWith("http")) {
-            linkToOpen = `https://${link}`;
-        }
-
-        shell.openExternal(linkToOpen);
+        shell.openExternal(preprocessUrl(link));
     };
 
     return (

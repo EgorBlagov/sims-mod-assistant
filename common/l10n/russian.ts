@@ -77,4 +77,5 @@ export const russian: Translation = {
     caseHelp: "Чувствительность к регистру",
 
     moveSubdirForbidden: "Перемещать в ту же папку или подпапку нельзя, пожалуйста, выберите другую папку",
+    homepage: "Домашняя страница",
 };
