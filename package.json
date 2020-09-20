@@ -1,7 +1,7 @@
 {
     "name": "sims-mod-assistant",
     "nameLong": "Sims 4 mod assistant",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Simple Electron based Application to help Sims 4 players handle their thousands of mods",
     "main": "dist/server/main.js",
     "devDependencies": {

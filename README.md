@@ -22,6 +22,10 @@ Small electron app intended to help Sims players and content makers to find and 
 
 Download application from Releases page and start.
 
+## Video tutorial
+
+[![Sims Mod Assistant Tutorial](https://img.youtube.com/vi/m-VSYq3zcdg/0.jpg)](https://youtu.be/m-VSYq3zcdg "Sims Mod Assistant Tutorial")
+
 # CLI
 
 ```bash
