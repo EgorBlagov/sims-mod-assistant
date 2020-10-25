@@ -67,7 +67,7 @@
         "watch-client": "parcel watch ui/index.html --public-url ./ -d dist/client --target electron",
         "watch-client-tsc": "tsc --build ui/tsconfig.json --watch",
         "watch-server": "npm run copy:assets && tsc --build server/tsconfig.json --watch",
-        "lint": "prettier --write (ui/**/*.{tsx,ts,css}|server/**/*.ts) && tslint --fix {server,ui}/**/*.{ts,tsx}",
+        "lint": "prettier --write \"(ui/**/*.{tsx,ts,css}|server/**/*.ts)\" && tslint --fix {server,ui}/**/*.{ts,tsx}",
         "build": "rm -rf dist && npm run build:ui && npm run build:server",
         "build:ui": "npm run build:ui:tsc && parcel build ui/index.html --public-url ./ -d dist/client --target electron",
         "build:ui:tsc": "tsc --build ui/tsconfig.json",

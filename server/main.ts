@@ -20,7 +20,7 @@ const launchElectron = () => {
                 nodeIntegration: true,
                 devTools: isDev,
             },
-            icon: path.join(__dirname, "..", "icon.ico"),
+            icon: path.join(__dirname, "..", "icon.png"),
         });
 
         mainWindow.loadFile(path.join(clientPath, "index.html"));

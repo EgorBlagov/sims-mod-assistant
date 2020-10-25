@@ -4,4 +4,4 @@ if (!fs.existsSync("dist")) {
     fs.mkdirSync("dist");
 }
 
-fs.copyFileSync("assets/icon.ico", "dist/icon.ico");
+fs.copyFileSync("assets/icon.png", "dist/icon.png");
